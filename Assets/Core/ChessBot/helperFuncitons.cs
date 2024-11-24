@@ -76,7 +76,7 @@ namespace ChessEngine
                 return 11;
             }
 
-            //fail  safe
+            // failsafe
             return int.MaxValue;
         }
         public static int CheckIfPieceOnEveryBoard(int pieceToNotCheck, int position, ChessBoard board)
@@ -131,7 +131,7 @@ namespace ChessEngine
                 return 11;
             }
 
-            //fail  safe
+            //failsafe
             return int.MaxValue;
         }
 

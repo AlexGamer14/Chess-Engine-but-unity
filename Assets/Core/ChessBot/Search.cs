@@ -83,7 +83,6 @@ namespace ChessEngine
                 Debug.Log(evaluation + " : Evaluation");
 
                 bestWhiteMoveEval[i] = evaluation;
-
             }
 
             int bestMoveIndex = 0;

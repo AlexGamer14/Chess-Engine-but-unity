@@ -30,6 +30,8 @@ namespace ChessEngine
             board = new ChessBoard();
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
+            Debug.Log("Chess engine is running");
+
             Mover = new();
 
             boardRenderer = new ChessBoardRenderer();

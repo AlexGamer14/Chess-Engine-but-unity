@@ -7,8 +7,6 @@ using UnityEngine.UIElements;
 
 namespace ChessEngine
 {
-    
-
     public class MovePieces
     {
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)

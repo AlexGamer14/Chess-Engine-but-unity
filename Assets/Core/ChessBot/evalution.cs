@@ -1,7 +1,7 @@
-using Unity.Collections;
-
-namespace ChessEngine {
-    public class Evaluation {
+namespace ChessEngine
+{
+    public class Evaluation
+    {
 
         const float pawnValue = 100;
         const float rookValue = 500;
@@ -13,7 +13,8 @@ namespace ChessEngine {
         bool whiteKingAlive = false;
         bool blackKingAlive = false;
 
-        public float Evaluate(ChessBoard board, bool whiteToMove) {
+        public float Evaluate(ChessBoard board, bool whiteToMove)
+        {
             float evaluation = 0;
 
 
@@ -23,22 +24,26 @@ namespace ChessEngine {
             evaluation += pieceBonus;
 
 
-            if (whiteToMove == true) {
-                evaluation+=moveFirstValue;
+            if (whiteToMove == true)
+            {
+                evaluation += moveFirstValue;
             }
-            else {
-                evaluation-=moveFirstValue;
+            else
+            {
+                evaluation -= moveFirstValue;
             }
 
-           
-            
-            if (!whiteKingAlive)  {
+
+
+            if (!whiteKingAlive)
+            {
                 evaluation -= 200000;
             }
-            if (!blackKingAlive) {
-                evaluation+=200000;
+            if (!blackKingAlive)
+            {
+                evaluation += 200000;
             }
-        
+
             return evaluation;
         }
 
@@ -126,5 +131,5 @@ namespace ChessEngine {
         }
     }
 
-    
+
 }
