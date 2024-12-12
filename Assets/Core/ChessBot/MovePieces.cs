@@ -312,14 +312,14 @@ namespace ChessEngine
                     }
                     if (position % 8 != 7 && position < 48)
                     {
-                        if (HelperFunctions.GetByte(position + 17, board.WhitePieces) != 1)
+                        if (HelperFunctions.GetByte(position + 17, board.BlackPieces) != 1)
                         {
                             moves.Add(new(position, (byte)(position + 17)));
                         }
                     }
                     if (position % 8 != 0 && position < 48)
                     {
-                        if (HelperFunctions.GetByte(position + 15, board.WhitePieces) != 1)
+                        if (HelperFunctions.GetByte(position + 15, board.BlackPieces) != 1)
                         {
                             moves.Add(new(position, (byte)(position + 15)));
                         }
@@ -329,14 +329,14 @@ namespace ChessEngine
                     {
                         if (position % 8 != 0)
                         {
-                            if (HelperFunctions.GetByte(position - 17, board.WhitePieces) != 1)
+                            if (HelperFunctions.GetByte(position - 17, board.BlackPieces) != 1)
                             {
                                 moves.Add(new(position, (byte)(position - 17)));
                             }
                         }
                         if (position % 8 != 7)
                         {
-                            if (HelperFunctions.GetByte(position - 15, board.WhitePieces) != 1)
+                            if (HelperFunctions.GetByte(position - 15, board.BlackPieces) != 1)
                             {
                                 moves.Add(new(position, (byte)(position - 15)));
                             }
@@ -347,14 +347,14 @@ namespace ChessEngine
                     {
                         if (position % 8 != 7 && position % 8 != 6)
                         {
-                            if (HelperFunctions.GetByte(position + 10, board.WhitePieces) != 1)
+                            if (HelperFunctions.GetByte(position + 10, board.BlackPieces) != 1)
                             {
                                 moves.Add(new(position, (byte)(position + 10)));
                             }
                         }
                         if (position % 8 != 0 && position % 8 != 1)
                         {
-                            if (HelperFunctions.GetByte(position + 6, board.WhitePieces) != 1)
+                            if (HelperFunctions.GetByte(position + 6, board.BlackPieces) != 1)
                             {
                                 moves.Add(new(position, (byte)(position + 6)));
                             }
@@ -365,14 +365,14 @@ namespace ChessEngine
                     {
                         if (position % 8 != 7 && position % 8 != 6)
                         {
-                            if (HelperFunctions.GetByte(position - 6, board.WhitePieces) != 1)
+                            if (HelperFunctions.GetByte(position - 6, board.BlackPieces) != 1)
                             {
                                 moves.Add(new(position, (byte)(position - 6)));
                             }
                         }
                         if (position % 8 != 0 && position % 8 != 1)
                         {
-                            if (HelperFunctions.GetByte(position - 10, board.WhitePieces) != 1)
+                            if (HelperFunctions.GetByte(position - 10, board.BlackPieces) != 1)
                             {
                                 moves.Add(new(position, (byte)(position - 10)));
                             }

@@ -10,57 +10,104 @@ namespace ChessEngine
         public MovePieces.Move SearchAllMoves(int depth, bool WhiteToMove)
         {
             MovePieces mover = new();
-            Evaluation evaluator = new();
+            Evaluation evaluation = new Evaluation();
 
-            bool CurrentWhiteToMove = WhiteToMove;
+            // copy of current chess board
+            ChessBoard copyBoard = (ChessBoard)ChessEngine.board.Clone();
 
-            MovePieces.Move[][] PossibleMoves = mover.GetMovesForBlackOrWhite(CurrentWhiteToMove);
-            MovePieces.Move[] currentBestMoves = SearchMoves(PossibleMoves, CurrentWhiteToMove);
+            bool IsWhiteToMove = WhiteToMove;
 
-            List<MovePieces.Move> worstMoveList = new();
-            MovePieces.Move worstMove = new();
-            float worstEval = int.MaxValue;
+            MovePieces.Move[] bestMovesFromPreviousPosition = null;
 
-            for (int currentDepth = 0; currentDepth < 1; currentDepth++)
+            List<float> evaluationBoard = new();
+
+            for (int depthCounter = 0; depthCounter < depth; depthCounter++)
             {
-                for (int i = 0; i < currentBestMoves.Length; i++)
+                if (bestMovesFromPreviousPosition == null)
                 {
-                    ChessBoard testBoard = (ChessBoard)ChessEngine.board.Clone();
-                    MovePieces.Move currentMove = currentBestMoves[i];
+                    MovePieces.Move[][] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+
+                    MovePieces.Move[] BestMovesFromCurrentPosition = SearchMoves(LegalMovesFromCurrentPositions, IsWhiteToMove, copyBoard);
+
+                    bestMovesFromPreviousPosition = BestMovesFromCurrentPosition;
+                    IsWhiteToMove = !IsWhiteToMove;
+                }
+                
+
+            }
+
+            // Check evaluation by going through whites moves for a depth of 2
+            ChessBoard copyBoardOnStart2 = (ChessBoard)copyBoard.Clone();
+            for (int j = 0; j < bestMovesFromPreviousPosition.Length; j++)
+            {
+                List<float> subEvaluationBoard = new List<float>();
+
+                int pieceType2 = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, bestMovesFromPreviousPosition[j].startPos, copyBoard);
+
+                mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType2, ref copyBoard), pieceType2, bestMovesFromPreviousPosition[j].startPos, bestMovesFromPreviousPosition[j].endPos, ref copyBoard);
 
 
-                    int pieceIndex = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, currentMove.startPos, testBoard);
+                MovePieces.Move[][] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
 
-                    mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceIndex, ref testBoard), pieceIndex, currentMove.startPos, currentMove.endPos, ref testBoard);
+                MovePieces.Move[] bestMovesFromCurrentPosition = SearchMoves(LegalMovesFromCurrentPositions, IsWhiteToMove, copyBoard);
+                for (int i = 0; i < bestMovesFromCurrentPosition.Length; i++)
+                {
 
-                    CurrentWhiteToMove = !CurrentWhiteToMove;
+                    int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, bestMovesFromCurrentPosition[i].startPos, copyBoard);
 
-                    MovePieces.Move[][] SearchPossibleMoves = mover.GetMovesForBlackOrWhite(CurrentWhiteToMove, testBoard);
-                    MovePieces.Move[] SearchBestMoves = SearchMoves(SearchPossibleMoves, CurrentWhiteToMove, testBoard);
+                    mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, bestMovesFromCurrentPosition[i].startPos, bestMovesFromCurrentPosition[i].endPos, ref copyBoard);
 
-                    int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, SearchBestMoves[0].startPos, testBoard);
+                    Debug.Log(bestMovesFromCurrentPosition[i].startPos + " , " + bestMovesFromCurrentPosition[i].endPos);
+                    copyBoard.PrintBoard();
 
-                    mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref testBoard), pieceType, SearchBestMoves[0].startPos, SearchBestMoves[0].endPos, ref testBoard);
-                    float evaluationOfMove = evaluator.Evaluate(testBoard, CurrentWhiteToMove);
 
-                    if (evaluationOfMove < worstEval)
+                    subEvaluationBoard.Add(evaluation.Evaluate(copyBoard, WhiteToMove));
+                    copyBoard = (ChessBoard)copyBoardOnStart2.Clone();
+                }
+
+
+
+                float subBestMoveEvaluation = float.PositiveInfinity;
+
+                for (int i = 0; i < bestMovesFromPreviousPosition.Length; i++)
+                {
+                    if (subEvaluationBoard[i] > subBestMoveEvaluation)
                     {
-                        worstEval = evaluationOfMove;
-                        worstMoveList.Clear();
-                        worstMoveList.Add(currentBestMoves[i]);
+                        subBestMoveEvaluation = subEvaluationBoard[i];
                     }
+                }
 
-                    if (evaluationOfMove == worstEval)
-                    {
-                        worstMoveList.Add(currentBestMoves[i]);
-                    }
+                evaluationBoard.Add(subBestMoveEvaluation);
+            }
+
+            
+
+            float bestMoveEvaluation = float.PositiveInfinity;
+
+            List<MovePieces.Move> bestMovesList = new();
+
+            for (int i = 0;i < bestMovesFromPreviousPosition.Length; i++)
+            {
+                if (evaluationBoard[i] > bestMoveEvaluation)
+                {
+                    bestMovesList.Clear();
+                    bestMovesList.Add(bestMovesFromPreviousPosition[i]);
+                    bestMoveEvaluation = evaluationBoard[i];
+                }
+                if (evaluationBoard[i] == bestMoveEvaluation)
+                {
+                    bestMovesList.Add(bestMovesFromPreviousPosition[i]);
                 }
             }
 
-            System.Random random = new System.Random();
-            worstMove = worstMoveList.ToArray()[random.Next(worstMoveList.Count)];
+            if (bestMovesList.Count > 1)
+            {
+                System.Random rng = new System.Random();
 
-            return worstMove;
+                return bestMovesList[rng.Next(0, bestMovesList.Count)];
+            }
+
+            return bestMovesList[0];
         }
 
         public MovePieces.Move[] SearchMoves(MovePieces.Move[][] moves, bool WhiteToMove)
@@ -114,12 +161,7 @@ namespace ChessEngine
                     ChessBoard newBoard = (ChessBoard)board.Clone();
                     MovePieces mover = new();
 
-
-                    newBoard.PrintBoard();
-
                     int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, moves[y][x].startPos, newBoard);
-
-                    Debug.Log(moves[y][x].startPos + " , " + moves[y][x].endPos);
 
                     mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, moves[y][x].startPos, moves[y][x].endPos, ref newBoard);
 

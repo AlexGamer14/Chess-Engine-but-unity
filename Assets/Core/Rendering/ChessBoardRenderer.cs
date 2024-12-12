@@ -32,8 +32,8 @@ namespace ChessEngine {
                     board[y,x].transform.SetParent( parentObj);
                     MoveBoard[y, x].transform.SetParent(parentObj);
 
-                    board[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(350-(x*100), -350+(y*100), 0);
-                    MoveBoard[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(350 - (x * 100), -350 + (y * 100), 0);
+                    board[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350+(x*100), -350+(y*100), 0);
+                    MoveBoard[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350 + (x * 100), -350 + (y * 100), 0);
 
                     Image img = board[y, x].GetComponent<Image>();
 

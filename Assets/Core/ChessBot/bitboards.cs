@@ -37,15 +37,15 @@ namespace ChessEngine
             WhiteKnights = 0x0000000000000042; // b1 and g1
             WhiteBishops = 0x0000000000000024; // c1 and f1
             WhiteRooks = 0x0000000000000081; // a1 and h1
-            WhiteQueens = 0x0000000000000010; // d1
-            WhiteKing = 0x0000000000000008; // e1
+            WhiteQueens = 0x0000000000000008; // d1
+            WhiteKing = 0x0000000000000010; // e1
 
             BlackPawns = 0x00FF000000000000; // Rank 7
             BlackKnights = 0x4200000000000000; // b8 and g8
             BlackBishops = 0x2400000000000000; // c8 and f8
             BlackRooks = 0x8100000000000000; // a8 and h8
-            BlackQueens = 0x1000000000000000; // d8
-            BlackKing = 0x0800000000000000; // e8
+            BlackQueens = 0x0800000000000000; // d8
+            BlackKing = 0x1000000000000000; // e8
 
             // Calculate the bitboards for all pieces, white pieces, black pieces, and empty squares
             AllPieces = WhitePawns | WhiteKnights | WhiteBishops | WhiteRooks | WhiteQueens | WhiteKing |
