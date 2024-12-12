@@ -25,11 +25,11 @@ namespace ChessEngine
             {
                 if (bestMovesFromPreviousPosition == null)
                 {
-                    MovePieces.Move[][] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+                    MovePieces.Move[] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+                    
+                    
 
-                    MovePieces.Move[] BestMovesFromCurrentPosition = SearchMoves(LegalMovesFromCurrentPositions, IsWhiteToMove, copyBoard);
-
-                    bestMovesFromPreviousPosition = BestMovesFromCurrentPosition;
+                    bestMovesFromPreviousPosition = LegalMovesFromCurrentPositions;
                     IsWhiteToMove = !IsWhiteToMove;
                 }
                 
@@ -47,11 +47,9 @@ namespace ChessEngine
                 mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType2, ref copyBoard), pieceType2, bestMovesFromPreviousPosition[j].startPos, bestMovesFromPreviousPosition[j].endPos, ref copyBoard);
 
 
-                MovePieces.Move[][] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+                MovePieces.Move[] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
 
-                MovePieces.Move[] bestMovesFromCurrentPosition = SearchMoves(LegalMovesFromCurrentPositions, IsWhiteToMove, copyBoard);
-
-                Debug.Log(bestMovesFromCurrentPosition.Length);
+                MovePieces.Move[] bestMovesFromCurrentPosition = LegalMovesFromCurrentPositions;
 
                 for (int i = 0; i < bestMovesFromCurrentPosition.Length; i++)
                 {
@@ -71,7 +69,6 @@ namespace ChessEngine
 
                 for (int c = 0; c < bestMovesFromCurrentPosition.Length; c++)
                 {
-                    Debug.Log(c);
 
                     if (subEvaluationBoard[c] > subBestMoveEvaluation)
                     {

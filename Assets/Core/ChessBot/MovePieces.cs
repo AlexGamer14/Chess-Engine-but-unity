@@ -654,9 +654,9 @@ namespace ChessEngine
             ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);*/
         }
 
-        public MovePieces.Move[][] GetMovesForBlackOrWhite(bool IsWhite)
+        public MovePieces.Move[] GetMovesForBlackOrWhite(bool IsWhite)
         {
-            List<Move[]> moves = new();
+            List<Move> moves = new();
 
             for (int i = 0; i < 8; i++)
             {
@@ -690,15 +690,18 @@ namespace ChessEngine
                     }
 
 
-                    moves.Add(legalMoves);
+                    for (int z = 0; z < legalMoves.Length; z++)
+                    {
+                        moves.Add(moves[z]);
+                    }
                 }
             }
             return moves.ToArray();
         }
 
-        public MovePieces.Move[][] GetMovesForBlackOrWhite(bool IsWhite, ChessBoard board)
+        public MovePieces.Move[] GetMovesForBlackOrWhite(bool IsWhite, ChessBoard board)
         {
-            List<Move[]> moves = new();
+            List<Move> moves = new();
 
             for (int i = 0; i < 8; i++)
             {
@@ -732,7 +735,10 @@ namespace ChessEngine
                     }
 
 
-                    moves.Add(legalMoves);
+                    for (int z = 0; z < legalMoves.Length; z++)
+                    {
+                        moves.Add(legalMoves[z]);
+                    }
                 }
             }
             return moves.ToArray();
