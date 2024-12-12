@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace ChessEngine
 {
     public class Evaluation
@@ -38,10 +40,12 @@ namespace ChessEngine
             if (!whiteKingAlive)
             {
                 evaluation -= 200000;
+                Debug.Log("Black won");
             }
             if (!blackKingAlive)
             {
                 evaluation += 200000;
+                Debug.Log("White won");
             }
 
             return evaluation;
@@ -110,10 +114,12 @@ namespace ChessEngine
             if (!blackKingAlive)
             {
                 evaluation += 1000000;
+                Debug.Log("White won!");
             }
             if (!whiteKingAlive)
             {
                 evaluation -= 1000000;
+                Debug.Log("Black won!");
             }
             return evaluation;
         }
@@ -130,6 +136,4 @@ namespace ChessEngine
             return evaluation;
         }
     }
-
-
 }
