@@ -117,10 +117,7 @@ namespace ChessEngine
                             whiteAttackBoard = (ulong)(whiteAttackBoard + Math.Pow(position+7, 2));
                         }
                     }
-<<<<<<< HEAD
 
-=======
->>>>>>> c14631c5ba19a47fe3eeb8c569d37d5bea011b4e
                     if (position%8!=7)
                     {
                         if (HelperFunctions.GetByte(position + 1, board.BlackPawns) == 0 && ChessEngine.MovedTwoSpacesLastTurn == position + 1) 
@@ -129,11 +126,7 @@ namespace ChessEngine
                         }
 
                     }
-<<<<<<< HEAD
-                    
-                    
-=======
->>>>>>> c14631c5ba19a47fe3eeb8c569d37d5bea011b4e
+
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType)) == 0)
