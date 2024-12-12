@@ -100,8 +100,6 @@ namespace ChessEngine
                             moves.Add(new(position, (byte)(position +7 )));
                         }
                     }
-                    
-                    
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType)) == 0)

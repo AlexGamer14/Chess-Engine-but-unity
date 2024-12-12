@@ -11,7 +11,7 @@ namespace ChessEngine
 
         public static void SetBit(ref ulong value, int bitPosition)
         {
-            // Create a mask where only the bit at bitPosition is 1
+            // Create and invert a mask where only the bit at bitPosition is 1
             ulong mask = ~(1UL << bitPosition);
 
             // Use bitwise AND to clear the bit at the bitPosition
