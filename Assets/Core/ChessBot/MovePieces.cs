@@ -117,8 +117,6 @@ namespace ChessEngine
                             whiteAttackBoard = (ulong)(whiteAttackBoard + Math.Pow(position+7, 2));
                         }
                     }
-<<<<<<< Updated upstream
-=======
                     if (position%8!=7)
                     {
                         if (HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, position + 1, board) == 0 && ChessEngine.MovedTwoSpacesLastTurn == position + 1) 
@@ -127,9 +125,6 @@ namespace ChessEngine
                         }
 
                     }
-                    
-                    
->>>>>>> Stashed changes
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType)) == 0)
