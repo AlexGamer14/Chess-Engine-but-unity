@@ -55,8 +55,11 @@ namespace ChessEngine {
                         }
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
-                        
-                        if (true)
+                        if (!ChessEngine.WhiteToMove || pieceType > 5)
+                        {
+
+                        }
+                        else
                         {
 
 
@@ -87,7 +90,7 @@ namespace ChessEngine {
                                         ChessEngine.boardRenderer.UpdateBoard();
                                         ChessEngine.board.UpdateBitBoards();
 
-                                        
+                                        ChessEngine.Mover.MakeAIMove(false);
                                     });
                                 }
                             }
