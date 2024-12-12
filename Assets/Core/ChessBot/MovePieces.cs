@@ -130,13 +130,23 @@ namespace ChessEngine
 
                     if (position%8!=7)
                     {
-                        if (HelperFunctions.GetByte(position + 1, board.BlackPawns) == 0 && ChessEngine.MovedTwoSpacesLastTurn == position + 1) 
+                        if (HelperFunctions.GetByte(position + 1, board.BlackPawns) == 1 && ChessEngine.MovedTwoSpacesLastTurn == position + 1) 
                         {
                             moves.Add(new(position, (byte)(position + 9)));
+                            HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(6, ref board), position + 1);
                         }
 
                     }
+                    
+                    if (position % 8 != 0)
+                    {
+                        if (HelperFunctions.GetByte(position - 1, board.BlackPawns) == 1 && ChessEngine.MovedTwoSpacesLastTurn == position - 1)
+                        {
+                            moves.Add(new(position, (byte)(position + 7)));
+                            HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(6, ref board), position - 1);
+                        }
 
+                    }
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType)) == 0)
