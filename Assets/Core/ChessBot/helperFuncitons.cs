@@ -11,10 +11,10 @@ namespace ChessEngine
 
         public static void SetBit(ref ulong value, int bitPosition)
         {
-            // Create a mask where only the bit at bitPosition is 1
+            // Create and invert a mask where only the bit at bitPosition is 1
             ulong mask = ~(1UL << bitPosition);
 
-            // Use bitwise AND to clear the bit at the bitPosition
+            // Use bitwise AND to set the bit at the bitPosition
             value &= mask;
         }
 
@@ -76,7 +76,7 @@ namespace ChessEngine
                 return 11;
             }
 
-            //fail  safe
+            // failsafe
             return int.MaxValue;
         }
         public static int CheckIfPieceOnEveryBoard(int pieceToNotCheck, int position, ChessBoard board)
@@ -131,7 +131,7 @@ namespace ChessEngine
                 return 11;
             }
 
-            //fail  safe
+            //failsafe
             return int.MaxValue;
         }
 
