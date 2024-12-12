@@ -71,6 +71,16 @@ namespace ChessEngine
             return false;
         }
 
+
+        public Move CheckForCastle(bool IsWhite)
+        {
+            if (IsWhite && !ChessEngine.HasWhiteKingMoved)
+            {
+                return new();
+            }
+            return new();
+        }
+
         public Move[] GetLegalMoves(ChessBoard board ,byte pieceType,byte position)
         {
             List<Move> moves = new();
@@ -265,6 +275,7 @@ namespace ChessEngine
                 case 5:
 
                     KingMovement(pieceType, position, board.WhitePieces, ref moves);
+                    ChessEngine.HasWhiteKingMoved = true;
 
                     break;
                 case 6:
@@ -381,6 +392,7 @@ namespace ChessEngine
                     break;
                 case 11:
                     KingMovement(pieceType,position, board.BlackPieces,ref moves);
+                    ChessEngine.HasBlackKingMoved = true;
                     break;
                 
             }
@@ -592,7 +604,15 @@ namespace ChessEngine
 
         public void MakeAIMove(bool IsWhite)
         {
-            Move[] moves = ChessEngine.search.SearchMoves(GetMovesForBlackOrWhite(IsWhite), false, ChessEngine.board);
+            Move move = ChessEngine.search.SearchAllMoves(2, IsWhite);
+
+            int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
+
+
+            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
+
+
+            /*Move[] moves = ChessEngine.search.SearchMoves(GetMovesForBlackOrWhite(IsWhite), false, ChessEngine.board);
 
             System.Random random = new System.Random();
             Move move = moves[random.Next(moves.Length)];
@@ -600,7 +620,7 @@ namespace ChessEngine
             int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
 
 
-            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
+            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);*/
         }
 
         public MovePieces.Move[][] GetMovesForBlackOrWhite(bool IsWhite)
@@ -632,6 +652,48 @@ namespace ChessEngine
                     }
 
                     Move[] legalMoves = GetLegalMoves(ChessEngine.board, (byte)TEMPpieceType, (byte)(i * 8 + j));
+
+                    if (legalMoves.Length <= 0)
+                    {
+                        continue;
+                    }
+
+
+                    moves.Add(legalMoves);
+                }
+            }
+            return moves.ToArray();
+        }
+
+        public MovePieces.Move[][] GetMovesForBlackOrWhite(bool IsWhite, ChessBoard board)
+        {
+            List<Move[]> moves = new();
+
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    int TEMPpieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, i * 8 + j, board);
+                    if (TEMPpieceType == int.MaxValue)
+                    {
+                        continue;
+                    }
+                    if (IsWhite)
+                    {
+                        if (TEMPpieceType > 5)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (TEMPpieceType < 6)
+                        {
+                            continue;
+                        }
+                    }
+
+                    Move[] legalMoves = GetLegalMoves(board, (byte)TEMPpieceType, (byte)(i * 8 + j));
 
                     if (legalMoves.Length <= 0)
                     {

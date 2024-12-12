@@ -8,7 +8,7 @@ namespace ChessEngine {
         const float knightsValue = 300;
         const float bishopsValue = 320;
         const float queenValue = 900;
-        const float moveFirstValue = 200;
+        const float moveFirstValue = 0;
 
         bool whiteKingAlive = false;
         bool blackKingAlive = false;

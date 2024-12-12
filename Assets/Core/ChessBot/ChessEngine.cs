@@ -17,6 +17,11 @@ namespace ChessEngine
 
         public static bool WhiteToMove = true;
 
+        public static bool HasWhiteKingMoved;
+        public static bool HasBlackKingMoved;
+
+        public static bool[] HasRooksMoved;
+
         public static MovePieces Mover;
         public static Evaluation evaluation = new Evaluation();
         public static Search search = new Search();

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace ChessEngine
 {
@@ -52,6 +53,24 @@ namespace ChessEngine
 
             WhitePieces = WhitePawns | WhiteKnights | WhiteBishops | WhiteRooks | WhiteQueens | WhiteKing;
             BlackPieces = BlackPawns | BlackKnights | BlackBishops | BlackRooks | BlackQueens | BlackKing;
+
+           
+        }
+
+        public void PrintBoard()
+        {
+            string boardText = "";
+
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    boardText += HelperFunctions.GetByte(j + i * 8, AllPieces);
+                }
+                boardText += "\n";
+            }
+
+            Debug.Log(boardText);
         }
 
         public void UpdateBitBoards()
