@@ -50,15 +50,15 @@ namespace ChessEngine
                 MovePieces.Move[][] LegalMovesFromCurrentPositions = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
 
                 MovePieces.Move[] bestMovesFromCurrentPosition = SearchMoves(LegalMovesFromCurrentPositions, IsWhiteToMove, copyBoard);
+
+                Debug.Log(bestMovesFromCurrentPosition.Length);
+
                 for (int i = 0; i < bestMovesFromCurrentPosition.Length; i++)
                 {
 
                     int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, bestMovesFromCurrentPosition[i].startPos, copyBoard);
 
                     mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, bestMovesFromCurrentPosition[i].startPos, bestMovesFromCurrentPosition[i].endPos, ref copyBoard);
-
-                    Debug.Log(bestMovesFromCurrentPosition[i].startPos + " , " + bestMovesFromCurrentPosition[i].endPos);
-                    copyBoard.PrintBoard();
 
 
                     subEvaluationBoard.Add(evaluation.Evaluate(copyBoard, WhiteToMove));
@@ -69,11 +69,13 @@ namespace ChessEngine
 
                 float subBestMoveEvaluation = float.PositiveInfinity;
 
-                for (int i = 0; i < bestMovesFromPreviousPosition.Length; i++)
+                for (int c = 0; c < bestMovesFromCurrentPosition.Length; c++)
                 {
-                    if (subEvaluationBoard[i] > subBestMoveEvaluation)
+                    Debug.Log(c);
+
+                    if (subEvaluationBoard[c] > subBestMoveEvaluation)
                     {
-                        subBestMoveEvaluation = subEvaluationBoard[i];
+                        subBestMoveEvaluation = subEvaluationBoard[c];
                     }
                 }
 
@@ -93,12 +95,16 @@ namespace ChessEngine
                     bestMovesList.Clear();
                     bestMovesList.Add(bestMovesFromPreviousPosition[i]);
                     bestMoveEvaluation = evaluationBoard[i];
+
+                    Debug.Log(bestMoveEvaluation);
                 }
                 if (evaluationBoard[i] == bestMoveEvaluation)
                 {
                     bestMovesList.Add(bestMovesFromPreviousPosition[i]);
                 }
             }
+
+            
 
             if (bestMovesList.Count > 1)
             {
