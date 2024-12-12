@@ -7,6 +7,21 @@ namespace ChessEngine
     {
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)
         {
+
+            if (pieceType == 0 && startPosition + 16 == endPosition)
+            {
+                ChessEngine.MovedTwoSpacesLastTurn = endPosition;
+            }
+            else if (pieceType == 6 && startPosition - 16 == endPosition)
+            {
+                ChessEngine.MovedTwoSpacesLastTurn = endPosition;
+            }
+            else 
+            {
+                ChessEngine.MovedTwoSpacesLastTurn = byte.MaxValue;
+            }
+            
+
             CheckForCapture(pieceType,endPosition);
             ChessEngine.WhiteToMove = !ChessEngine.WhiteToMove;
 
@@ -102,6 +117,19 @@ namespace ChessEngine
                             whiteAttackBoard = (ulong)(whiteAttackBoard + Math.Pow(position+7, 2));
                         }
                     }
+<<<<<<< Updated upstream
+=======
+                    if (position%8!=7)
+                    {
+                        if (HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, position + 1, board) == 0 && ChessEngine.MovedTwoSpacesLastTurn == position + 1) 
+                        {
+                            moves.Add(new(position, (byte)(position + 9)));
+                        }
+
+                    }
+                    
+                    
+>>>>>>> Stashed changes
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType)) == 0)
