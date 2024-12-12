@@ -37,7 +37,7 @@ namespace ChessEngine
         // There are 10 types of people in the world, those who understand pentadecimal, those who think it is quattuordecimal, those who think it is tridecimal, those who think it is duodecimal, those who think it is undecimal, those who think it is decimal, those who think it is nonal, those who think it is octal, those who think it is septimal, those who think it is seximal, those who think it is quinary, those who think it is quadrary, those who think it is trinary, those who think it is binary and those who don't.
         // There are 10 types of people in the world, those who understand hexadecimal, those who think it is pentadecimal, those who think it is quattuordecimal, those who think it is tridecimal, those who think it is duodecimal, those who think it is undecimal, those who think it is decimal, those who think it is nonal, those who think it is octal, those who think it is septimal, those who think it is seximal, those who think it is quinary, those who think it is quadrary, those who think it is trinary, those who think it is binary and those who don't.
 
-        public static byte MovedTwoSpacesLastTurn;
+        [SerializeField] public static byte MovedTwoSpacesLastTurn;
 
         public float cooldown = 0.1f;
 
@@ -62,8 +62,7 @@ namespace ChessEngine
         {
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
             {
-                Mover.MakeAIMove(ChessEngine.WhiteToMove);
-                timer = 0;
+                Debug.Log(MovedTwoSpacesLastTurn);
             }
             timer += Time.deltaTime;
         }
