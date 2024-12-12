@@ -94,7 +94,7 @@ namespace ChessEngine
         {
             List<Move> moves = new();
             UInt64 whiteAttackBoard = 0;
-            UInt64 blackAttackBoard = 0;
+            // UInt64 blackAttackBoard = 0;
 
             switch (pieceType)
             {
