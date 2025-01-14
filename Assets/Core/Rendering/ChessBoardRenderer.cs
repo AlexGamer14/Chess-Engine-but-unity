@@ -15,6 +15,7 @@ namespace ChessEngine {
 
         public Sprite[] spriteSheet;
 
+        
 
         public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab)
         {
@@ -56,13 +57,13 @@ namespace ChessEngine {
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
 
-                        if (!ChessEngine.WhiteToMove && pieceType > 5)
+                        if ((ChessEngine.WhiteToMove && pieceType > 5) && ChessEngine.EnableAI)
                         {
-
 
                         }
                         else
                         {
+                            
 
 
                             if (pieceType != byte.MaxValue)
@@ -92,7 +93,10 @@ namespace ChessEngine {
                                         ChessEngine.boardRenderer.UpdateBoard();
                                         ChessEngine.board.UpdateBitBoards();
 
-                                        ChessEngine.Mover.MakeAIMove(false);
+                                        if (ChessEngine.EnableAI)
+                                        {
+                                            ChessEngine.Mover.MakeAIMove(false);
+                                        }
                                     });
                                 }
                             }

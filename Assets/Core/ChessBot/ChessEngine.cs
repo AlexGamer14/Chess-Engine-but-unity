@@ -26,6 +26,9 @@ namespace ChessEngine
         public static Evaluation evaluation = new Evaluation();
         public static Search search = new Search();
 
+        public static bool EnableAI = true;
+        [SerializeField] bool EnableAIInspector = true;
+
         // There are 10 types of people in the world, those who understand binary and those who don't
         // There are 10 types of people in the world, those who understand trinary, those who think it is binary, and those who don't
         // There are 10 types of people in the world, those who understand quadary, those who think it is trinary, those who think it is binary, and those who don't
@@ -52,6 +55,8 @@ namespace ChessEngine
         {
             board = new ChessBoard();
             //Console.WriteLine(GetByte(1, board.AllPieces));
+
+            EnableAI = EnableAIInspector;
 
             Debug.Log("Chess engine is running");
 
