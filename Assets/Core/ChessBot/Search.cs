@@ -63,7 +63,7 @@ namespace ChessEngine
                        
                     } 
                 }
-
+                return allMoves[1];
             }
 
             ChessBoard resetboard = (ChessBoard)copyBoard.Clone();
@@ -82,6 +82,10 @@ namespace ChessEngine
                     copyBoard = (ChessBoard)resetboard.Clone();
                 }
             }
+            
+            // DO NOT KEEP
+            // I JUST WANTED TO GET RID OF COMPILER ERRORS
+            return;
         }
 
 
