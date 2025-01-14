@@ -47,9 +47,7 @@ namespace ChessEngine
                 }
             }
             
-            // DO NOT KEEP
-            // I JUST WANTED TO GET RID OF COMPILER ERRORS
-            return;
+            return(new());
         }
 
 
