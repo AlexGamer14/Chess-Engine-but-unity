@@ -22,12 +22,12 @@ namespace ChessEngine
                 ChessEngine.MovedTwoSpacesLastTurn = byte.MaxValue;
             }
 
-            if (pieceType != 0 && (startPosition+9==endPosition || startPosition+7==endPosition))
+            if (pieceType != 0 || (startPosition+9==endPosition || startPosition+7==endPosition))
             {
                 CheckForCapture(pieceType, endPosition);
             }
 
-            if (pieceType != 6 && (startPosition - 9 == endPosition || startPosition - 7 == endPosition))
+            if (pieceType != 6 || (startPosition - 9 == endPosition || startPosition - 7 == endPosition))
             {
                 CheckForCapture(pieceType, endPosition);
             }
