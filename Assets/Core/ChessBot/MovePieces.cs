@@ -9,6 +9,15 @@ namespace ChessEngine
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)
         {
 
+            if (pieceType == 0 || pieceType == 6)
+            {
+                if (endPosition == startPosition + 16)
+                    EnPassantTargetSquare = endPosition - 8;
+                if (endPosition == startPosition - 16) {
+                    EnPassantTargetSquare = startPosition + 8;
+                }
+            }
+            
             if (pieceType == 0 && startPosition + 16 == endPosition)
             {
                 ChessEngine.MovedTwoSpacesLastTurn = endPosition;
