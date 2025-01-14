@@ -736,6 +736,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5ddd8d749fc53d74da5b27e2fb68c1c4, type: 3}
   prefab: {fileID: 5984064074621747440, guid: 56387c242e2ea71438f2080c2b954c81, type: 3}
   movePrefab: {fileID: 1342150057149416867, guid: 316230cb4843a234491a0fc3dd1c37e9, type: 3}
+  EnableAIInspector: 1
   cooldown: 0.1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
