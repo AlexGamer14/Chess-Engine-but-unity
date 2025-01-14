@@ -19,6 +19,8 @@ namespace ChessEngine
         public ulong BlackRooks ;
         public ulong BlackQueens;
         public ulong BlackKing ;
+        public byte WhiteCanCastle;
+        public byte BlackCanCastle; 
 
         // Bitboard for all pieces
         public ulong AllPieces ;
@@ -122,7 +124,10 @@ namespace ChessEngine
                 // Copy bitboards for all pieces
                 WhitePieces = this.WhitePieces,
                 BlackPieces = this.BlackPieces,
-                AllPieces = this.AllPieces
+                AllPieces = this.AllPieces,
+                WhiteCanCastle = this.WhiteCanCastle,
+                BlackCanCastle = this.BlackCanCastles
+
             };
 
             return newBoard;
