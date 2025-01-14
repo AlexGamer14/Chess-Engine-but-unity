@@ -329,7 +329,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -736,6 +736,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5ddd8d749fc53d74da5b27e2fb68c1c4, type: 3}
   prefab: {fileID: 5984064074621747440, guid: 56387c242e2ea71438f2080c2b954c81, type: 3}
   movePrefab: {fileID: 1342150057149416867, guid: 316230cb4843a234491a0fc3dd1c37e9, type: 3}
+  EnableAIInspector: 1
   cooldown: 0.1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

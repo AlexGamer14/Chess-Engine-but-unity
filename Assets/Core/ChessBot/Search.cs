@@ -17,69 +17,33 @@ namespace ChessEngine
 
             bool IsWhiteToMove = WhiteToMove;
 
-            List<MovePieces.Move[]> previousMoves = new List<MovePieces.Move[]>();
-            List<MovePieces.Move> orgMoves = new List<MovePieces.Move>();
+            List <MovePieces.Move []> allMoves = new List <MovePieces.Move []>();
+            List<MovePieces.Move[]> tempAllMoves = new List<MovePieces.Move[]>();
 
-            List<MovePieces.Move[]> tempPreviousMoves = new List<MovePieces.Move[]>();
-
-
-            for (int i = 0; i < depth; i++)
+            for (int i = 0; i < depth; i++ )
             {
-                if (previousMoves == null)
+                if (i == 0)
                 {
-                    
-
-                    MovePieces.Move[] allMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove);
-                    for (int j = 0; j<allMoves.Length; j++)
+                    MovePieces.Move[] moves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+                    for (int j = 0; j < moves.Length; j++)
                     {
-                        orgMoves.Add(allMoves[j]);
+                        allMoves.Add(new MovePieces.Move[] { moves[j] });
                     }
-                    previousMoves.Add(allMoves);
                 }
                 else
                 {
-                    IsWhiteToMove = !IsWhiteToMove;
-                    ChessBoard resetBoard = (ChessBoard)copyBoard.Clone();
-
-                    for (int j = 0; j < previousMoves.Count; j++)
+                    for (int j = 0; j<allMoves.Count; j++)
                     {
-                        for (int k = 0; k < previousMoves[j].Length; k++)
+                         ChessBoard resetBoard = (ChessBoard)copyBoard.Clone();
+
+                        for (int k = 0; k < allMoves[j].Length; k++)
                         {
+                            if (allMoves[j][k].startPos == 255 && allMoves[j][k].endPos == 255)
+                            {
 
-                            int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, previousMoves[j][k].startPos, copyBoard);
-
-                            mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, previousMoves[j][k].startPos, previousMoves[j][k].endPos, ref copyBoard);
-                            
-                            MovePieces.Move[] allMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, board);
-                            tempPreviousMoves.Add(allMoves);
-
-
-                            copyBoard = (ChessBoard)resetBoard.Clone();
+                            }
                         }
-
-                        previousMoves.Clear();
-                        previousMoves = tempPreviousMoves;
-                        tempPreviousMoves.Clear();
-                       
-                    } 
-                }
-                return allMoves[1];
-            }
-
-            ChessBoard resetboard = (ChessBoard)copyBoard.Clone();
-
-            for (int i = 0; i < previousMoves.Count; i++)
-            {
-                for (int j = 0; j < previousMoves[j].Length; j++)
-                {
-
-                    int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, previousMoves[i][j].startPos, copyBoard);
-
-                    mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, previousMoves[i][j].startPos, previousMoves[i][j].endPos, ref copyBoard);
-
-                    float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
-
-                    copyBoard = (ChessBoard)resetboard.Clone();
+                    }
                 }
             }
             
