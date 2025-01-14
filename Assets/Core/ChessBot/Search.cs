@@ -10,97 +10,78 @@ namespace ChessEngine
         // MIGHT HAVE SOME PROBLEMS WITH IsWhiteToMove variable
         public MovePieces.Move RefactoredSearchAllMoves(int depth, bool WhiteToMove, ChessBoard board)
         {
-            MovePieces move = new();
-            Evaluation evaluation = new();
+            MovePieces mover = new();
+            Evaluation evaluation = new Evaluation();
 
             ChessBoard copyBoard = (ChessBoard)board.Clone();
+
             bool IsWhiteToMove = WhiteToMove;
 
-            // Which moves gives best eval for black   THE BETTER IF ITS NEGATIVE
-            float bestEval = float.PositiveInfinity;
-            List<int> bestEvalIndex = new();
+            List<MovePieces.Move[]> previousMoves = new List<MovePieces.Move[]>();
+            List<MovePieces.Move> orgMoves = new List<MovePieces.Move>();
 
-            MovePieces.Move[][] moves = new MovePieces.Move[depth][];
+            List<MovePieces.Move[]> tempPreviousMoves = new List<MovePieces.Move[]>();
 
-            for (int depthCounter = 0; depthCounter < depth; depthCounter++)
+
+            for (int i = 0; i < depth; i++)
             {
-                
-                if (depthCounter == 0)
+                if (previousMoves == null)
                 {
-                    Debug.Log(WhiteToMove);
-                    MovePieces.Move[] LegalMovesFromCurrentPosition = move.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+                    
 
-                    moves[depthCounter] = LegalMovesFromCurrentPosition;
-
-                    IsWhiteToMove = !IsWhiteToMove;
+                    MovePieces.Move[] allMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove);
+                    for (int j = 0; j<allMoves.Length; j++)
+                    {
+                        orgMoves.Add(allMoves[j]);
+                    }
+                    previousMoves.Add(allMoves);
                 }
                 else
                 {
-                    Debug.Log(WhiteToMove);
-                    // Create copy of board so that multiple of the moves dont happen on the same boards attempting to move empty squares after its already moved
-                    ChessBoard boardReset = (ChessBoard)copyBoard.Clone();
-
-                    for (int i= 0; i <  moves[depthCounter-1].Length; i++)
-                    {
-
-                        int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, moves[depthCounter-1][i].startPos, copyBoard);
-
-                        move.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, moves[depthCounter-1][i].startPos, moves[depthCounter-1][i].endPos, ref copyBoard);
-
-                        MovePieces.Move[] LegalMovesFromCurrentPosition = move.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
-
-                        moves[depthCounter] = LegalMovesFromCurrentPosition;
-
-                        copyBoard = (ChessBoard)boardReset.Clone();
-                        
-                    }
-
                     IsWhiteToMove = !IsWhiteToMove;
-                }
+                    ChessBoard resetBoard = (ChessBoard)copyBoard.Clone();
 
+                    for (int j = 0; j < previousMoves.Count; j++)
+                    {
+                        for (int k = 0; k < previousMoves[j].Length; k++)
+                        {
+
+                            int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, previousMoves[j][k].startPos, copyBoard);
+
+                            mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, previousMoves[j][k].startPos, previousMoves[j][k].endPos, ref copyBoard);
+                            
+                            MovePieces.Move[] allMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, board);
+                            tempPreviousMoves.Add(allMoves);
+
+
+                            copyBoard = (ChessBoard)resetBoard.Clone();
+                        }
+
+                        previousMoves.Clear();
+                        previousMoves = tempPreviousMoves;
+                        tempPreviousMoves.Clear();
+                       
+                    } 
+                }
 
             }
 
-            
+            ChessBoard resetboard = (ChessBoard)copyBoard.Clone();
 
-            ChessBoard boardReset1 = (ChessBoard)copyBoard.Clone();
-
-            // Evaluate the positions after its found all the moves
-            for (int i= 0; i < moves[depth-1].Length; i++)
+            for (int i = 0; i < previousMoves.Count; i++)
             {
-                int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, moves[depth - 1][i].startPos, copyBoard);
-
-                move.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, moves[depth - 1][i].startPos, moves[depth - 1][i].endPos, ref copyBoard);
-
-                float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
-
-
-                if (eval < bestEval)
+                for (int j = 0; j < previousMoves[j].Length; j++)
                 {
-                    bestEval = eval;
-                    bestEvalIndex.Clear();
-                    bestEvalIndex.Add(i);
-                    Debug.Log(eval + ": " + moves[depth - 1][i].startPos + " , " + moves[depth - 1][i].endPos);
+
+                    int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, previousMoves[i][j].startPos, copyBoard);
+
+                    mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, previousMoves[i][j].startPos, previousMoves[i][j].endPos, ref copyBoard);
+
+                    float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
+
+                    copyBoard = (ChessBoard)resetboard.Clone();
                 }
-                if (eval==bestEval)
-                {
-                    bestEvalIndex.Add(i);
-                    Debug.Log(eval + ": " + moves[depth - 1][i].startPos + " , " + moves[depth - 1][i].endPos);
-                }
-
-
-                copyBoard = (ChessBoard)boardReset1.Clone();
             }
-
-
-            if (bestEvalIndex.Count == 1)
-            {
-                return moves[depth-1][bestEvalIndex[0]];
-            }
-
-            System.Random rng = new System.Random();
-
-            return moves[depth-1][bestEvalIndex[rng.Next(0, bestEvalIndex.Count)]];
         }
 
 

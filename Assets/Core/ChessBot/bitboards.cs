@@ -105,24 +105,24 @@ namespace ChessEngine
             ChessBoard newBoard = new()
             {
                 // Copy individual piece bitboards
-                WhitePawns = ChessEngine.board.WhitePawns,
-                WhiteKnights = ChessEngine.board.WhiteKnights,
-                WhiteBishops = ChessEngine.board.WhiteBishops,
-                WhiteRooks = ChessEngine.board.WhiteRooks,
-                WhiteQueens = ChessEngine.board.WhiteQueens,
-                WhiteKing = ChessEngine.board.WhiteKing,
+                WhitePawns = this.WhitePawns,
+                WhiteKnights = this.WhiteKnights,
+                WhiteBishops = this.WhiteBishops,
+                WhiteRooks = this.WhiteRooks,
+                WhiteQueens = this.WhiteQueens,
+                WhiteKing = this.WhiteKing,
 
-                BlackPawns = ChessEngine.board.BlackPawns,
-                BlackKnights = ChessEngine.board.BlackKnights,
-                BlackBishops = ChessEngine.board.BlackBishops,
-                BlackRooks = ChessEngine.board.BlackRooks,
-                BlackQueens = ChessEngine.board.BlackQueens,
-                BlackKing = ChessEngine.board.BlackKing,
+                BlackPawns = this.BlackPawns,
+                BlackKnights = this.BlackKnights,
+                BlackBishops = this.BlackBishops,
+                BlackRooks = this.BlackRooks,
+                BlackQueens = this.BlackQueens,
+                BlackKing = this.BlackKing,
 
                 // Copy bitboards for all pieces
-                WhitePieces = ChessEngine.board.WhitePieces,
-                BlackPieces = ChessEngine.board.BlackPieces,
-                AllPieces = ChessEngine.board.AllPieces
+                WhitePieces = this.WhitePieces,
+                BlackPieces = this.BlackPieces,
+                AllPieces = this.AllPieces
             };
 
             return newBoard;

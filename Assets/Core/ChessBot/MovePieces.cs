@@ -36,15 +36,7 @@ namespace ChessEngine
 
         public void SearchMovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ref ChessBoard board)
         {
-            if (pieceType != 0 && (startPosition + 9 == endPosition || startPosition + 7 == endPosition))
-            {
-                CheckForCapture(pieceType, endPosition);
-            }
-
-            if (pieceType != 6 && (startPosition - 9 == endPosition || startPosition - 7 == endPosition))
-            {
-                CheckForCapture(pieceType, endPosition);
-            }
+            CheckForCapture(pieceType, endPosition);
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
