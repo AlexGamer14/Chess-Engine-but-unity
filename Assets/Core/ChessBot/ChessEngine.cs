@@ -83,5 +83,54 @@ namespace ChessEngine
                 Debug.Log(Mover.GetMovesForBlackOrWhite(true, board).Length) ;
             }
         }
+    
+    /*public LoadFenString(string FenString) = new() {
+            // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+            byte fenPosition = 0;
+            byte piecePosition = 0;
+            bool isWhiteToMove;
+            // Piece positions
+            for (int i = 0; i < FenString.Length, i++) {
+                if (FenString[i] = " ") {
+                    break;
+                }
+
+                // TODO: Find piece type, and convert fenPosition to piecePosition and set bitboard to that value
+            }
+
+            // Side to move
+            for (int i = 0; i<= FenString.Length, i++) {
+                if (FenString[i] = " ") {
+                    if (FenString[i + 1] = "w") {
+                        isWhiteToMove = true;
+                    } else if (FenString[i + 1] = "b") {
+                        isWhiteToMove = false;
+                    } else {
+                        Debug.Log("Insert a valid FEN-string");
+                    }
+                }
+            }
+
+            // Castling
+
+        }
+
+        /*
+        Fenpos
+        Piecepos
+        EndOfPos
+        Loop through FenString
+            Check if char at index of FenString = space
+                If so set endOfPos(end of part of fen string containing info about piece positions)
+                break
+            set bitboard of piece type to include that piece type at bit position
+        Loop through FenString starting at EnOfPos ending either "w" or "b"
+            Check if char at index of FenString = "w"|"b"
+                If so set start of castlingInfo to index+1
+
+        Loop through FenString starting at castlingInfo
+            Set castling to valid castling based on fen string('-' | ['K'] ['Q'] ['k'] ['q'] (1..4))
+        Go to end of    
+        */
     }
 }

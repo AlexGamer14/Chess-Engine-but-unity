@@ -127,6 +127,5 @@ namespace ChessEngine
 
             return newBoard;
         }
-
     }
 }
