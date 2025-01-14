@@ -22,7 +22,10 @@ namespace ChessEngine
                     EnPassantTargetSquare = startPosition + 8;
                 }
             }
-            
+            else
+            {
+                EnPassantTargetSquare = 255
+            }
             if (pieceType == 0 && startPosition + 16 == endPosition)
             {
                 bitboards.WhiteCanCastle = 3;
