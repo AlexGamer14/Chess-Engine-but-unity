@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 namespace ChessEngine
 {
@@ -20,9 +21,19 @@ namespace ChessEngine
             {
                 ChessEngine.MovedTwoSpacesLastTurn = byte.MaxValue;
             }
-            
 
-            CheckForCapture(pieceType,endPosition);
+            if (pieceType != 0 && (startPosition+9==endPosition || startPosition+7==endPosition))
+            {
+                CheckForCapture(pieceType, endPosition);
+            }
+
+            if (pieceType != 6 && (startPosition - 9 == endPosition || startPosition - 7 == endPosition))
+            {
+                CheckForCapture(pieceType, endPosition);
+            }
+
+
+
             ChessEngine.WhiteToMove = !ChessEngine.WhiteToMove;
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
@@ -33,7 +44,15 @@ namespace ChessEngine
 
         public void SearchMovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ref ChessBoard board)
         {
-            CheckForCapture(pieceType, endPosition, ref board);
+            if (pieceType != 0 && (startPosition + 9 == endPosition || startPosition + 7 == endPosition))
+            {
+                CheckForCapture(pieceType, endPosition);
+            }
+
+            if (pieceType != 6 && (startPosition - 9 == endPosition || startPosition - 7 == endPosition))
+            {
+                CheckForCapture(pieceType, endPosition);
+            }
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
@@ -126,26 +145,6 @@ namespace ChessEngine
                             moves.Add(new(position, (byte)(position +7 )));
                             whiteAttackBoard = (ulong)(whiteAttackBoard + Math.Pow(position+7, 2));
                         }
-                    }
-
-                    if (position%8!=7)
-                    {
-                        if (HelperFunctions.GetByte(position + 1, board.BlackPawns) == 1 && ChessEngine.MovedTwoSpacesLastTurn == position + 1) 
-                        {
-                            moves.Add(new(position, (byte)(position + 9)));
-                            HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(6, ref board), position + 1);
-                        }
-
-                    }
-                    
-                    if (position % 8 != 0)
-                    {
-                        if (HelperFunctions.GetByte(position - 1, board.BlackPawns) == 1 && ChessEngine.MovedTwoSpacesLastTurn == position - 1)
-                        {
-                            moves.Add(new(position, (byte)(position + 7)));
-                            HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(6, ref board), position - 1);
-                        }
-
                     }
                     break;
                 case 1:
@@ -645,7 +644,7 @@ namespace ChessEngine
 
         public void MakeAIMove(bool IsWhite)
         {
-            Move move = ChessEngine.search.SearchAllMoves(2, IsWhite);
+            Move move = ChessEngine.search.RefactoredSearchAllMoves(3, IsWhite, ChessEngine.board);
 
             int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
 

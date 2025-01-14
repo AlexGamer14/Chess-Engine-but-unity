@@ -17,8 +17,8 @@ namespace ChessEngine
 
         public static bool WhiteToMove = true;
 
-        public static bool HasWhiteKingMoved;
-        public static bool HasBlackKingMoved;
+        public static bool HasWhiteKingMoved = false;
+        public static bool HasBlackKingMoved = false;
 
         public static bool[] HasRooksMoved;
 

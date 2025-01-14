@@ -55,8 +55,13 @@ namespace ChessEngine {
                         }
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
-                        
-                        if (true)
+
+                        if (!ChessEngine.WhiteToMove && pieceType > 5)
+                        {
+
+
+                        }
+                        else
                         {
 
 
@@ -74,8 +79,8 @@ namespace ChessEngine {
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.RemoveAllListeners();
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.AddListener(() =>
                                     {
-                                        
-                                        
+
+
                                         ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i].startPos, moves[i].endPos);
                                         for (int y2 = 0; y2 < 8; y2++)
                                         {
@@ -87,6 +92,7 @@ namespace ChessEngine {
                                         ChessEngine.boardRenderer.UpdateBoard();
                                         ChessEngine.board.UpdateBitBoards();
 
+                                        ChessEngine.Mover.MakeAIMove(false);
                                     });
                                 }
                             }

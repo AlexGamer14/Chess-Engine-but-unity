@@ -58,56 +58,70 @@ namespace ChessEngine
             whiteKingAlive = false;
             blackKingAlive = false;
 
+            int amountOfPieces = 0;
+
             for (int i = 0; i < 64; i++)
             {
                 if (HelperFunctions.GetByte(i, board.WhitePawns) == 1)
                 {
                     evaluation += pawnValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteKing) == 1)
                 {
                     whiteKingAlive = true;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteKnights) == 1)
                 {
                     evaluation += knightsValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteBishops) == 1)
                 {
                     evaluation += bishopsValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteRooks) == 1)
                 {
                     evaluation += rookValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteQueens) == 1)
                 {
                     evaluation += queenValue;
+                    amountOfPieces++;
                 }
 
                 if (HelperFunctions.GetByte(i, board.BlackPawns) == 1)
                 {
                     evaluation -= pawnValue;
+                        amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackKing) == 1)
                 {
                     blackKingAlive = true;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackKnights) == 1)
                 {
                     evaluation -= knightsValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackBishops) == 1)
                 {
                     evaluation -= bishopsValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackRooks) == 1)
                 {
                     evaluation -= rookValue;
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackQueens) == 1)
                 {
                     evaluation -= queenValue;
+                    amountOfPieces++;
                 }
             }
 
@@ -121,6 +135,9 @@ namespace ChessEngine
                 evaluation -= 1000000;
                 Debug.Log("Black won!");
             }
+
+            
+
             return evaluation;
         }
 
@@ -130,7 +147,7 @@ namespace ChessEngine
 
             for (int i = 0; i < 64; i++)
             {
-
+  
             }
 
             return evaluation;
