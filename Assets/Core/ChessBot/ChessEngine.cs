@@ -68,6 +68,8 @@ namespace ChessEngine
             boardRenderer.UpdateBoard();
         }
 
+        
+
         private void Update()
         {
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
@@ -75,6 +77,11 @@ namespace ChessEngine
                 Debug.Log(MovedTwoSpacesLastTurn);
             }
             timer += Time.deltaTime;
+            
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                Debug.Log(Mover.GetMovesForBlackOrWhite(true, board).Length) ;
+            }
         }
     }
 }
