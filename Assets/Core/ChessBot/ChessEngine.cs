@@ -60,8 +60,8 @@ namespace ChessEngine
 
             Mover = new();
             
-            WhiteAttackBoard = new();
-            BlackAttackBoard = new();
+            WhiteAttackBoard = new int[1];
+            BlackAttackBoard = new int[1];
 
             boardRenderer = new ChessBoardRenderer();
             boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab);
@@ -81,7 +81,7 @@ namespace ChessEngine
             
             if (Input.GetKeyDown(KeyCode.F))
             {
-                Debug.Log(Mover.GetMovesForBlackOrWhite(true, board).Length) ;
+                Debug.Log(Mover.GetMovesForBlackOrWhite(true).Length) ;
             }
         }
     
