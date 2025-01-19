@@ -12,12 +12,12 @@ namespace ChessEngine
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)
         {
             // Value set to 255 so that it is not on board if en passant is not possible
-            byte EnPassantTargetSquare = 255;
+            int EnPassantTargetSquare = 255;
 
             if (pieceType == 0 || pieceType == 6)
             {
                 if (endPosition == startPosition + 16)
-                    EnPassantTargetSquare = endPosition - 8;
+                    EnPassantTargetSquare = endPosition - (byte)8;
                 if (endPosition == startPosition - 16)
                 {
                     EnPassantTargetSquare = startPosition + 8;
@@ -29,7 +29,7 @@ namespace ChessEngine
             }
             if (pieceType == 0 && startPosition + 16 == endPosition)
             {
-                newBoard.WhiteCanCastle = 3;
+                WhiteCanCastle = 3;
             }
             else if (pieceType == 6 && startPosition - 16 == endPosition)
             {
