@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using UnityEngine;
 
 namespace ChessEngine
 {
@@ -8,18 +9,50 @@ namespace ChessEngine
     {
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)
         {
+            // Value set to 255 so that it is not on board if en passant is not possible
 
-            if (pieceType == 0 && startPosition + 16 == endPosition)
+            if (pieceType == 0)
             {
-                ChessEngine.MovedTwoSpacesLastTurn = endPosition;
+                
+                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                {
+                    CheckForCapture(pieceType, endPosition - 8);
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
+
+                Debug.Log(pieceType);
+                Debug.Log(startPosition);
+                Debug.Log(endPosition);
+
+                if (endPosition == startPosition + 16)
+                {
+                    ChessEngine.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
+                }
+                else
+                {
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
             }
-            else if (pieceType == 6 && startPosition - 16 == endPosition)
+            else if (pieceType == 6)
             {
-                ChessEngine.MovedTwoSpacesLastTurn = endPosition;
+                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                {
+                    CheckForCapture(pieceType, endPosition + 8);
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
+
+                if (endPosition == startPosition - 16)
+                {
+                    ChessEngine.EnPassantTargetSquare = (byte)(endPosition + (byte)8);
+                }
+                else
+                {
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
             }
             else
             {
-                ChessEngine.MovedTwoSpacesLastTurn = byte.MaxValue;
+                ChessEngine.EnPassantTargetSquare = 255;
             }
 
 
@@ -36,6 +69,43 @@ namespace ChessEngine
 
         public void SearchMovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ref ChessBoard board)
         {
+            if (pieceType == 0)
+            {
+                if (endPosition == startPosition + 16)
+                {
+                    ChessEngine.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
+                }
+                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                {
+                    CheckForCapture(pieceType, endPosition - 8);
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
+                else
+                {
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
+            }
+            if (pieceType == 6)
+            {
+                if (endPosition == startPosition - 16)
+                {
+                    ChessEngine.EnPassantTargetSquare = (byte)(startPosition + (byte)8);
+                }
+                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                {
+                    CheckForCapture(pieceType, endPosition + 8);
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
+                else
+                {
+                    ChessEngine.EnPassantTargetSquare = 255;
+                }
+            }
+            else
+            {
+                ChessEngine.EnPassantTargetSquare = byte.MaxValue;
+            }
+            
             CheckForCapture(pieceType, endPosition);
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
@@ -60,28 +130,8 @@ namespace ChessEngine
             }
         }
 
-        public bool LegalMove(byte pieceType, byte startPosition, byte endPosition)
-        {
             // 0 = White Pawn, 1 = White Knigth, 2 = White Bishop, 3 = White Rook, 4 = White Queen, 5 = White King
             // 6 = Black Pawn, 7 = Black Knigth, 8 = Black Bishop, 9 = Black Rook, 10 = Black Queen, 11 = Black King
-            switch (pieceType)
-            {
-                case 1:
-                    if (startPosition == 6 && endPosition == 7)
-                    {
-
-                    }
-                    break;
-
-                case 6:
-                    if (startPosition == 6)
-                    {
-
-                    }
-                    break;
-            }
-            return false;
-        }
 
         public Move[] GetLegalMoves(ChessBoard board, byte pieceType, byte position)
         {
@@ -120,6 +170,15 @@ namespace ChessEngine
                             whiteAttackBoard = (ulong)(whiteAttackBoard + Math.Pow(position + 7, 2));
                         }
                     }
+                    if (position + 9 == ChessEngine.EnPassantTargetSquare)
+                    {
+                        moves.Add(new(position, (byte)(position + 9)));
+                    }
+                    if (position + 7 == ChessEngine.EnPassantTargetSquare)
+                    {
+                        moves.Add(new(position, (byte)(position + 7)));
+                    }
+                        
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType)) == 0)
@@ -316,6 +375,14 @@ namespace ChessEngine
                         {
                             moves.Add(new(position, (byte)(position - 9)));
                         }
+                    }
+                    if (position - 9 == ChessEngine.EnPassantTargetSquare)
+                    {
+                        moves.Add(new(position, (byte)(position - 9)));
+                    }
+                    if (position - 7 == ChessEngine.EnPassantTargetSquare)
+                    {
+                        moves.Add(new(position, (byte)(position - 7)));
                     }
                     break;
                 case 7:
