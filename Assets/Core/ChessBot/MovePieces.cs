@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
+using UnityEngine;
 
 namespace ChessEngine
 {
@@ -8,22 +9,6 @@ namespace ChessEngine
     {
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)
         {
-
-            if (pieceType == 0 && startPosition + 16 == endPosition)
-            {
-                ChessEngine.MovedTwoSpacesLastTurn = endPosition;
-            }
-            else if (pieceType == 6 && startPosition - 16 == endPosition)
-            {
-                ChessEngine.MovedTwoSpacesLastTurn = endPosition;
-            }
-            else
-            {
-                ChessEngine.MovedTwoSpacesLastTurn = byte.MaxValue;
-            }
-
-
-
             CheckForCapture(pieceType, endPosition);
 
             ChessEngine.WhiteToMove = !ChessEngine.WhiteToMove;
@@ -620,6 +605,7 @@ namespace ChessEngine
 
             int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
 
+            Debug.Log("AI moving from " + move.startPos + " to " + move.endPos);
 
             ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
 

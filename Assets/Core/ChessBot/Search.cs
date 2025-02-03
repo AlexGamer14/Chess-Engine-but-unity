@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 namespace ChessEngine
@@ -17,61 +18,96 @@ namespace ChessEngine
 
             bool IsWhiteToMove = WhiteToMove;
 
-            List<List<MovePieces.Move>> allMoves = new List<List<MovePieces.Move>>();
-            List<List<MovePieces.Move>> tempAllMoves = new List<List<MovePieces.Move>>();
+            MovePieces.Move[] movesToCheck = new MovePieces.Move[depth];
 
-            for (int i = 0; i < 2; i++)
+            List<int> depthList = new List<int>();
+            for (int i = 0; i<depth;i++)
             {
-                if (i == 0)
+                depthList.Add(0);
+                
+            }
+
+            float bestEval = float.PositiveInfinity;
+            MovePieces.Move bestMove = new();
+
+            ChessBoard[] resetLayers = new ChessBoard[depth];
+            resetLayers[0] = (ChessBoard)copyBoard.Clone();
+
+            bool Calculating = true;
+            int calculatedDepth = 0;
+
+            int pieceType = 0;
+            while (Calculating)
+            {
+                switch (calculatedDepth)
                 {
-                    MovePieces.Move[] moves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
-                    for (int j = 0; j < moves.Length; j++)
-                    {
-                        allMoves.Add(new List<MovePieces.Move>() { moves[j], new MovePieces.Move(255, 255) });
-
-                    }
-
-
-                }
-                else
-                {
-                    IsWhiteToMove = !IsWhiteToMove;
-                    for (int j = 0; j < allMoves.Count; j++)
-                    {
-                        int[] allStop = new int[depth - 1];
-                        int stopI = 0;
-
-                        ChessBoard resetBoardLayer0 = (ChessBoard)copyBoard.Clone();
-
-
-
-                        for (int k = 0; k < allMoves[j].Count; k++)
+                    case 0:
+                        copyBoard = (ChessBoard)resetLayers[0].Clone();
+                        IsWhiteToMove = WhiteToMove;
+                        try
                         {
-                            if (allMoves[j][k].startPos == 255 && allMoves[j][k].endPos == 255)
-                            {
-                                allStop[stopI] = k;
-                                stopI++;
-                            }
+                            movesToCheck[0]=mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard)[depthList[0]];
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            Calculating = false;
+                            break;
+                        }
+                        depthList[0]++;
+                        calculatedDepth++;
+                        break;
+                    case 1:
+                        copyBoard = (ChessBoard)resetLayers[0].Clone();
+                        IsWhiteToMove = !WhiteToMove;
+                        Debug.Log(movesToCheck[0].startPos);
+                        pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, movesToCheck[0].startPos, copyBoard);
+
+                        mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[0].startPos, movesToCheck[0].endPos, ref copyBoard);
+                        try
+                        {
+                            movesToCheck[1]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[1]]);
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            calculatedDepth--;
+                            depthList[1]=0;
+                            break;
+                        }
+                        resetLayers[1] = (ChessBoard)copyBoard.Clone();
+                        depthList[1]++;
+                        calculatedDepth++;
+                        break;
+                    case 2:
+                        copyBoard = (ChessBoard)resetLayers[1].Clone();
+                        IsWhiteToMove=WhiteToMove;
+                        pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, movesToCheck[1].startPos, copyBoard);
+
+                        mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[1].startPos, movesToCheck[1].endPos, ref copyBoard);
+                        try
+                        {
+                            movesToCheck[2]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[2]]);
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            calculatedDepth--;
+                            depthList[2] = 0;
+                            break;
                         }
 
-                        
-
-                        int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, allMoves[j][0].startPos, copyBoard);
-                        mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, allMoves[j][0].startPos, allMoves[j][0].endPos, ref copyBoard);
-
-                        ChessBoard resetBoardLayer1 = (ChessBoard)copyBoard.Clone();
-
-                        MovePieces.Move[] moves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
-                        for (int l = 0; l < moves.Length; l++)
+                        float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
+                        if (eval < bestEval)
                         {
-                            allMoves[j].Add(moves[l]);
+                            bestEval = eval;
+                            bestMove = movesToCheck[0];
                         }
-                        copyBoard = (ChessBoard)resetBoardLayer0.Clone();
-                    }
+
+
+                        depthList[2]++;
+                        break;
                 }
             }
-            
-            return(new());
+
+            return bestMove;
         }
 
 
