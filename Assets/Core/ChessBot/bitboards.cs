@@ -125,8 +125,6 @@ namespace ChessEngine
                 WhitePieces = this.WhitePieces,
                 BlackPieces = this.BlackPieces,
                 AllPieces = this.AllPieces,
-                WhiteCanCastle = this.WhiteCanCastle,
-                BlackCanCastle = this.BlackCanCastles
 
             };
 

@@ -60,8 +60,8 @@ namespace ChessEngine
 
             Mover = new();
             
-            WhiteAttackBoard = new();
-            BlackAttackBoard = new();
+            WhiteAttackBoard = new int[64];
+            BlackAttackBoard = new int[64];
 
             boardRenderer = new ChessBoardRenderer();
             boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab);
