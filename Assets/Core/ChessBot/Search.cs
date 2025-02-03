@@ -70,14 +70,8 @@ namespace ChessEngine
                     }
                 }
             }
-            for (int x = 0; x < allMoves.Count; x++)
-            {
-                for (int y = 0; y < allMoves[x].Count; y++)
-                {
-                    Debug.Log(allMoves[x][y].startPos + " : " + allMoves[x][y].endPos);
-                }
-            }
-            return new();
+            
+            return(new());
         }
 
 
