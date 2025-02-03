@@ -712,6 +712,7 @@ namespace ChessEngine
 
             int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
 
+            Debug.Log("AI moving from " + move.startPos + " to " + move.endPos);
 
             ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
 
