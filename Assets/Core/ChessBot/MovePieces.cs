@@ -126,6 +126,24 @@ namespace ChessEngine
                 ChessEngine.EnPassantTargetSquare = byte.MaxValue;
             }
             
+            if(pieceType != 0 || pieceType != 6)
+            {
+                if (!hasCaptured)
+                {
+                    ChessEngine.FiftyMoveRule += (float)0.5;
+                }
+            }
+            else
+            {
+                ChessEngine.FiftyMoveRule = 0;
+            }
+
+            if(ChessEngine.FiftyMoveRule <= 50)
+            {
+                Debug.Log("Draw by 50-Move rule");
+            }
+            Debug.Log(ChessEngine.FiftyMoveRule);
+
             CheckForCapture(pieceType, endPosition);
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
