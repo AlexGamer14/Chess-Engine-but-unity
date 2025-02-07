@@ -22,6 +22,7 @@ namespace ChessEngine
                 Debug.Log(pieceType);
                 Debug.Log(startPosition);
                 Debug.Log(endPosition);
+                
 
                 if (endPosition == startPosition + 16)
                 {
@@ -54,9 +55,28 @@ namespace ChessEngine
                 ChessEngine.EnPassantTargetSquare = 255;
             }
 
+            bool hasCaptured = CheckForCapture(pieceType, endPosition);
 
+            
+            if(pieceType != 0 || pieceType != 6)
+            {
+                if (!hasCaptured)
+                {
+                    ChessEngine.FiftyMoveRule += (float)0.5;
+                }
+            }
+            else
+            {
+                ChessEngine.FiftyMoveRule = 0;
+            }
 
-            CheckForCapture(pieceType, endPosition);
+            if(ChessEngine.FiftyMoveRule <= 50)
+            {
+                Debug.Log("Draw by 50-Move rule");
+            }
+            Debug.Log(ChessEngine.FiftyMoveRule);
+
+            
 
             ChessEngine.WhiteToMove = !ChessEngine.WhiteToMove;
 
@@ -105,22 +125,43 @@ namespace ChessEngine
                 ChessEngine.EnPassantTargetSquare = byte.MaxValue;
             }*/
             
-            CheckForCapture(pieceType, endPosition, ref board);
+            /*if(pieceType != 0 || pieceType != 6)
+            {
+                if (!hasCaptured)
+                {
+                    ChessEngine.FiftyMoveRule += (float)0.5;
+                }
+            }
+            else
+            {
+                ChessEngine.FiftyMoveRule = 0;
+            }
+
+            if(ChessEngine.FiftyMoveRule <= 50)
+            {
+                Debug.Log("Draw by 50-Move rule");
+            }
+            Debug.Log(ChessEngine.FiftyMoveRule);*/
+
+            CheckForCapture(pieceType, endPosition, ref chessboard);
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
             board.UpdateBitBoards();
         }
 
-        public void CheckForCapture(int pieceType, int pos)
+        public bool CheckForCapture(int pieceType, int pos)
         {
             int pieceTypeCheck = HelperFunctions.CheckIfPieceOnEveryBoard(pieceType, pos);
             if (pieceTypeCheck != int.MaxValue)
             {
                 HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(pieceTypeCheck), pos);
+                return true;
             }
+            return false;
+            
         }
-        public void CheckForCapture(int pieceType, int pos, ref ChessBoard board)
+        public bool CheckForCapture(int pieceType, int pos, ref ChessBoard board)
         {
             int pieceTypeCheck = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, pos, board);
             
@@ -128,7 +169,9 @@ namespace ChessEngine
             {
                 
                 HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(pieceTypeCheck, ref board), pos);
+                return true;
             }
+            return false;
         }
 
             // 0 = White Pawn, 1 = White Knigth, 2 = White Bishop, 3 = White Rook, 4 = White Queen, 5 = White King

@@ -45,6 +45,8 @@ namespace ChessEngine
 
         public static byte EnPassantTargetSquare = byte.MaxValue;
 
+        public static float FiftyMoveRule = 0;
+
         public float cooldown = 0.1f;
 
         private float timer = 0;
