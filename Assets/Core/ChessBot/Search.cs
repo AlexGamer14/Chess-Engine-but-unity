@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
+
+using System.IO;
+
 using UnityEngine;
 
 namespace ChessEngine
@@ -28,10 +30,18 @@ namespace ChessEngine
             }
 
             float bestEval = float.PositiveInfinity;
-            MovePieces.Move bestMove = new();
+            List<MovePieces.Move> bestMove = new();
 
             ChessBoard[] resetLayers = new ChessBoard[depth];
             resetLayers[0] = (ChessBoard)copyBoard.Clone();
+
+            Dictionary<MovePieces.Move, moveAndEval> evalList = new();
+
+            string path = Application.persistentDataPath + "/savefile.txt";
+
+            string output = "";
+
+            Debug.Log("File updated at: " + path);
 
             bool Calculating = true;
             int calculatedDepth = 0;
@@ -42,11 +52,13 @@ namespace ChessEngine
                 switch (calculatedDepth)
                 {
                     case 0:
+                        
                         copyBoard = (ChessBoard)resetLayers[0].Clone();
                         IsWhiteToMove = WhiteToMove;
                         try
                         {
                             movesToCheck[0]=mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard)[depthList[0]];
+                            output+="CHECKING NEW BASE MOVE: " + movesToCheck[0].startPos + " : " + movesToCheck[0].endPos + "\n";
                         }
                         catch (IndexOutOfRangeException)
                         {
@@ -59,13 +71,13 @@ namespace ChessEngine
                     case 1:
                         copyBoard = (ChessBoard)resetLayers[0].Clone();
                         IsWhiteToMove = !WhiteToMove;
-                        Debug.Log(movesToCheck[0].startPos);
                         pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, movesToCheck[0].startPos, copyBoard);
 
                         mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[0].startPos, movesToCheck[0].endPos, ref copyBoard);
                         try
                         {
                             movesToCheck[1]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[1]]);
+                            output+="CHECKING NEW SUB MOVE: " + movesToCheck[1].startPos + " : " + movesToCheck[1].endPos + "\n";
                         }
                         catch (IndexOutOfRangeException)
                         {
@@ -82,10 +94,14 @@ namespace ChessEngine
                         IsWhiteToMove=WhiteToMove;
                         pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, movesToCheck[1].startPos, copyBoard);
 
+                        
+
                         mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[1].startPos, movesToCheck[1].endPos, ref copyBoard);
                         try
                         {
                             movesToCheck[2]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[2]]);
+                            output+="CHECKING NEW SUB SUB MOVE: " + movesToCheck[2].startPos + " : " + movesToCheck[2].endPos+"\n";
+
                         }
                         catch (IndexOutOfRangeException)
                         {
@@ -94,20 +110,74 @@ namespace ChessEngine
                             break;
                         }
 
-                        float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
-                        if (eval < bestEval)
+                        depthList[2]++;
+                        resetLayers[2]= (ChessBoard)copyBoard.Clone();
+
+                        if (depth > 3)
                         {
-                            bestEval = eval;
-                            bestMove = movesToCheck[0];
+                            calculatedDepth++;
                         }
 
+                        else
+                        {
 
-                        depthList[2]++;
+                            pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, movesToCheck[2].startPos, copyBoard);
+                            mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[2].startPos, movesToCheck[2].endPos, ref copyBoard);
+
+                            float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
+                            output += eval + "\n";
+
+                            // GETS THE WORST MOVE IN THIS POSITION TO TRY TO SHOW THE BEST OVERALL MOVE
+                            if (evalList.ContainsKey(movesToCheck[0]))
+                            {
+                                if (eval > evalList[movesToCheck[0]].eval)
+                                {
+                                    MovePieces.Move key = movesToCheck[0];
+
+                                    evalList[key].move = movesToCheck[0];
+                                    evalList[key].eval = eval;
+
+
+                                }
+                            }
+                            else
+                            {
+                                MovePieces.Move key = movesToCheck[0];
+                                evalList.Add(key, new moveAndEval(movesToCheck[0], eval));
+                            }
+                        }
+
                         break;
                 }
             }
 
-            return bestMove;
+            foreach (moveAndEval value in evalList.Values)
+            {
+                if (value.eval < bestEval)
+                {
+                    bestEval = value.eval;
+                    bestMove.Clear();
+                    bestMove.Add(value.move);
+
+                    output += "New best eval with base move: " + value.move.startPos + " , " + value.move.endPos +" and eval of: " + value.eval + "\n";
+                }
+
+                if (value.eval==bestEval)
+                {
+                    bestMove.Add(value.move);
+                    output += "New equal eval with base move: " + value.move.startPos + " , " + value.move.endPos + " and eval of" + value.eval + "\n";
+                }
+            }
+
+            using (StreamWriter writer = new StreamWriter(path, false)) // `true` appends instead of overwriting
+            {
+                writer.WriteLine(output);
+            }
+
+            System.Random rng = new();
+
+
+            return bestMove[rng.Next(0,bestMove.Count)];
         }
 
 
@@ -294,6 +364,18 @@ namespace ChessEngine
                 }
             }
             return bestMove.ToArray();
+        }
+    }
+
+    public class moveAndEval 
+    {
+        public MovePieces.Move move;
+        public float eval;
+
+        public moveAndEval(MovePieces.Move move, float eval)
+        {
+            this.move = move;
+            this.eval = eval;
         }
     }
 }

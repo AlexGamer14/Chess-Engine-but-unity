@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEngine;
-
 namespace ChessEngine
 {
     public class MovePieces
@@ -69,7 +68,7 @@ namespace ChessEngine
 
         public void SearchMovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ref ChessBoard board)
         {
-            if (pieceType == 0)
+            /*if (pieceType == 0)
             {
                 if (endPosition == startPosition + 16)
                 {
@@ -77,7 +76,7 @@ namespace ChessEngine
                 }
                 if (endPosition == ChessEngine.EnPassantTargetSquare)
                 {
-                    CheckForCapture(pieceType, endPosition - 8);
+                    CheckForCapture(pieceType, endPosition - 8, ref board);
                     ChessEngine.EnPassantTargetSquare = 255;
                 }
                 else
@@ -104,9 +103,9 @@ namespace ChessEngine
             else
             {
                 ChessEngine.EnPassantTargetSquare = byte.MaxValue;
-            }
+            }*/
             
-            CheckForCapture(pieceType, endPosition);
+            CheckForCapture(pieceType, endPosition, ref board);
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
@@ -123,9 +122,11 @@ namespace ChessEngine
         }
         public void CheckForCapture(int pieceType, int pos, ref ChessBoard board)
         {
-            int pieceTypeCheck = HelperFunctions.CheckIfPieceOnEveryBoard(pieceType, pos, board);
+            int pieceTypeCheck = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, pos, board);
+            
             if (pieceTypeCheck != int.MaxValue)
             {
+                
                 HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(pieceTypeCheck, ref board), pos);
             }
         }
@@ -685,9 +686,11 @@ namespace ChessEngine
         {
             Move move = ChessEngine.search.RefactoredSearchAllMoves(3, IsWhite, ChessEngine.board);
 
+            ChessEngine.board.UpdateBitBoards();
+            ChessEngine.boardRenderer.UpdateBoard();
             int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
 
-            Debug.Log("AI moving from " + move.startPos + " to " + move.endPos);
+            Debug.Log("AI moving from " + move.startPos + " to " + move.endPos + " with a piece type of " + pieceType);
 
             ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
 
