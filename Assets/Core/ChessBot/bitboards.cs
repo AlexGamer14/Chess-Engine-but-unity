@@ -67,7 +67,7 @@ namespace ChessEngine
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    boardText += HelperFunctions.GetByte(j + i * 8, AllPieces);
+                    boardText += HelperFunctions.GetByte(j + i * 8, WhitePieces);
                 }
                 boardText += "\n";
             }

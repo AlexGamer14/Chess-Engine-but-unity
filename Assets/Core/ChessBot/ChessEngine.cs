@@ -27,6 +27,18 @@ namespace ChessEngine
         public static bool EnableAI = true;
         [SerializeField] bool EnableAIInspector = true;
 
+        public static int MoveCount = 0;
+
+        int[] pawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
+                                                                10, 15, 5, 5,  5,  5, 15, 10,
+                                                                5,  0,  5, 15, 15, 5, 0,  5,
+                                                                0,  0,  10, 25, 25, 10, 0,  0,
+                                                                0,  0,  0, 0,  0,  0, 0,  0,
+                                                                0,  0,  0, 0,  0,  0, 0,  0,
+                                                                0,  0,  0, 0,  0,  0, 0,  0,
+                                                                0,  0,  0, 0,  0,  0, 0,  0,
+                                                              } ;
+
         // There are 10 types of people in the world, those who understand binary and those who don't
         // There are 10 types of people in the world, those who understand trinary, those who think it is binary, and those who don't
         // There are 10 types of people in the world, those who understand quadary, those who think it is trinary, those who think it is binary, and those who don't
@@ -83,7 +95,7 @@ namespace ChessEngine
             
             if (Input.GetKeyDown(KeyCode.F))
             {
-                Debug.Log(Mover.GetMovesForBlackOrWhite(true, board).Length) ;
+                board.PrintBoard();
             }
         }
     

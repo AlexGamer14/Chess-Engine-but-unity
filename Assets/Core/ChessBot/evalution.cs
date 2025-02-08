@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ChessEngine
@@ -15,26 +16,36 @@ namespace ChessEngine
         bool whiteKingAlive = false;
         bool blackKingAlive = false;
 
+        int[] earlyWhitePawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
+                                        10, 15, 10, 5,  5,  10, 15, 10,
+                                        5,  0,  5, 15, 15, 5, 0,  5,
+                                        0,  0,  10, 25, 25, 10, 0,  0,
+                                        0,  0,  0, 0,  0,  0, 0,  0,
+                                        0,  0,  0, 0,  0,  0, 0,  0,
+                                        0,  0,  0, 0,  0,  0, 0,  0,
+                                        0,  0,  0, 0,  0,  0, 0,  0,
+                                       };
+
+        int[] earlyBlackPawnBonus = new int[64] {
+    0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0, 10, 25, 25, 10,  0,  0,
+    5,  0,  5, 15, 15,  5,  0,  5,
+    10, 15,10,  5,  5,  10, 15, 10,
+    0,  0,  0,  0,  0,  0,  0,  0
+};
+
+
         public float Evaluate(ChessBoard board, bool whiteToMove)
         {
             float evaluation = 0;
 
 
             float pieceBonus = PieceBonus(board);
-            float defenceBonus = DefenceBonus();
 
             evaluation += pieceBonus;
-
-
-            if (whiteToMove == true)
-            {
-                evaluation += moveFirstValue;
-            }
-            else
-            {
-                evaluation -= moveFirstValue;
-            }
-
 
 
             if (!whiteKingAlive)
@@ -60,11 +71,16 @@ namespace ChessEngine
 
             int amountOfPieces = 0;
 
+            List<int> whitePawnPositions = new List<int>();
+            List<int> blackPawnPositions = new List<int>();
+
             for (int i = 0; i < 64; i++)
             {
                 if (HelperFunctions.GetByte(i, board.WhitePawns) == 1)
                 {
                     evaluation += pawnValue;
+                    whitePawnPositions.Add(i);
+
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteKing) == 1)
@@ -96,7 +112,10 @@ namespace ChessEngine
                 if (HelperFunctions.GetByte(i, board.BlackPawns) == 1)
                 {
                     evaluation -= pawnValue;
-                        amountOfPieces++;
+
+                    blackPawnPositions.Add(i);
+
+                    amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackKing) == 1)
                 {
@@ -136,12 +155,24 @@ namespace ChessEngine
                 Debug.Log("Black won!");
             }
 
-            
+
+            if (amountOfPieces>11)
+            {
+                foreach (int pos in whitePawnPositions)
+                {
+                    evaluation += earlyWhitePawnBonus[pos];
+                }
+                foreach (int pos in blackPawnPositions)
+                {
+                    evaluation -= earlyBlackPawnBonus[pos];
+                }
+            }
+
 
             return evaluation;
         }
 
-        private float DefenceBonus()
+        /*private float DefenceBonus()
         {
             float evaluation = 0;
 
@@ -151,6 +182,6 @@ namespace ChessEngine
             }
 
             return evaluation;
-        }
+        }*/
     }
 }

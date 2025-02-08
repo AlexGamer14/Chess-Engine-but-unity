@@ -100,12 +100,14 @@ namespace ChessEngine
                         try
                         {
                             movesToCheck[2]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[2]]);
+                            
                             output+="CHECKING NEW SUB SUB MOVE: " + movesToCheck[2].startPos + " : " + movesToCheck[2].endPos+"\n";
 
                         }
                         catch (IndexOutOfRangeException)
                         {
                             calculatedDepth--;
+                            output += depthList[2] + " Amount of moves" + "\n";
                             depthList[2] = 0;
                             break;
                         }
