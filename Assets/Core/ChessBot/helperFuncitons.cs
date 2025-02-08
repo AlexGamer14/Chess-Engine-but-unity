@@ -16,6 +16,8 @@ namespace ChessEngine
 
             // Use bitwise AND to set the bit at the bitPosition
             value &= mask;
+
+            //e
         }
 
 

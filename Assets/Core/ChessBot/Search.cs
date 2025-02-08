@@ -46,7 +46,7 @@ namespace ChessEngine
             bool Calculating = true;
             int calculatedDepth = 0;
 
-            int pieceType = 0;
+            int pieceType = 0; 
             while (Calculating)
             {
                 switch (calculatedDepth)
@@ -171,10 +171,10 @@ namespace ChessEngine
                 }
             }
 
-            using (StreamWriter writer = new StreamWriter(path, false)) // `true` appends instead of overwriting
+            /*using (StreamWriter writer = new StreamWriter(path, false)) // `true` appends instead of overwriting
             {
                 writer.WriteLine(output);
-            }
+            }*/
 
             System.Random rng = new();
 
