@@ -680,21 +680,29 @@ namespace ChessEngine
 
         public void MakeAIMove(bool IsWhite)
         {
-            if (ChessEngine.MoveCount==1)
-            {
-                ChessEngine.Mover.MovePiece(ref ChessEngine.board.BlackPawns, 0, 52, 36);
-                return;
-            }
 
-            Move move = ChessEngine.search.RefactoredSearchAllMoves(3, IsWhite, ChessEngine.board);
+            float time = 0;
+
+            Move move = ChessEngine.search.RecursiveSearchMoves(3, IsWhite, ChessEngine.board);
+
+            time += Time.deltaTime;
+            Debug.Log(time);
 
             ChessEngine.board.UpdateBitBoards();
             ChessEngine.boardRenderer.UpdateBoard();
+            time += Time.deltaTime;
+            Debug.Log(time);
             int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, ChessEngine.board);
 
             Debug.Log("AI moving from " + move.startPos + " to " + move.endPos + " with a piece type of " + pieceType);
 
+            time += Time.deltaTime;
+            Debug.Log(time);
+
             ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
+
+            time += Time.deltaTime;
+            Debug.Log(time);
 
 
             /*Move[] moves = ChessEngine.search.SearchMoves(GetMovesForBlackOrWhite(IsWhite), false, ChessEngine.board);
@@ -797,6 +805,9 @@ namespace ChessEngine
             }
             return moves.ToArray();
         }
+        
+        // first digit in vector is startY second is startX third is stopY fourth is stopX 
+        
 
         public struct Move
         {

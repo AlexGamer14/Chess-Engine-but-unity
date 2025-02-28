@@ -10,8 +10,95 @@ namespace ChessEngine
 {
     public class Search
     {
-        // MIGHT HAVE SOME PROBLEMS WITH IsWhiteToMove variable
-        public MovePieces.Move RefactoredSearchAllMoves(int depth, bool WhiteToMove,ChessBoard board)
+        string output = "";
+
+        public MovePieces.Move RecursiveSearchMoves(int depth, bool WhiteToMove, ChessBoard board)
+        {
+            MovePieces mover = new();
+            Evaluation evaluation = new Evaluation();
+
+            ChessBoard copyBoard = (ChessBoard)board.Clone();
+
+            bool IsWhiteToMove = WhiteToMove;
+
+            MovePieces.Move[] baseMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, board);
+            List<MovePieces.Move> worstMovesForBaseMoves = new();
+            float worstEval = float.PositiveInfinity;
+
+            for (int i = 0; i < baseMoves.Length; i++)
+            {
+                float eval = GetEvalInDepthRecursive(0, depth, baseMoves[i], board, IsWhiteToMove);
+                if (eval<worstEval)
+                {
+                    worstEval=eval;
+                    worstMovesForBaseMoves.Clear();
+                    worstMovesForBaseMoves.Add(baseMoves[i]);
+                }
+                else if (eval==worstEval)
+                {
+                    worstMovesForBaseMoves.Add(baseMoves[i]);
+                }
+            }
+
+            Debug.Log(worstMovesForBaseMoves.Count);
+
+            string path = Application.persistentDataPath + "/savefile.txt";
+            using (StreamWriter writer = new StreamWriter(path, false)) // `true` appends instead of overwriting
+            {
+                writer.WriteLine(output);
+            }
+
+            
+
+            System.Random rng = new System.Random();
+            return worstMovesForBaseMoves[rng.Next(0,worstMovesForBaseMoves.Count)];
+        }
+
+        public float GetEvalInDepthRecursive(int currentDepth, int maxDepth, MovePieces.Move move, ChessBoard board, bool WhiteToMove)
+        {
+            currentDepth++;
+  
+            MovePieces mover = new();
+            Evaluation evaluation = new Evaluation();
+
+            ChessBoard copyBoard = (ChessBoard)board.Clone();
+
+            int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, copyBoard);
+            mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, move.startPos, move.endPos, ref copyBoard);
+
+
+            if (currentDepth==maxDepth)
+            {
+                bool IsWhiteToMove = !WhiteToMove;
+
+                float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
+                Debug.Log(eval);
+                return eval;
+
+            }
+            else
+            {
+                bool IsWhiteToMove = !WhiteToMove;
+                float worstEval = float.NegativeInfinity;
+
+                MovePieces.Move[] baseMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+                for (int i = 0; i < baseMoves.Length; i++)
+                {
+                    Debug.Log(baseMoves.Length + " LENGTH OF MOVES LIST");
+                    Debug.Log(currentDepth + " DEPTH CURRENTLY");
+                    float eval = GetEvalInDepthRecursive(currentDepth, maxDepth, baseMoves[i], copyBoard, IsWhiteToMove);
+                    if (eval>worstEval)
+                    {
+                        worstEval=eval;
+                    }
+                }
+
+                return worstEval;
+            } 
+        }
+
+
+        public MovePieces.Move IterativeSearchAllMoves(int depth, bool WhiteToMove,ChessBoard board)
         {
             MovePieces mover = new();
             Evaluation evaluation = new Evaluation();
@@ -46,7 +133,11 @@ namespace ChessEngine
             bool Calculating = true;
             int calculatedDepth = 0;
 
-            int pieceType = 0;
+            MovePieces.Move[] baseMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
+            List<MovePieces.Move> subMoves = new();
+            List<MovePieces.Move> subSubMoves = new();
+
+            int pieceType = 0; 
             while (Calculating)
             {
                 switch (calculatedDepth)
@@ -57,7 +148,7 @@ namespace ChessEngine
                         IsWhiteToMove = WhiteToMove;
                         try
                         {
-                            movesToCheck[0]=mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard)[depthList[0]];
+                            movesToCheck[0]=baseMoves[depthList[0]];
                             output+="CHECKING NEW BASE MOVE: " + movesToCheck[0].startPos + " : " + movesToCheck[0].endPos + "\n";
                         }
                         catch (IndexOutOfRangeException)
@@ -76,11 +167,21 @@ namespace ChessEngine
                         mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[0].startPos, movesToCheck[0].endPos, ref copyBoard);
                         try
                         {
-                            movesToCheck[1]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[1]]);
-                            output+="CHECKING NEW SUB MOVE: " + movesToCheck[1].startPos + " : " + movesToCheck[1].endPos + "\n";
+                            if (subMoves.Count == 0)
+                            {
+                                foreach (MovePieces.Move move in mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard))
+                                {
+                                    subMoves.Add(move);
+                                }
+                            }
+
+                            movesToCheck[1] = subMoves[depthList[1]];
+                            output +="CHECKING NEW SUB MOVE: " + movesToCheck[1].startPos + " : " + movesToCheck[1].endPos + "\n";
                         }
-                        catch (IndexOutOfRangeException)
+                        catch (ArgumentOutOfRangeException)
                         {
+                            subMoves.Clear();
+
                             calculatedDepth--;
                             depthList[1]=0;
                             break;
@@ -99,14 +200,25 @@ namespace ChessEngine
                         mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref copyBoard), pieceType, movesToCheck[1].startPos, movesToCheck[1].endPos, ref copyBoard);
                         try
                         {
-                            movesToCheck[2]=(mover.GetMovesForBlackOrWhite(IsWhiteToMove,copyBoard)[depthList[2]]);
+                            if (subSubMoves.Count==0)
+                            {
+                                foreach (MovePieces.Move move in mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard))
+                                {
+                                    subSubMoves.Add(move);
+                                }
+                            }
+
+                            movesToCheck[2]=subSubMoves[depthList[2]];
                             
                             output+="CHECKING NEW SUB SUB MOVE: " + movesToCheck[2].startPos + " : " + movesToCheck[2].endPos+"\n";
 
                         }
-                        catch (IndexOutOfRangeException)
+                        catch (ArgumentOutOfRangeException)
                         {
                             calculatedDepth--;
+
+                            subSubMoves.Clear();
+
                             output += depthList[2] + " Amount of moves" + "\n";
                             depthList[2] = 0;
                             break;
@@ -130,22 +242,17 @@ namespace ChessEngine
                             output += eval + "\n";
 
                             // GETS THE WORST MOVE IN THIS POSITION TO TRY TO SHOW THE BEST OVERALL MOVE
-                            if (evalList.ContainsKey(movesToCheck[0]))
+                            if (evalList.TryGetValue(movesToCheck[0], out var existingMove))
                             {
-                                if (eval > evalList[movesToCheck[0]].eval)
+                                if (eval > existingMove.eval)
                                 {
-                                    MovePieces.Move key = movesToCheck[0];
-
-                                    evalList[key].move = movesToCheck[0];
-                                    evalList[key].eval = eval;
-
-
+                                    existingMove.move = movesToCheck[0];
+                                    existingMove.eval = eval;
                                 }
                             }
                             else
                             {
-                                MovePieces.Move key = movesToCheck[0];
-                                evalList.Add(key, new moveAndEval(movesToCheck[0], eval));
+                                evalList[movesToCheck[0]] = new moveAndEval(movesToCheck[0], eval);
                             }
                         }
 
@@ -181,6 +288,9 @@ namespace ChessEngine
 
             return bestMove[rng.Next(0,bestMove.Count)];
         }
+
+
+        
 
 
         public MovePieces.Move SearchAllMoves(int depth, bool WhiteToMove)
