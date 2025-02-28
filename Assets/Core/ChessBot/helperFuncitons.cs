@@ -252,7 +252,7 @@ namespace ChessEngine
                 case 11:
                     return ref board.BlackKing;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(index), "Invalid piece index. " + index);
+                    throw new ArgumentOutOfRangeException(nameof(index), "Invalid piece index. " + index); 
             }
         }
     }

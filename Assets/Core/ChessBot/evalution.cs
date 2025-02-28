@@ -38,6 +38,7 @@ namespace ChessEngine
 };
 
 
+
         public float Evaluate(ChessBoard board, bool whiteToMove)
         {
             float evaluation = 0;
@@ -106,6 +107,11 @@ namespace ChessEngine
                 if (HelperFunctions.GetByte(i, board.WhiteQueens) == 1)
                 {
                     evaluation += queenValue;
+
+                    if (i==3)
+                    {
+                        evaluation += 40;
+                    }
                     amountOfPieces++;
                 }
 
@@ -141,6 +147,11 @@ namespace ChessEngine
                 {
                     evaluation -= queenValue;
                     amountOfPieces++;
+
+                    if (i==59)
+                    {
+                        evaluation -= 40;
+                    }
                 }
             }
 
@@ -166,7 +177,11 @@ namespace ChessEngine
                 {
                     evaluation -= earlyBlackPawnBonus[pos];
                 }
+
+                
             }
+            
+            
 
 
             return evaluation;
