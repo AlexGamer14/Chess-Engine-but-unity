@@ -63,6 +63,9 @@ namespace ChessEngine
             BlackPieces = BlackPawns | BlackKnights | BlackBishops | BlackRooks | BlackQueens | BlackKing;
 
             EnPassantTargetSquare = byte.MaxValue;
+
+            WhiteAttackBoard = new bool[64];
+            BlackAttackBoard = new bool[64];
         }
 
         public void PrintBoard()
@@ -132,7 +135,10 @@ namespace ChessEngine
                 BlackPieces = this.BlackPieces,
                 AllPieces = this.AllPieces,
 
-                EnPassantTargetSquare = this.EnPassantTargetSquare
+                EnPassantTargetSquare = this.EnPassantTargetSquare,
+
+                BlackAttackBoard = new bool[64],
+                WhiteAttackBoard = new bool[64]
 
             };
 
