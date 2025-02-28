@@ -55,7 +55,6 @@ namespace ChessEngine
         // There are 10 types of people in the world, those who understand pentadecimal, those who think it is quattuordecimal, those who think it is tridecimal, those who think it is duodecimal, those who think it is undecimal, those who think it is decimal, those who think it is nonal, those who think it is octal, those who think it is septimal, those who think it is seximal, those who think it is quinary, those who think it is quadrary, those who think it is trinary, those who think it is binary and those who don't.
         // There are 10 types of people in the world, those who understand hexadecimal, those who think it is pentadecimal, those who think it is quattuordecimal, those who think it is tridecimal, those who think it is duodecimal, those who think it is undecimal, those who think it is decimal, those who think it is nonal, those who think it is octal, those who think it is septimal, those who think it is seximal, those who think it is quinary, those who think it is quadrary, those who think it is trinary, those who think it is binary and those who don't.
 
-        public static byte EnPassantTargetSquare = byte.MaxValue;
 
         public static float FiftyMoveRule = 0;
 
@@ -89,7 +88,7 @@ namespace ChessEngine
         {
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
             {
-                Debug.Log(EnPassantTargetSquare);
+                Debug.Log(board.EnPassantTargetSquare);
             }
             timer += Time.deltaTime;
             

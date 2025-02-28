@@ -13,10 +13,10 @@ namespace ChessEngine
             if (pieceType == 0)
             {
                 
-                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                if (endPosition == ChessEngine.board.EnPassantTargetSquare)
                 {
                     CheckForCapture(pieceType, endPosition - 8);
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    ChessEngine.board.EnPassantTargetSquare = 255;
                 }
 
                 Debug.Log(pieceType);
@@ -26,35 +26,35 @@ namespace ChessEngine
 
                 if (endPosition == startPosition + 16)
                 {
-                    ChessEngine.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
+                    ChessEngine.board.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
                 }
                 else
                 {
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    ChessEngine.board.EnPassantTargetSquare = 255;
                 }
             }
             else if (pieceType == 6)
             {
-                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                if (endPosition == ChessEngine.board.EnPassantTargetSquare)
                 {
                     CheckForCapture(pieceType, endPosition + 8);
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    ChessEngine.board.EnPassantTargetSquare = 255;
                 }
 
 
 
                 if (endPosition == startPosition - 16)
                 {
-                    ChessEngine.EnPassantTargetSquare = (byte)(endPosition + (byte)8);
+                    ChessEngine.board.EnPassantTargetSquare = (byte)(endPosition + (byte)8);
                 }
                 else
                 {
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    ChessEngine.board.EnPassantTargetSquare = 255;
                 }
             }
             else
             {
-                ChessEngine.EnPassantTargetSquare = 255;
+                ChessEngine.board.EnPassantTargetSquare = 255;
             }
 
             bool hasCaptured = false;
@@ -115,37 +115,37 @@ namespace ChessEngine
             {
                 if (endPosition == startPosition + 16)
                 {
-                    ChessEngine.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
+                    board.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
                 }
-                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                if (endPosition == board.EnPassantTargetSquare)
                 {
                     CheckForCapture(pieceType, endPosition - 8, ref board);
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    board.EnPassantTargetSquare = 255;
                 }
                 else
                 {
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    board.EnPassantTargetSquare = 255;
                 }
             }
             if (pieceType == 6)
             {
                 if (endPosition == startPosition - 16)
                 {
-                    ChessEngine.EnPassantTargetSquare = (byte)(startPosition + (byte)8);
+                    board.EnPassantTargetSquare = (byte)(startPosition + (byte)8);
                 }
-                if (endPosition == ChessEngine.EnPassantTargetSquare)
+                if (endPosition == board.EnPassantTargetSquare)
                 {
                     CheckForCapture(pieceType, endPosition + 8);
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    board.EnPassantTargetSquare = 255;
                 }
                 else
                 {
-                    ChessEngine.EnPassantTargetSquare = 255;
+                    board.EnPassantTargetSquare = 255;
                 }
             }
             else
             {
-                ChessEngine.EnPassantTargetSquare = byte.MaxValue;
+                board.EnPassantTargetSquare = byte.MaxValue;
             }*/
             
             /*if(pieceType != 0 || pieceType != 6)
@@ -237,11 +237,11 @@ namespace ChessEngine
                             whiteAttackBoard = (ulong)(whiteAttackBoard + Math.Pow(position + 7, 2));
                         }
                     }
-                    if (position + 9 == ChessEngine.EnPassantTargetSquare)
+                    if (position + 9 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new(position, (byte)(position + 9)));
                     }
-                    if (position + 7 == ChessEngine.EnPassantTargetSquare)
+                    if (position + 7 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new(position, (byte)(position + 7)));
                     }
@@ -443,11 +443,11 @@ namespace ChessEngine
                             moves.Add(new(position, (byte)(position - 9)));
                         }
                     }
-                    if (position - 9 == ChessEngine.EnPassantTargetSquare)
+                    if (position - 9 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new(position, (byte)(position - 9)));
                     }
-                    if (position - 7 == ChessEngine.EnPassantTargetSquare)
+                    if (position - 7 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new(position, (byte)(position - 7)));
                     }

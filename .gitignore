@@ -72,3 +72,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 ProjectSettings/ShaderGraphSettings.asset
 ProjectSettings/ShaderGraphSettings.asset
+Assets/Core/Rendering.meta
+Assets/Scenes/SampleScene.unity

@@ -31,6 +31,9 @@ namespace ChessEngine
         // Bitboard for all black pieces
         public ulong BlackPieces ;
 
+        // En passant target square
+        public byte EnPassantTargetSquare ;
+
         // Initialize the board with the starting position
         public ChessBoard()
         {
@@ -56,7 +59,7 @@ namespace ChessEngine
             WhitePieces = WhitePawns | WhiteKnights | WhiteBishops | WhiteRooks | WhiteQueens | WhiteKing;
             BlackPieces = BlackPawns | BlackKnights | BlackBishops | BlackRooks | BlackQueens | BlackKing;
 
-           
+            EnPassantTargetSquare = byte.MaxValue;
         }
 
         public void PrintBoard()
@@ -125,6 +128,8 @@ namespace ChessEngine
                 WhitePieces = this.WhitePieces,
                 BlackPieces = this.BlackPieces,
                 AllPieces = this.AllPieces,
+
+                EnPassantTargetSquare = this.EnPassantTargetSquare
 
             };
 
