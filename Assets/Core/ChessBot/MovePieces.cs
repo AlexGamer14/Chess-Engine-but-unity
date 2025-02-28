@@ -330,77 +330,7 @@ namespace ChessEngine
                     }
                     break;
                 case 2:
-                    if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
-                    {
-                        return moves.ToArray();
-                    }
-                    if (position < 56)
-                    {
-                        int updatePosition = position + 9;
-                        while (updatePosition < 64 && updatePosition % 8 != 0)
-                        {
-                            if (HelperFunctions.GetByte(updatePosition, board.WhitePieces) == 1)
-                            {
-                                break;
-                            }
-                            moves.Add(new(position, (byte)(updatePosition)));
-                            if (HelperFunctions.GetByte(updatePosition, board.BlackPieces) == 1)
-                            {
-                                break;
-                            }
-                            updatePosition += 9;
-
-                        }
-                        updatePosition = position + 7;
-                        while (updatePosition < 63 && updatePosition % 8 != 7)
-                        {
-                            if (HelperFunctions.GetByte(updatePosition, board.WhitePieces) == 1)
-                            {
-                                break;
-                            }
-                            moves.Add(new(position, (byte)(updatePosition)));
-                            if (HelperFunctions.GetByte(updatePosition, board.BlackPieces) == 1)
-                            {
-                                break;
-                            }
-                            updatePosition += 7;
-
-                        }
-
-                    }
-                    if (position > 7)
-                    {
-                        int updatedPosition = position - 7;
-
-                        while (updatedPosition > 0 && updatedPosition % 8 != 0)
-                        {
-                            if (HelperFunctions.GetByte(updatedPosition, board.WhitePieces) == 1)
-                            {
-                                break;
-                            }
-                            moves.Add(new(position, (byte)updatedPosition));
-                            if (HelperFunctions.GetByte(updatedPosition, board.BlackPieces) == 1)
-                            {
-                                break;
-                            }
-                            updatedPosition -= 7;
-                        }
-                        updatedPosition = position - 9;
-                        while (updatedPosition >= 0 && updatedPosition % 8 != 7)
-                        {
-                            if (HelperFunctions.GetByte(updatedPosition, board.WhitePieces) == 1)
-                            {
-                                break;
-                            }
-                            moves.Add(new(position, (byte)updatedPosition));
-                            if (HelperFunctions.GetByte(updatedPosition, board.BlackPieces) == 1)
-                            {
-                                break;
-                            }
-                            updatedPosition -= 9;
-                        }
-                    }
-
+                    BishopMovement(pieceType, position, board.WhitePieces, board.BlackPieces, ref moves, board);
                     break;
 
                 case 3:
