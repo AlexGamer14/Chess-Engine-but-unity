@@ -74,7 +74,6 @@ namespace ChessEngine
                 float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
                 Debug.Log(eval);
                 return eval;
-
             }
             else
             {
@@ -93,9 +92,7 @@ namespace ChessEngine
                         {
                             worstEval=eval;
                         }
-
-                    }
-                    else {
+                    } else {
                         if (eval<worstEval) {
                             worstEval=eval;
                         }
@@ -104,11 +101,6 @@ namespace ChessEngine
 
                 return worstEval;
             } 
-        }
-
-        public static bool MinMax(){
-            Debug.Log("Hello World");
-            return false;
         }
 
         public MovePieces.Move IterativeSearchAllMoves(int depth, bool WhiteToMove,ChessBoard board)

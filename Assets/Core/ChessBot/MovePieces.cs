@@ -111,7 +111,7 @@ namespace ChessEngine
 
         public void SearchMovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ref ChessBoard board)
         {
-            /*if (pieceType == 0)
+            if (pieceType == 0)
             {
                 if (endPosition == startPosition + 16)
                 {
@@ -146,7 +146,7 @@ namespace ChessEngine
             else
             {
                 board.EnPassantTargetSquare = byte.MaxValue;
-            }*/
+            }
             
             /*if(pieceType != 0 || pieceType != 6)
             {
