@@ -137,8 +137,8 @@ namespace ChessEngine
 
                 EnPassantTargetSquare = this.EnPassantTargetSquare,
 
-                BlackAttackBoard = new bool[64],
-                WhiteAttackBoard = new bool[64]
+                BlackAttackBoard = this.BlackAttackBoard,
+                WhiteAttackBoard = this.BlackAttackBoard
 
             };
 
