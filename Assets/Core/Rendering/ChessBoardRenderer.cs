@@ -10,17 +10,20 @@ namespace ChessEngine {
     {
         private readonly int size = 8;
         public GameObject[,] board;
-        public GameObject[,] MoveBoard; 
+        public GameObject[,] MoveBoard;
+
+        public GameObject[,] attackBoardBoard;
 
 
         public Sprite[] spriteSheet;
 
         
 
-        public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab)
+        public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab, GameObject AttackBoardPrefab)
         {
             board = new GameObject[size, size];
             MoveBoard = new GameObject[size, size];
+            attackBoardBoard = new GameObject[size, size];
             spriteSheet = sprites;
 
             for (int y = 0; y < size; y++)
@@ -30,10 +33,15 @@ namespace ChessEngine {
                     board[y,x] = GameObject.Instantiate(prefab);
                     MoveBoard[y,x] = GameObject.Instantiate (movePrefab);
 
+                    attackBoardBoard[y, x] = GameObject.Instantiate(AttackBoardPrefab);
+
                     board[y,x].transform.SetParent( parentObj);
                     MoveBoard[y, x].transform.SetParent(parentObj);
 
+                    attackBoardBoard[y, x].transform.SetParent(parentObj);
+
                     board[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350+(x*100), -350+(y*100), 0);
+                    attackBoardBoard[y, x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350 + (x * 100), -350 + (y * 100), 0);
                     MoveBoard[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350 + (x * 100), -350 + (y * 100), 0);
 
                     Image img = board[y, x].GetComponent<Image>();
@@ -167,6 +175,15 @@ namespace ChessEngine {
                     else
                     {
                         board[y,x].SetActive(false);
+                    }
+
+                    if (ChessEngine.board.WhiteAttackBoard[y * 8 + x])
+                    {
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.2f);
+                    }
+                    else
+                    {
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
                     }
                 }
             }

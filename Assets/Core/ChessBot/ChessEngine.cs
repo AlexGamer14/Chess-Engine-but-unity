@@ -11,6 +11,7 @@ namespace ChessEngine
         [SerializeField] Sprite[] sprites;
         [SerializeField] GameObject prefab;
         [SerializeField] GameObject movePrefab;
+        [SerializeField] GameObject AttackBoardPrefab;
 
         public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
@@ -26,6 +27,8 @@ namespace ChessEngine
         public static int[] BlackAttackBoard;
         public static bool EnableAI = true;
         [SerializeField] bool EnableAIInspector = true;
+
+
 
         public static int MoveCount = 0;
 
@@ -77,7 +80,7 @@ namespace ChessEngine
             BlackAttackBoard = new int[64];
 
             boardRenderer = new ChessBoardRenderer();
-            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab);
+            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
 
             boardRenderer.UpdateBoard();
         }
