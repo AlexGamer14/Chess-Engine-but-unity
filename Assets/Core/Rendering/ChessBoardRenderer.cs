@@ -69,7 +69,7 @@ namespace ChessEngine {
                             if (pieceType != byte.MaxValue)
                             {
 
-                                MovePieces.Move[] moves = ChessEngine.Mover.GetLegalMoves(ChessEngine.board, pieceType, (byte)(y1 * size + x1));
+                                MovePieces.Move[] moves = ChessEngine.Mover.GetLegalMoves(ref ChessEngine.board, pieceType, (byte)(y1 * size + x1));
 
                                 for (int i1 = 0; i1 < moves.Length; i1++)
                                 {

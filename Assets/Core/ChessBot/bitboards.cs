@@ -34,6 +34,9 @@ namespace ChessEngine
         // En passant target square
         public byte EnPassantTargetSquare ;
 
+        public bool[] WhiteAttackBoard;
+        public bool[] BlackAttackBoard;
+
         // Initialize the board with the starting position
         public ChessBoard()
         {

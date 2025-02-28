@@ -87,9 +87,19 @@ namespace ChessEngine
                     Debug.Log(baseMoves.Length + " LENGTH OF MOVES LIST");
                     Debug.Log(currentDepth + " DEPTH CURRENTLY");
                     float eval = GetEvalInDepthRecursive(currentDepth, maxDepth, baseMoves[i], copyBoard, IsWhiteToMove);
-                    if (eval>worstEval)
+                    if (!IsWhiteToMove)
                     {
-                        worstEval=eval;
+                        if (eval > worstEval)
+                        {
+                            worstEval = eval;
+                        }
+                    }
+                    else
+                    {
+                        if (eval < worstEval)
+                        {
+                            worstEval = eval;
+                        }
                     }
                 }
 
