@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using System.IO;
-
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace ChessEngine
@@ -27,7 +27,7 @@ namespace ChessEngine
 
             for (int i = 0; i < baseMoves.Length; i++)
             {
-                float eval = GetEvalInDepthRecursive(0, depth, baseMoves[i], board, IsWhiteToMove);
+                float eval = GetEvalInDepthRecursive(0, depth, baseMoves[i], copyBoard, IsWhiteToMove);
                 if (eval<worstEval)
                 {
                     worstEval=eval;
@@ -74,12 +74,11 @@ namespace ChessEngine
                 float eval = evaluation.Evaluate(copyBoard, IsWhiteToMove);
                 Debug.Log(eval);
                 return eval;
-
             }
             else
             {
                 bool IsWhiteToMove = !WhiteToMove;
-                float worstEval = float.NegativeInfinity;
+                float worstEval = IsWhiteToMove ? float.PositiveInfinity : float.NegativeInfinity;
 
                 MovePieces.Move[] baseMoves = mover.GetMovesForBlackOrWhite(IsWhiteToMove, copyBoard);
                 for (int i = 0; i < baseMoves.Length; i++)
@@ -87,18 +86,15 @@ namespace ChessEngine
                     Debug.Log(baseMoves.Length + " LENGTH OF MOVES LIST");
                     Debug.Log(currentDepth + " DEPTH CURRENTLY");
                     float eval = GetEvalInDepthRecursive(currentDepth, maxDepth, baseMoves[i], copyBoard, IsWhiteToMove);
-                    if (!IsWhiteToMove)
-                    {
-                        if (eval > worstEval)
+                    
+                    if (!IsWhiteToMove) {
+                        if (eval>worstEval)
                         {
-                            worstEval = eval;
+                            worstEval=eval;
                         }
-                    }
-                    else
-                    {
-                        if (eval < worstEval)
-                        {
-                            worstEval = eval;
+                    } else {
+                        if (eval<worstEval) {
+                            worstEval=eval;
                         }
                     }
                 }
@@ -106,7 +102,6 @@ namespace ChessEngine
                 return worstEval;
             } 
         }
-
 
         public MovePieces.Move IterativeSearchAllMoves(int depth, bool WhiteToMove,ChessBoard board)
         {
