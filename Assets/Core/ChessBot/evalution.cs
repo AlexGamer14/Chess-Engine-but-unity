@@ -8,8 +8,8 @@ namespace ChessEngine
 
         const float pawnValue = 100;
         const float rookValue = 500;
-        const float knightsValue = 300;
-        const float bishopsValue = 320;
+        const float knightsValue = 350;
+        const float bishopsValue = 350;
         const float queenValue = 900;
         const float moveFirstValue = 0;
 
