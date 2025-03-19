@@ -22,9 +22,6 @@ namespace ChessEngine
         public static Evaluation evaluation = new Evaluation();
         public static Search search = new Search();
 
-        public static int[] WhiteAttackBoard;
-
-        public static int[] BlackAttackBoard;
         public static bool EnableAI = true;
         [SerializeField] bool EnableAIInspector = true;
 
@@ -75,9 +72,6 @@ namespace ChessEngine
             Debug.Log("Chess engine is running");
 
             Mover = new();
-            
-            WhiteAttackBoard = new int[64];
-            BlackAttackBoard = new int[64];
 
             boardRenderer = new ChessBoardRenderer();
             boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
