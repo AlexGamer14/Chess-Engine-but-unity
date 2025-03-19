@@ -6,17 +6,17 @@ namespace ChessEngine
     public class ChessBoard : ICloneable
     {
         // Bitboards for each piece type
-        public ulong WhitePawns ;
-        public ulong WhiteKnights ;
-        public ulong WhiteBishops; 
-        public ulong WhiteRooks ;
-        public ulong WhiteQueens; 
-        public ulong WhiteKing ;
+        public ulong WhitePawns;
+        public ulong WhiteKnights;
+        public ulong WhiteBishops;
+        public ulong WhiteRooks;
+        public ulong WhiteQueens;
+        public ulong WhiteKing;
 
-        public ulong BlackPawns ;
-        public ulong BlackKnights ;
-        public ulong BlackBishops; 
-        public ulong BlackRooks ;
+        public ulong BlackPawns;
+        public ulong BlackKnights;
+        public ulong BlackBishops;
+        public ulong BlackRooks;
         public ulong BlackQueens;
         public ulong BlackKing ;
         //Casteling rights
@@ -28,16 +28,16 @@ namespace ChessEngine
         public bool BlackCanCastleKingside;
 
         // Bitboard for all pieces
-        public ulong AllPieces ;
+        public ulong AllPieces;
 
         // Bitboard for all white pieces
-        public ulong WhitePieces ;
+        public ulong WhitePieces;
 
         // Bitboard for all black pieces
-        public ulong BlackPieces ;
+        public ulong BlackPieces;
 
         // En passant target square
-        public byte EnPassantTargetSquare ;
+        public byte EnPassantTargetSquare;
         // Attack boards
         public bool[] WhiteAttackBoard;
         public bool[] BlackAttackBoard;
@@ -134,7 +134,29 @@ namespace ChessEngine
             }
         }
 
-        public object Clone()
+        public void ClearBoard()
+        {
+            this.WhiteBishops = 0;
+            this.WhiteKing = 0;
+            this.WhiteKnights = 0;
+            this.WhitePawns = 0;
+            this.WhiteQueens = 0;
+            this.WhiteRooks = 0;
+
+            this.BlackBishops = 0;
+            this.BlackKing = 0;
+            this.BlackKnights = 0;
+            this.BlackPawns = 0;
+            this.BlackQueens = 0;
+            this.BlackRooks = 0;
+        }
+
+        public void SetUpAllBoards()
+        {
+            this.WhitePieces = this.WhitePawns | this.WhiteKnights | this.WhiteBishops | this.WhiteRooks | this.WhiteQueens | this.WhiteKing;
+            this.BlackPieces = this.BlackPawns | this.BlackKnights | this.BlackBishops | this.BlackRooks | this.BlackQueens | this.BlackKing;
+        }
+                public object Clone()
         {
             ChessBoard newBoard = new()
             {
