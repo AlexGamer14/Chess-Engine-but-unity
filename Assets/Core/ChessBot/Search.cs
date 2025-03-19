@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using System.IO;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace ChessEngine
@@ -127,7 +126,7 @@ namespace ChessEngine
             ChessBoard[] resetLayers = new ChessBoard[depth];
             resetLayers[0] = (ChessBoard)copyBoard.Clone();
 
-            Dictionary<MovePieces.Move, moveAndEval> evalList = new();
+            Dictionary<MovePieces.Move, MoveAndEval> evalList = new();
 
             string path = Application.persistentDataPath + "/savefile.txt";
 
@@ -257,7 +256,7 @@ namespace ChessEngine
                             }
                             else
                             {
-                                evalList[movesToCheck[0]] = new moveAndEval(movesToCheck[0], eval);
+                                evalList[movesToCheck[0]] = new MoveAndEval(movesToCheck[0], eval);
                             }
                         }
 
@@ -265,7 +264,7 @@ namespace ChessEngine
                 }
             }
 
-            foreach (moveAndEval value in evalList.Values)
+            foreach (MoveAndEval value in evalList.Values)
             {
                 if (value.eval < bestEval)
                 {
@@ -484,12 +483,12 @@ namespace ChessEngine
         }
     }
 
-    public class moveAndEval 
+    public class MoveAndEval 
     {
         public MovePieces.Move move;
         public float eval;
 
-        public moveAndEval(MovePieces.Move move, float eval)
+        public MoveAndEval(MovePieces.Move move, float eval)
         {
             this.move = move;
             this.eval = eval;
