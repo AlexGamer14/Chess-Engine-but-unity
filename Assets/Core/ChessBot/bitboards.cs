@@ -44,6 +44,10 @@ namespace ChessEngine
 
         public bool WhiteToMove;
 
+        public float FiftyMoveRule;
+
+        public float MoveCount;
+
 
         // Initialize the board with the starting position
         public ChessBoard()
@@ -81,6 +85,10 @@ namespace ChessEngine
             BlackCanCastleQueenside = true;
 
             WhiteToMove = true;
+
+            FiftyMoveRule = 0;
+            MoveCount = 0;
+            
         }
 
         public void PrintBoard()
@@ -161,6 +169,9 @@ namespace ChessEngine
                 BlackCanCastleQueenside = this.BlackCanCastleQueenside,
 
                 WhiteToMove = this.WhiteToMove,
+
+                FiftyMoveRule = this.FiftyMoveRule,
+                MoveCount = this.MoveCount,
 
             };
 

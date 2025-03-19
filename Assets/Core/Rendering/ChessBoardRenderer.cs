@@ -92,7 +92,7 @@ namespace ChessEngine {
                                     {
 
 
-                                        ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i].startPos, moves[i].endPos);
+                                        ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i].startPos, moves[i].endPos, ChessEngine.board);
                                         for (int y2 = 0; y2 < 8; y2++)
                                         {
                                             for (int x2 = 0; x2 < 8; x2++)
