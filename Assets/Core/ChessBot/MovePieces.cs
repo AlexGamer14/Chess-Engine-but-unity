@@ -7,199 +7,13 @@ namespace ChessEngine
 {
     public class MovePieces
     {
-        public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition)
+        public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ChessBoard board)
         {
-            // Value set to 255 so that it is not on board if en passant is not possible
 
-            if (pieceType == 0)
-            {
-                
-                if (endPosition == ChessEngine.board.EnPassantTargetSquare)
-                {
-                    CheckForCapture(pieceType, endPosition - 8);
-                    ChessEngine.board.EnPassantTargetSquare = 255;
-                }
+            EnPassant(board, startPosition, endPosition, pieceType);
+            FiftyMoveRuleCounter(board, pieceType, startPosition, endPosition);
+            CastelingRights(board, pieceType, startPosition, endPosition);
 
-                Debug.Log(pieceType);
-                Debug.Log(startPosition);
-                Debug.Log(endPosition);
-                
-
-                if (endPosition == startPosition + 16)
-                {
-                    ChessEngine.board.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
-                }
-                else
-                {
-                    ChessEngine.board.EnPassantTargetSquare = 255;
-                }
-            }
-            else if (pieceType == 6)
-            {
-                if (endPosition == ChessEngine.board.EnPassantTargetSquare)
-                {
-                    CheckForCapture(pieceType, endPosition + 8);
-                    ChessEngine.board.EnPassantTargetSquare = 255;
-                }
-
-
-
-                if (endPosition == startPosition - 16)
-                {
-                    ChessEngine.board.EnPassantTargetSquare = (byte)(endPosition + (byte)8);
-                }
-                else
-                {
-                    ChessEngine.board.EnPassantTargetSquare = 255;
-                }
-            }
-            else
-            {
-                ChessEngine.board.EnPassantTargetSquare = 255;
-            }
-
-            bool hasCaptured = false;
-
-            if (pieceType == 0)
-            {
-                if (endPosition==startPosition+9 || endPosition==startPosition+7)
-                {
-                    hasCaptured= CheckForCapture(pieceType, endPosition);
-                }
-            }
-
-            else if (pieceType==6)
-            {
-                if (endPosition==startPosition-9 || endPosition==startPosition-7)
-                {
-                    hasCaptured= CheckForCapture(pieceType, endPosition);
-                }
-            }
-
-            else
-            {
-                hasCaptured = CheckForCapture(pieceType, endPosition);
-            }
-            
-            if(pieceType != 0 && pieceType != 6)
-            {
-                if (!hasCaptured)
-                {
-                    ChessEngine.FiftyMoveRule += (float)0.5;
-                }
-                else
-                {
-                    ChessEngine.FiftyMoveRule = 0;
-                }
-            }
-            else
-            {
-                ChessEngine.FiftyMoveRule = 0;
-            }
-
-            if(ChessEngine.FiftyMoveRule >= 50)
-            {
-                Debug.Log("Draw by 50-Move rule");
-            }
-            Debug.Log(ChessEngine.FiftyMoveRule);
-
-            // Remove all castling rights for white if king is moved
-            if(pieceType == 5)
-            {
-                ChessEngine.board.WhiteCanCastleKingside = false;
-                ChessEngine.board.WhiteCanCastleQueenside = false;
-            }
-            // Remove all castling rights for black if king is moved
-            else if(pieceType == 11)
-            {
-                ChessEngine.board.BlackCanCastleKingside = false;
-                ChessEngine.board.BlackCanCastleQueenside = false;
-            }
-            
-            //Now white rooks
-            else if(pieceType == 3)
-            {
-                if(startPosition == 0)
-                {
-                    ChessEngine.board.WhiteCanCastleQueenside = false;
-                }
-                if(startPosition == 7)
-                {
-                    ChessEngine.board.WhiteCanCastleKingside = false;
-                } 
-            }
-
-            //Now black rooks
-            else if(pieceType == 9)
-            {
-                if(startPosition == 56)
-                {
-                    ChessEngine.board.BlackCanCastleQueenside = false;
-                }
-                if(startPosition == 63)
-                {
-                    ChessEngine.board.BlackCanCastleKingside = false;
-                } 
-            }
-            Debug.Log(ChessEngine.board.WhiteCanCastleQueenside);
-            Debug.Log(ChessEngine.board.WhiteCanCastleKingside);
-            Debug.Log(ChessEngine.board.BlackCanCastleQueenside);
-            Debug.Log(ChessEngine.board.BlackCanCastleKingside);
-
-
-            /* Castling!! (WHOOOO)
-            First two bits are for white
-                1100
-                First is left
-                    1000
-                Second is right
-                    0100
-            Third and fourth bits are black
-                0011
-                Third is left
-                    0010
-                Fourth is right
-                    0001
-            */
-
-            // Remove all castling rights for white if king is moved
-            /*if(pieceType == 5)
-            {
-                ChessEngine.board.CanCastle = ChessEngine.board.CanCastle & 0b00110000;
-            } 
-            // Same for black
-            if(pieceType == 11)
-            {
-                board.CanCastle = board.CanCastle & 1100;
-            }
-
-            // Now do the white rooks
-            if(pieceType == 3)
-            {
-                if(startPosition == 0)
-                {
-                    board.CanCastle = board.CanCastle & 1101;
-                }
-                if(startPosition == 7)
-                {
-                    board.CanCastle = board.CanCastle & 1110;
-                }
-            }
-            // Finally the black rooks
-            if(pieceType == 9)
-            {
-                if(startPosition == 56)
-                {
-                    board.CanCastle = board.CanCastle & 1101;
-                }
-                if(startPosition == 63)
-                {
-                    board.CanCastle = board.CanCastle & 1110;
-                }
-            }
-
-            Debug.Log(board.CanCastle);*/
-         
             ChessEngine.MoveCount++;
 
             ChessEngine.board.WhiteToMove = !ChessEngine.board.WhiteToMove;
@@ -214,19 +28,19 @@ namespace ChessEngine
         }
 
         
-        /*public void CastleMover(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ChessBoard board)
+        public void CastleMover(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ChessBoard board)
         {
             
             board.EnPassantTargetSquare = 255;
             
             // I(Thomas) and Sondre think we should add 0.5 once. Debate this next time
-            FiftyMoveRule += (float)0.25;
+            board.FiftyMoveRule += (float)0.25;
 
-            if(FiftyMoveRule >= 50)
+            if(board.FiftyMoveRule >= 50)
             {
                 Debug.Log("Draw by 50-Move rule");
             }
-            Debug.Log(FiftyMoveRule);
+            Debug.Log(board.FiftyMoveRule);
 
             // Remove all castling rights for white if king is moved
             if(pieceType == 5)
@@ -246,18 +60,18 @@ namespace ChessEngine
             Debug.Log(board.BlackCanCastleQueenside);
             Debug.Log(board.BlackCanCastleKingside);
          
-            MoveCount+=0.5f;
+            board.MoveCount+=0.5f;
 
-            WhiteToMove = !WhiteToMove;
+            board.WhiteToMove = !board.WhiteToMove;
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
 
             board.WhiteAttackBoard = new bool[64];
-            board.blackAttackBoard = new bool[64];
+            board.BlackAttackBoard = new bool[64];
 
             board.UpdateBitBoards();
-        }*/
+        }
 
 
         public void SearchMovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ref ChessBoard board)
@@ -303,19 +117,19 @@ namespace ChessEngine
             {
                 if (!hasCaptured)
                 {
-                    ChessEngine.FiftyMoveRule += (float)0.5;
+                    ChessEngine.board.FiftyMoveRule += (float)0.5;
                 }
             }
             else
             {
-                ChessEngine.FiftyMoveRule = 0;
+                ChessEngine.board.FiftyMoveRule = 0;
             }
 
-            if(ChessEngine.FiftyMoveRule <= 50)
+            if(ChessEngine.board.FiftyMoveRule <= 50)
             {
                 Debug.Log("Draw by 50-Move rule");
             }
-            Debug.Log(ChessEngine.FiftyMoveRule);*/
+            Debug.Log(ChessEngine.board.FiftyMoveRule);*/
 
             CheckForCapture(pieceType, endPosition, ref board);
 
@@ -887,12 +701,110 @@ namespace ChessEngine
         {
             if(IsWhite)
             {
-                if (ChessEngine.board.WhiteCanCastleKingside)
+                if (board.WhiteCanCastleKingside)
                 {
                     // its gonna be casteling here
                     Debug.Log("Castle");
                 }
             }
+        }
+
+        public void EnPassant(ChessBoard board, byte startPosition, byte endPosition, int pieceType)
+        {
+            // Value set to 255 so that it is not on board if en passant is not possible
+
+            if (pieceType == 0)
+            {
+                
+                if (endPosition == board.EnPassantTargetSquare)
+                {
+                    CheckForCapture(pieceType, endPosition - 8);
+                    board.EnPassantTargetSquare = 255;
+                }
+
+                Debug.Log(pieceType);
+                Debug.Log(startPosition);
+                Debug.Log(endPosition);
+                
+
+                if (endPosition == startPosition + 16)
+                {
+                    board.EnPassantTargetSquare = (byte)(endPosition - (byte)8);
+                }
+                else
+                {
+                    board.EnPassantTargetSquare = 255;
+                }
+            }
+            else if (pieceType == 6)
+            {
+                if (endPosition == board.EnPassantTargetSquare)
+                {
+                    CheckForCapture(pieceType, endPosition + 8);
+                    board.EnPassantTargetSquare = 255;
+                }
+
+
+
+                if (endPosition == startPosition - 16)
+                {
+                    board.EnPassantTargetSquare = (byte)(endPosition + (byte)8);
+                }
+                else
+                {
+                    board.EnPassantTargetSquare = 255;
+                }
+            }
+            else
+            {
+                board.EnPassantTargetSquare = 255;
+            }
+        }
+
+        public void CastelingRights(ChessBoard board, int pieceType, byte startPosition, byte endPosition)
+        {
+            // Remove all castling rights for white if king is moved
+            if(pieceType == 5)
+            {
+                board.WhiteCanCastleKingside = false;
+                board.WhiteCanCastleQueenside = false;
+            }
+            // Remove all castling rights for black if king is moved
+            else if(pieceType == 11)
+            {
+                board.BlackCanCastleKingside = false;
+                board.BlackCanCastleQueenside = false;
+            }
+            
+            //Now white rooks
+            else if(pieceType == 3)
+            {
+                if(startPosition == 0)
+                {
+                    board.WhiteCanCastleQueenside = false;
+                }
+                if(startPosition == 7)
+                {
+                    board.WhiteCanCastleKingside = false;
+                } 
+            }
+
+            //Now black rooks
+            else if(pieceType == 9)
+            {
+                if(startPosition == 56)
+                {
+                    board.BlackCanCastleQueenside = false;
+                }
+                if(startPosition == 63)
+                {
+                    board.BlackCanCastleKingside = false;
+                } 
+            }
+            Debug.Log(board.WhiteCanCastleQueenside);
+            Debug.Log(board.WhiteCanCastleKingside);
+            Debug.Log(board.BlackCanCastleQueenside);
+            Debug.Log(board.BlackCanCastleKingside);
         }
         public void MakeAIMove(bool IsWhite)
         {
@@ -907,7 +819,7 @@ namespace ChessEngine
             Debug.Log("AI moving from " + move.startPos + " to " + move.endPos + " with a piece type of " + pieceType);
 
 
-            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);
+            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos, ChessEngine.board);
 
 
             /*Move[] moves = ChessEngine.search.SearchMoves(GetMovesForBlackOrWhite(IsWhite), false, ChessEngine.board);
@@ -964,6 +876,54 @@ namespace ChessEngine
                 }
             }
             return moves.ToArray();
+        }
+
+        public void FiftyMoveRuleCounter(ChessBoard board, int pieceType, byte startPosition, byte endPosition)
+        {
+            bool hasCaptured = false;
+
+            if (pieceType == 0)
+            {
+                if (endPosition==startPosition+9 || endPosition==startPosition+7)
+                {
+                    hasCaptured= CheckForCapture(pieceType, endPosition);
+                }
+            }
+
+            else if (pieceType==6)
+            {
+                if (endPosition==startPosition-9 || endPosition==startPosition-7)
+                {
+                    hasCaptured= CheckForCapture(pieceType, endPosition);
+                }
+            }
+
+            else
+            {
+                hasCaptured = CheckForCapture(pieceType, endPosition);
+            }
+            
+            if(pieceType != 0 && pieceType != 6)
+            {
+                if (!hasCaptured)
+                {
+                    board.FiftyMoveRule += (float)0.5;
+                }
+                else
+                {
+                    board.FiftyMoveRule = 0;
+                }
+            }
+            else
+            {
+                board.FiftyMoveRule = 0;
+            }
+
+            if(board.FiftyMoveRule >= 50)
+            {
+                Debug.Log("Draw by 50-Move rule");
+            }
+            Debug.Log(board.FiftyMoveRule);
         }
 
         public MovePieces.Move[] GetMovesForBlackOrWhite(bool IsWhite, ChessBoard board)
