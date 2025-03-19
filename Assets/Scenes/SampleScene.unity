@@ -739,6 +739,7 @@ MonoBehaviour:
   AttackBoardPrefab: {fileID: 5984064074621747440, guid: 6752483e703ad3f46848356843442d65, type: 3}
   EnableAIInspector: 1
   cooldown: 0.1
+  FenString: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
