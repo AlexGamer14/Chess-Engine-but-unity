@@ -63,10 +63,11 @@ namespace ChessEngine
 
         private float timer = 0;
 
+        public string FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1";
         public void Awake()
         {
             //board = new ChessBoard();
-            board = LoadFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1");
+            board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
             EnableAI = EnableAIInspector;
@@ -108,6 +109,7 @@ namespace ChessEngine
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
             byte piecePosition = 0;
 
+            // Find location of spaces
             List<int> spaceIndices = new List<int>();
 
             for (int j = 0; j < fenString.Length; j++)
