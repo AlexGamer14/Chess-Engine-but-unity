@@ -91,6 +91,8 @@ namespace ChessEngine
         {
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
             {
+                Mover.GetMovesForBlackOrWhite(true, board);
+                Mover.GetMovesForBlackOrWhite(false, board);
                 boardRenderer.UpdateBoard();
             }
             timer += Time.deltaTime;
