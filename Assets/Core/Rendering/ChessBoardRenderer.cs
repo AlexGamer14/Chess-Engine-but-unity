@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -67,7 +64,7 @@ namespace ChessEngine {
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
 
-                        if ((ChessEngine.board.WhiteToMove && pieceType > 5) && ChessEngine.EnableAI)
+                        if (ChessEngine.board.WhiteToMove && pieceType > 5 && ChessEngine.EnableAI)
                         {
 
                         }
@@ -85,10 +82,10 @@ namespace ChessEngine {
                                 {
                                     int i = i1;
 
-                                    MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].SetActive(true);
+                                    MoveBoard[moves[i].endPos / size, moves[i].endPos % size].SetActive(true);
 
-                                    MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.RemoveAllListeners();
-                                    MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.AddListener(() =>
+                                    MoveBoard[moves[i].endPos / size, moves[i].endPos % size].GetComponent<Button>().onClick.RemoveAllListeners();
+                                    MoveBoard[moves[i].endPos / size, moves[i].endPos % size].GetComponent<Button>().onClick.AddListener(() =>
                                     {
 
 
