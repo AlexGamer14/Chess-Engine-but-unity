@@ -421,10 +421,10 @@ namespace ChessEngine
 
                     float moveEval;
 
-                    if (!ChessEngine.WhiteToMove) { moveEval = -ChessEngine.evaluation.Evaluate(newBoard, WhiteToMove); }
+                    if (!ChessEngine.board.WhiteToMove) { moveEval = -ChessEngine.evaluation.Evaluate(newBoard, WhiteToMove); }
                     else
                     {
-                        moveEval = ChessEngine.evaluation.Evaluate(newBoard, ChessEngine.WhiteToMove);
+                        moveEval = ChessEngine.evaluation.Evaluate(newBoard, ChessEngine.board.WhiteToMove);
                     }
 
                     if (moveEval > bestMoveEval)
@@ -460,10 +460,10 @@ namespace ChessEngine
 
                     float moveEval;
 
-                    if (!ChessEngine.WhiteToMove) { moveEval = -ChessEngine.evaluation.Evaluate(newBoard, WhiteToMove); }
+                    if (!ChessEngine.board.WhiteToMove) { moveEval = -ChessEngine.evaluation.Evaluate(newBoard, WhiteToMove); }
                     else
                     {
-                        moveEval = ChessEngine.evaluation.Evaluate(newBoard, ChessEngine.WhiteToMove);
+                        moveEval = ChessEngine.evaluation.Evaluate(newBoard, ChessEngine.board.WhiteToMove);
                     }
 
                     if (moveEval > bestMoveEval)

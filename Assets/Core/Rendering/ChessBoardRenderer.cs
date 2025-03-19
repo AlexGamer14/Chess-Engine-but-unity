@@ -67,7 +67,7 @@ namespace ChessEngine {
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
 
-                        if ((ChessEngine.WhiteToMove && pieceType > 5) && ChessEngine.EnableAI)
+                        if ((ChessEngine.board.WhiteToMove && pieceType > 5) && ChessEngine.EnableAI)
                         {
 
                         }

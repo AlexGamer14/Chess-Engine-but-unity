@@ -16,7 +16,7 @@ namespace ChessEngine
         public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
 
-        public static bool WhiteToMove = true;
+        
 
         public static MovePieces Mover;
         public static Evaluation evaluation = new Evaluation();

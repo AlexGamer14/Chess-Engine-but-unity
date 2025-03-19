@@ -42,6 +42,8 @@ namespace ChessEngine
         public bool[] WhiteAttackBoard;
         public bool[] BlackAttackBoard;
 
+        public bool WhiteToMove;
+
 
         // Initialize the board with the starting position
         public ChessBoard()
@@ -77,6 +79,8 @@ namespace ChessEngine
             WhiteCanCastleQueenside = true;
             BlackCanCastleKingside = true;
             BlackCanCastleQueenside = true;
+
+            WhiteToMove = true;
         }
 
         public void PrintBoard()
@@ -149,7 +153,14 @@ namespace ChessEngine
                 EnPassantTargetSquare = this.EnPassantTargetSquare,
 
                 BlackAttackBoard = this.BlackAttackBoard,
-                WhiteAttackBoard = this.BlackAttackBoard
+                WhiteAttackBoard = this.BlackAttackBoard,
+
+                WhiteCanCastleKingside = this.WhiteCanCastleKingside,
+                WhiteCanCastleQueenside = this.WhiteCanCastleQueenside,
+                BlackCanCastleKingside = this.BlackCanCastleKingside,
+                BlackCanCastleQueenside = this.BlackCanCastleQueenside,
+
+                WhiteToMove = this.WhiteToMove,
 
             };
 
