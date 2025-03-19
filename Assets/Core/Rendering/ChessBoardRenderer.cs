@@ -44,6 +44,8 @@ namespace ChessEngine {
                     attackBoardBoard[y, x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350 + (x * 100), -350 + (y * 100), 0);
                     MoveBoard[y,x].GetComponent<RectTransform>().anchoredPosition = new Vector3(-350 + (x * 100), -350 + (y * 100), 0);
 
+                    attackBoardBoard[y, x].GetComponent<Image>().raycastTarget = false;
+
                     Image img = board[y, x].GetComponent<Image>();
 
                     int y1 = y;
@@ -179,7 +181,7 @@ namespace ChessEngine {
 
                     if (ChessEngine.board.WhiteAttackBoard[y * 8 + x])
                     {
-                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.2f);
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);
                     }
                     else
                     {

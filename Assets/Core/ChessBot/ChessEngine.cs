@@ -91,7 +91,7 @@ namespace ChessEngine
         {
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
             {
-                Debug.Log(board.EnPassantTargetSquare);
+                boardRenderer.UpdateBoard();
             }
             timer += Time.deltaTime;
             
