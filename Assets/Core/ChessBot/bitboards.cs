@@ -19,8 +19,13 @@ namespace ChessEngine
         public ulong BlackRooks ;
         public ulong BlackQueens;
         public ulong BlackKing ;
-        public byte WhiteCanCastle;
-        public byte BlackCanCastle; 
+        //Casteling rights
+        public byte CanCastle;
+
+        public bool WhiteCanCastleQueenside;
+        public bool WhiteCanCastleKingside;
+        public bool BlackCanCastleQueenside;
+        public bool BlackCanCastleKingside;
 
         // Bitboard for all pieces
         public ulong AllPieces ;
@@ -33,9 +38,10 @@ namespace ChessEngine
 
         // En passant target square
         public byte EnPassantTargetSquare ;
-
+        // Attack boards
         public bool[] WhiteAttackBoard;
         public bool[] BlackAttackBoard;
+
 
         // Initialize the board with the starting position
         public ChessBoard()
@@ -66,6 +72,11 @@ namespace ChessEngine
 
             WhiteAttackBoard = new bool[64];
             BlackAttackBoard = new bool[64];
+            
+            WhiteCanCastleKingside = true;
+            WhiteCanCastleQueenside = true;
+            BlackCanCastleKingside = true;
+            BlackCanCastleQueenside = true;
         }
 
         public void PrintBoard()
