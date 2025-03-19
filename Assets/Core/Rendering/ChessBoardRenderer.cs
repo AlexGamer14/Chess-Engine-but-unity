@@ -187,7 +187,37 @@ namespace ChessEngine {
                     {
                         attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
                     }
+
                 }
+
+            }
+        }
+
+        public void UpdateAttackBoard(bool white)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    if (ChessEngine.board.WhiteAttackBoard[y * 8 + x] && white)
+                    {
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);
+                    }
+                    else if (white)
+                    {
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
+                    }
+
+                    if (ChessEngine.board.BlackAttackBoard[y * 8 + x] && !white)
+                    {
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);
+                    }
+                    else if (!white)
+                    {
+                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
+                    }
+                }
+
             }
         }
     }
