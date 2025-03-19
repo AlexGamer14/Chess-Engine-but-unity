@@ -75,10 +75,10 @@ namespace ChessEngine
             WhiteAttackBoard = new bool[64];
             BlackAttackBoard = new bool[64];
             
-            WhiteCanCastleKingside = true;
-            WhiteCanCastleQueenside = true;
-            BlackCanCastleKingside = true;
-            BlackCanCastleQueenside = true;
+            WhiteCanCastleKingside = false;
+            WhiteCanCastleQueenside = false;
+            BlackCanCastleKingside = false;
+            BlackCanCastleQueenside = false;
 
             WhiteToMove = true;
         }
