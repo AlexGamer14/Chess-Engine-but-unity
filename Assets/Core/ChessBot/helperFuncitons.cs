@@ -16,8 +16,15 @@ namespace ChessEngine
 
             // Use bitwise AND to set the bit at the bitPosition
             value &= mask;
+        }
 
-            //e
+        public static void SetBit(ref ulong value, int bitPosition, ulong desiredValue)
+        {
+            // Create a mask where only the bit at bitPosition is 1
+            ulong mask = 1UL << bitPosition;
+
+            // Use bitwise AND to set the bit at the bitPosition
+            value |= mask;
         }
 
 
@@ -112,11 +119,11 @@ namespace ChessEngine
             {
                 return 6;
             }
-            if (pieceToNotCheck != 7 && GetByte(position,   board.BlackKnights) == 1)
+            if (pieceToNotCheck != 7 && GetByte(position, board.BlackKnights) == 1)
             {
                 return 7;
             }
-            if (pieceToNotCheck != 8 && GetByte(position,   board.BlackBishops) == 1)
+            if (pieceToNotCheck != 8 && GetByte(position, board.BlackBishops) == 1)
             {
                 return 8;
             }
@@ -159,7 +166,7 @@ namespace ChessEngine
             {
                 return 1;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackKnights )== 1)
+            if (GetByte(byteIndex, ChessEngine.board.BlackKnights) == 1)
             {
                 return 7;
             }
@@ -193,35 +200,35 @@ namespace ChessEngine
 
         public static ref ulong GetTypeBasedOnIndex(int index)
         {
-                switch (index)
-                {
-                    case 0:
-                        return ref ChessEngine.board.WhitePawns;
-                    case 1:
-                        return ref ChessEngine.board.WhiteKnights;
-                    case 2:
-                        return ref ChessEngine.board.WhiteBishops;
-                    case 3:
-                        return ref ChessEngine.board.WhiteRooks;
-                    case 4:
-                        return ref ChessEngine.board.WhiteQueens;
-                    case 5:
-                        return ref ChessEngine.board.WhiteKing;
-                    case 6:
-                        return ref ChessEngine.board.BlackPawns;
-                    case 7:
-                        return ref ChessEngine.board.BlackKnights;
-                    case 8:
-                        return ref ChessEngine.board.BlackBishops;
-                    case 9:
-                        return ref ChessEngine.board.BlackRooks;
-                    case 10:
-                        return ref ChessEngine.board.BlackQueens;
-                    case 11:
-                        return ref ChessEngine.board.BlackKing;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(index), "Invalid piece index.");
-                }
+            switch (index)
+            {
+                case 0:
+                    return ref ChessEngine.board.WhitePawns;
+                case 1:
+                    return ref ChessEngine.board.WhiteKnights;
+                case 2:
+                    return ref ChessEngine.board.WhiteBishops;
+                case 3:
+                    return ref ChessEngine.board.WhiteRooks;
+                case 4:
+                    return ref ChessEngine.board.WhiteQueens;
+                case 5:
+                    return ref ChessEngine.board.WhiteKing;
+                case 6:
+                    return ref ChessEngine.board.BlackPawns;
+                case 7:
+                    return ref ChessEngine.board.BlackKnights;
+                case 8:
+                    return ref ChessEngine.board.BlackBishops;
+                case 9:
+                    return ref ChessEngine.board.BlackRooks;
+                case 10:
+                    return ref ChessEngine.board.BlackQueens;
+                case 11:
+                    return ref ChessEngine.board.BlackKing;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(index), "Invalid piece index.");
+            }
         }
         public static ref ulong GetTypeBasedOnIndex(int index, ref ChessBoard board)
         {
@@ -252,8 +259,19 @@ namespace ChessEngine
                 case 11:
                     return ref board.BlackKing;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(index), "Invalid piece index. " + index); 
+                    throw new ArgumentOutOfRangeException(nameof(index), "Invalid piece index. " + index);
             }
         }
+
+    public static ulong FlipBitboard(ulong bitboard)
+        {
+            ulong result = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                result |= ((bitboard >> (i * 8)) & 0xFF) << ((7 - i) * 8);
+            }
+            return result;
+        }
+
     }
 }

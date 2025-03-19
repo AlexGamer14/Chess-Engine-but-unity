@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using UnityEditor;
 
 namespace ChessEngine
 {
@@ -64,7 +65,8 @@ namespace ChessEngine
 
         public void Awake()
         {
-            board = new ChessBoard();
+            //board = new ChessBoard();
+            board = LoadFenString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
             EnableAI = EnableAIInspector;
@@ -101,26 +103,81 @@ namespace ChessEngine
             }
         }
     
-    /*public LoadFenString(string FenString) = new() {
+    public ChessBoard LoadFenString(string FenString) {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-            byte fenPosition = 0;
+            /*byte fenPosition = 0;
             byte piecePosition = 0;
-            bool isWhiteToMove;
+            bool isWhiteToMove;*/
+
+            FenString = FenString.Replace("/", "");
+
+            ChessBoard board = new();
+            board.ClearBoard();
+
             // Piece positions
-            for (int i = 0; i < FenString.Length, i++) {
-                if (FenString[i] = " ") {
+            int piecePosition = 0;
+            for (int i = 0; i < FenString.Length; i++) {
+                if (FenString[i] == ' ') {
                     break;
                 }
 
-                // TODO: Find piece type, and convert fenPosition to piecePosition and set bitboard to that value
+                // Check for black pieces
+                if (FenString[i] == 'r') {
+                    HelperFunctions.SetBit(ref board.BlackRooks, piecePosition, 1);
+                } else if (FenString[i] == 'n') {
+                    HelperFunctions.SetBit(ref board.BlackKnights, piecePosition, 1);
+                } else if (FenString[i] == 'b') {
+                    HelperFunctions.SetBit(ref board.BlackBishops, piecePosition, 1);
+                } else if (FenString[i] == 'k') {
+                    HelperFunctions.SetBit(ref board.BlackKing, piecePosition, 1);
+                } else if (FenString[i] == 'q') {
+                    HelperFunctions.SetBit(ref board.BlackQueens, piecePosition, 1);
+                } else if (FenString[i] == 'p') {
+                    HelperFunctions.SetBit(ref board.BlackPawns, piecePosition, 1);
+                }
+
+                // Check for white pieces
+                if (FenString[i] == 'R') {
+                    HelperFunctions.SetBit(ref board.WhiteRooks, piecePosition, 1);
+                } else if (FenString[i] == 'N') {
+                    HelperFunctions.SetBit(ref board.WhiteKnights, piecePosition, 1);
+                } else if (FenString[i] == 'B') {
+                    HelperFunctions.SetBit(ref board.WhiteBishops, piecePosition, 1);
+                } else if (FenString[i] == 'K') {
+                    HelperFunctions.SetBit(ref board.WhiteKing, piecePosition, 1);
+                } else if (FenString[i] == 'Q') {
+                    HelperFunctions.SetBit(ref board.WhiteQueens, piecePosition, 1);
+                } else if (FenString[i] == 'P') {
+                    HelperFunctions.SetBit(ref board.WhitePawns, piecePosition, 1);
+                }
+
+                // Make numbers in fenstrings work
+                // NOTE: I'm not adding cases for the number 1 because it is already done by the for loop
+                if (FenString[i] == '2') {
+                    piecePosition++;
+                } else if (FenString[i] == '3') {
+                    piecePosition += 2;
+                } else if (FenString[i] == '4') {
+                    piecePosition += 3;
+                } else if (FenString[i] == '5') {
+                    piecePosition += 4;
+                } else if (FenString[i] == '6') {
+                    piecePosition += 5;
+                } else if (FenString[i] == '7') {
+                    piecePosition += 6;
+                } else if (FenString[i] == '8') {
+                    piecePosition += 7;
+                }
+
+                piecePosition ++;
             }
 
             // Side to move
-            for (int i = 0; i<= FenString.Length, i++) {
-                if (FenString[i] = " ") {
-                    if (FenString[i + 1] = "w") {
+            /*for (int i = 0; i<= FenString.Length, i++) {
+                if (FenString[i] == ' ') {
+                    if (FenString[i + 1] == 'w') {
                         isWhiteToMove = true;
-                    } else if (FenString[i + 1] = "b") {
+                    } else if (FenString[i + 1] = 'b') {
                         isWhiteToMove = false;
                     } else {
                         Debug.Log("Insert a valid FEN-string");
@@ -129,7 +186,24 @@ namespace ChessEngine
             }
 
             // Castling
+        */
+            //finish setting up the board
+            board.WhiteBishops = HelperFunctions.FlipBitboard(board.WhiteBishops);
+            board.WhiteKing = HelperFunctions.FlipBitboard(board.WhiteKing);
+            board.WhiteQueens = HelperFunctions.FlipBitboard(board.WhiteQueens);
+            board.WhiteRooks = HelperFunctions.FlipBitboard(board.WhiteRooks);
+            board.WhiteKnights = HelperFunctions.FlipBitboard(board.WhiteKnights);
+            board.WhitePawns = HelperFunctions.FlipBitboard(board.WhitePawns);
 
+            board.BlackBishops = HelperFunctions.FlipBitboard(board.BlackBishops);
+            board.BlackKing = HelperFunctions.FlipBitboard(board.BlackKing);
+            board.BlackQueens = HelperFunctions.FlipBitboard(board.BlackQueens);
+            board.BlackRooks = HelperFunctions.FlipBitboard(board.BlackRooks);
+            board.BlackKnights = HelperFunctions.FlipBitboard(board.BlackKnights);
+            board.BlackPawns = HelperFunctions.FlipBitboard(board.BlackPawns);
+
+            board.SetUpAllBoards();
+            return(board);
         }
 
         /*
@@ -141,6 +215,7 @@ namespace ChessEngine
                 If so set endOfPos(end of part of fen string containing info about piece positions)
                 break
             set bitboard of piece type to include that piece type at bit position
+
         Loop through FenString starting at EnOfPos ending either "w" or "b"
             Check if char at index of FenString = "w"|"b"
                 If so set start of castlingInfo to index+1
