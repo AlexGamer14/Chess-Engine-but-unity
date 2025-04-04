@@ -16,7 +16,7 @@ namespace ChessEngine
         [SerializeField] GameObject movePrefab;
         [SerializeField] GameObject AttackBoardPrefab;
 
-        public static ChessBoard board;
+        public static ChessBoard board = new();
         public static ChessBoardRenderer boardRenderer;
 
         [SerializeField] InputField FenStringInput;
@@ -78,8 +78,14 @@ namespace ChessEngine
         {
             FenStringInput.onSubmit.AddListener(SetFenString);
 
+            Mover = new();
+
+            EnableAI = EnableAIInspector;
+
             boardRenderer = new ChessBoardRenderer();
             boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
+
+            boardRenderer.UpdateBoard();
         }
         public void StartGame()
         {
@@ -87,13 +93,7 @@ namespace ChessEngine
             board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
-            EnableAI = EnableAIInspector;
-
             Debug.Log("Chess engine is running");
-
-            Mover = new();
-
-            boardRenderer.UpdateBoard();
         }
 
 
