@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
+using System.Runtime.CompilerServices;
 
 namespace ChessEngine
 {
@@ -17,7 +19,7 @@ namespace ChessEngine
         public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
 
-
+        [SerializeField]InputField fenstringInputField;
 
         public static MovePieces Mover;
         public static Evaluation evaluation = new Evaluation();
@@ -64,11 +66,21 @@ namespace ChessEngine
         private float timer = 0;
 
         public string FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1";
+
+        void SetFenString(string fenstring)
+        {
+            FenString=fenstring;
+            LoadFenString(FenString);
+            boardRenderer.UpdateBoard();
+        }
+
         public void Awake()
         {
             //board = new ChessBoard();
             board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
+
+            fenstringInputField.onSubmit.AddListener(SetFenString);
 
             EnableAI = EnableAIInspector;
 

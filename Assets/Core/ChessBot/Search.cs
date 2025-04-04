@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using System.IO;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 namespace ChessEngine
@@ -120,13 +121,13 @@ namespace ChessEngine
                 
             }
 
-            float bestEval = float.PositiveInfinity;
-            List<MovePieces.Move> bestMove = new();
+            MoveAndEval bestMove = new(new(), float.PositiveInfinity);
 
             ChessBoard[] resetLayers = new ChessBoard[depth];
             resetLayers[0] = (ChessBoard)copyBoard.Clone();
 
-            Dictionary<MovePieces.Move, MoveAndEval> evalList = new();
+            List<MoveAndEval> evalList = new();
+            List<MoveAndEval> finalList = new();
 
             string path = Application.persistentDataPath + "/savefile.txt";
 
@@ -195,6 +196,22 @@ namespace ChessEngine
                         calculatedDepth++;
                         break;
                     case 2:
+                        if (evalList.Count>0)
+                        {
+                            MoveAndEval bestMoveAndEval = new(new(),float.NegativeInfinity);
+
+                            foreach (MoveAndEval eval in evalList)
+                            {
+                                if (bestMoveAndEval.eval < eval.eval)
+                                {
+                                    bestMoveAndEval = eval;
+                                }
+                                
+                            }
+
+                            finalList.Add(bestMoveAndEval);
+                        }
+
                         copyBoard = (ChessBoard)resetLayers[1].Clone();
                         IsWhiteToMove=WhiteToMove;
                         pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, movesToCheck[1].startPos, copyBoard);
@@ -246,25 +263,36 @@ namespace ChessEngine
                             output += eval + "\n";
 
                             // GETS THE WORST MOVE IN THIS POSITION TO TRY TO SHOW THE BEST OVERALL MOVE
-                            if (evalList.TryGetValue(movesToCheck[0], out var existingMove))
-                            {
-                                if (eval > existingMove.eval)
+                            /*if (evalList.Count > 0) {
+                                foreach (MoveAndEval exisitingEval in evalList)
                                 {
-                                    existingMove.move = movesToCheck[0];
-                                    existingMove.eval = eval;
+                                    if (eval > exisitingEval.eval)
+                                    {
+                                        evalList.Clear();
+                                        MoveAndEval newMove = new MoveAndEval(movesToCheck[0], eval);
+                                        evalList.Add(newMove);
+                                    }
+                                    else if (eval==exisitingEval.eval)
+                                    {
+                                        MoveAndEval newMove = new MoveAndEval(movesToCheck[0], eval);
+                                        evalList.Add(newMove);
+                                    }
                                 }
                             }
                             else
                             {
-                                evalList[movesToCheck[0]] = new MoveAndEval(movesToCheck[0], eval);
-                            }
+                                MoveAndEval newMove = new MoveAndEval(movesToCheck[0], eval);
+                                evalList.Add(newMove);
+                            }*/
+                            MoveAndEval newMove = new MoveAndEval(movesToCheck[0], eval);
+                            evalList.Add(newMove);
                         }
 
                         break;
                 }
             }
 
-            foreach (MoveAndEval value in evalList.Values)
+            /*foreach (MoveAndEval value in evalList.Values)
             {
                 if (value.eval < bestEval)
                 {
@@ -280,7 +308,7 @@ namespace ChessEngine
                     bestMove.Add(value.move);
                     output += "New equal eval with base move: " + value.move.startPos + " , " + value.move.endPos + " and eval of" + value.eval + "\n";
                 }
-            }
+            }*/
 
             using (StreamWriter writer = new StreamWriter(path, false)) // `true` appends instead of overwriting
             {
@@ -290,7 +318,15 @@ namespace ChessEngine
             System.Random rng = new();
 
 
-            return bestMove[rng.Next(0,bestMove.Count)];
+            foreach (MoveAndEval moveAndEval in finalList)
+            {
+                if (bestMove.eval>moveAndEval.eval)
+                {
+                    bestMove = moveAndEval;
+                }
+            }
+
+            return bestMove.move;
         }
 
 
