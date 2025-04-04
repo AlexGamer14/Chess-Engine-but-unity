@@ -34,7 +34,6 @@ namespace ChessEngine
             board.EnPassantTargetSquare = 255;
             
             // I(Thomas) and Sondre think we should add 0.5 once. Debate this next time
-            board.FiftyMoveRule += (float)0.25;
 
             if(board.FiftyMoveRule >= 50)
             {
@@ -66,9 +65,6 @@ namespace ChessEngine
 
             pieces = pieces & ~(ulong)Math.Pow(2, startPosition);
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
-
-            board.WhiteAttackBoard = new bool[64];
-            board.BlackAttackBoard = new bool[64];
 
             board.UpdateBitBoards();
         }

@@ -74,7 +74,8 @@ namespace ChessEngine
             boardRenderer.UpdateBoard();
         }
 
-        public void Awake()
+
+        public void StartGame()
         {
             //board = new ChessBoard();
             board = LoadFenString(FenString);
