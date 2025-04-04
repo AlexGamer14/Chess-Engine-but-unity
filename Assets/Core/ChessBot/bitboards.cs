@@ -38,9 +38,12 @@ namespace ChessEngine
 
         // En passant target square
         public byte EnPassantTargetSquare;
+        
         // Attack boards
         public bool[] WhiteAttackBoard;
         public bool[] BlackAttackBoard;
+        public ulong WhiteAttackBitboard;
+        public ulong BlackAttackBitboard;
 
         public bool WhiteToMove;
 

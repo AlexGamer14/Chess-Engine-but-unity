@@ -9,22 +9,22 @@ namespace ChessEngine
             return (byte)(row * 8 + column);
         }
 
-        public static void SetBit(ref ulong value, int bitPosition)
+        public static void SetBit(ref ulong bitboard, int bitPosition)
         {
             // Create and invert a mask where only the bit at bitPosition is 1
             ulong mask = ~(1UL << bitPosition);
 
             // Use bitwise AND to set the bit at the bitPosition
-            value &= mask;
+            bitboard &= mask;
         }
 
-        public static void SetBit(ref ulong value, int bitPosition, ulong desiredValue)
+        public static void SetBit(ref ulong bitboard, int bitPosition, ulong desiredValue)
         {
             // Create a mask where only the bit at bitPosition is 1
-            ulong mask = 1UL << bitPosition;
+            ulong mask = desiredValue << bitPosition;
 
             // Use bitwise AND to set the bit at the bitPosition
-            value |= mask;
+            bitboard |= mask;
         }
 
 
