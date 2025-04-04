@@ -12,7 +12,7 @@ namespace ChessEngine
     {
         string output = "";
 
-        public MovePieces.Move RecursiveSearchMoves(int depth, bool WhiteToMove, ChessBoard board)
+        /*public MovePieces.Move RecursiveSearchMoves(int depth, bool WhiteToMove, ChessBoard board)
         {
             MovePieces mover = new();
             Evaluation evaluation = new Evaluation();
@@ -52,9 +52,9 @@ namespace ChessEngine
 
             System.Random rng = new System.Random();
             return worstMovesForBaseMoves[rng.Next(0,worstMovesForBaseMoves.Count)];
-        }
+        }*/
 
-        public float GetEvalInDepthRecursive(int currentDepth, int maxDepth, MovePieces.Move move, ChessBoard board, bool WhiteToMove)
+        /*public float GetEvalInDepthRecursive(int currentDepth, int maxDepth, MovePieces.Move move, ChessBoard board, bool WhiteToMove)
         {
             currentDepth++;
   
@@ -101,10 +101,11 @@ namespace ChessEngine
 
                 return worstEval;
             } 
-        }
+        }*/
 
         public MovePieces.Move IterativeSearchAllMoves(int depth, bool WhiteToMove,ChessBoard board)
         {
+            Debug.Log("Is this a memory leak? (in iterativesearchallmoves)");
             MovePieces mover = new();
             Evaluation evaluation = new Evaluation();
 

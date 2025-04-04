@@ -94,6 +94,8 @@ namespace ChessEngine
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
             Debug.Log("Chess engine is running");
+
+            boardRenderer.UpdateBoard();
         }
 
 
