@@ -19,7 +19,7 @@ namespace ChessEngine
         public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
 
-        [SerializeField]InputField fenstringInputField;
+        [SerializeField] InputField FenStringInput;
 
         public static MovePieces Mover;
         public static Evaluation evaluation = new Evaluation();
@@ -69,28 +69,29 @@ namespace ChessEngine
 
         void SetFenString(string fenstring)
         {
-            FenString=fenstring;
+            FenString = fenstring;
             LoadFenString(FenString);
             boardRenderer.UpdateBoard();
         }
 
+        public void Awake()
+        {
+            FenStringInput.onSubmit.AddListener(SetFenString);
 
+            boardRenderer = new ChessBoardRenderer();
+            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
+        }
         public void StartGame()
         {
             //board = new ChessBoard();
             board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
-            fenstringInputField.onSubmit.AddListener(SetFenString);
-
             EnableAI = EnableAIInspector;
 
             Debug.Log("Chess engine is running");
 
             Mover = new();
-
-            boardRenderer = new ChessBoardRenderer();
-            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
 
             boardRenderer.UpdateBoard();
         }
@@ -299,26 +300,26 @@ namespace ChessEngine
                 return;
             }
 
-            if(fenString[fenStringPos + 2] == ' ')
+            if (fenString[fenStringPos + 2] == ' ')
             {
                 return;
             }
-            else if (fenString[fenStringPos +2] == 'Q')
+            else if (fenString[fenStringPos + 2] == 'Q')
             {
                 board.WhiteCanCastleQueenside = true;
             }
-            else if (fenString[fenStringPos +2] == 'k')
+            else if (fenString[fenStringPos + 2] == 'k')
             {
                 board.BlackCanCastleKingside = true;
             }
-            else if (fenString[fenStringPos +2] == 'q')
+            else if (fenString[fenStringPos + 2] == 'q')
             {
                 board.BlackCanCastleQueenside = true;
 
                 return;
             }
 
-            if(fenString[fenStringPos + 3] == ' ')
+            if (fenString[fenStringPos + 3] == ' ')
             {
                 return;
             }
@@ -333,7 +334,7 @@ namespace ChessEngine
                 return;
             }
 
-            if(fenString[fenStringPos + 3] == ' ')
+            if (fenString[fenStringPos + 3] == ' ')
             {
                 return;
             }
