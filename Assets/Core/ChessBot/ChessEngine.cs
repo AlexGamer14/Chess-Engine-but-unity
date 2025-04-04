@@ -63,8 +63,9 @@ namespace ChessEngine
 
         private float timer = 0;
 
-        public string FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1";
-        public void Awake()
+        private string FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1";
+
+        public void StartGame()
         {
             //board = new ChessBoard();
             board = LoadFenString(FenString);
