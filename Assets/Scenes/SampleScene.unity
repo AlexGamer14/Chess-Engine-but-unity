@@ -898,6 +898,7 @@ MonoBehaviour:
   AttackBoardPrefab: {fileID: 5984064074621747440, guid: 6752483e703ad3f46848356843442d65, type: 3}
   EnableAIInspector: 1
   cooldown: 0.1
+  FenString: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1
 --- !u!1 &1803220642
 GameObject:
   m_ObjectHideFlags: 0
@@ -935,7 +936,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 480, y: 385}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1803220644
