@@ -458,49 +458,6 @@ namespace ChessEngine
             return moves.ToArray();
         }
 
-        /*public void RookMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard, ref ulong AttackBitboard)
-        {
-            if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
-            {
-                return;
-            }
-
-            // Direction vectors for rook: up (-8), down (+8), right (+1), left (-1)
-            int[] directions = { 8, -8, 1, -1 };
-
-            foreach (int direction in directions)
-            {
-                int currentPosition = position;
-
-                while (true)
-                {
-                    int targetPosition = currentPosition + direction;
-
-                    // Check bounds
-                    if (targetPosition < 0 || targetPosition >= 64)
-                        break;
-
-                    // Prevent wrapping from one rank to another on horizontal moves
-                    if ((direction == 1 || direction == -1) &&
-                        (currentPosition / 8 != targetPosition / 8))
-                        break;
-
-                    AttackBoard[targetPosition] = true;
-                    HelperFunctions.SetBit(ref AttackBitboard, targetPosition, 1);
-
-                    if (HelperFunctions.GetByte((byte)targetPosition, friendlyPieces) == 1)
-                        break;
-
-                    moves.Add(new Move(position, (byte)targetPosition));
-
-                    if (HelperFunctions.GetByte((byte)targetPosition, enemyPieces) == 1)
-                        break;
-
-                    currentPosition = targetPosition;
-                }
-            }
-        }*/
-
         public void RookMovement(
     int pieceType,
     byte position,
@@ -563,52 +520,52 @@ namespace ChessEngine
     ChessBoard board,
     ref bool[] AttackBoard,
     ref ulong AttackBitBoard)
-{
-    // Early exit if there's no bishop on the square
-    if ((HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) & 1) == 0)
-        return;
-
-    // Diagonal directions: top-right, top-left, bottom-right, bottom-left
-    ReadOnlySpan<int> directions = stackalloc int[] { 9, 7, -7, -9 };
-
-    foreach (int direction in directions)
-    {
-        int current = position;
-
-        while (true)
         {
-            int next = current + direction;
+            // Early exit if there's no bishop on the square
+            if ((HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) & 1) == 0)
+                return;
 
-            // Check board bounds
-            if (next < 0 || next >= 64)
-                break;
+            // Diagonal directions: top-right, top-left, bottom-right, bottom-left
+            ReadOnlySpan<int> directions = stackalloc int[] { 9, 7, -7, -9 };
 
-            // Prevent horizontal wrap (file jumping)
-            int currentFile = current % 8;
-            int nextFile = next % 8;
+            foreach (int direction in directions)
+            {
+                int current = position;
 
-            if (Math.Abs(nextFile - currentFile) != 1)
-                break;
+                while (true)
+                {
+                    int next = current + direction;
 
-            // Mark attack square
-            AttackBoard[next] = true;
-            HelperFunctions.SetBit(ref AttackBitBoard, next, 1);
+                    // Check board bounds
+                    if (next < 0 || next >= 64)
+                        break;
 
-            // Stop on friendly piece
-            if ((HelperFunctions.GetByte((byte)next, friendlyPieces) & 1) == 1)
-                break;
+                    // Prevent horizontal wrap (file jumping)
+                    int currentFile = current % 8;
+                    int nextFile = next % 8;
 
-            // Add legal move
-            moves.Add(new Move(position, (byte)next));
+                    if (Math.Abs(nextFile - currentFile) != 1)
+                        break;
 
-            // Stop on enemy piece (can't move past it)
-            if ((HelperFunctions.GetByte((byte)next, enemyPieces) & 1) == 1)
-                break;
+                    // Mark attack square
+                    AttackBoard[next] = true;
+                    HelperFunctions.SetBit(ref AttackBitBoard, next, 1);
 
-            current = next;
+                    // Stop on friendly piece
+                    if ((HelperFunctions.GetByte((byte)next, friendlyPieces) & 1) == 1)
+                        break;
+
+                    // Add legal move
+                    moves.Add(new Move(position, (byte)next));
+
+                    // Stop on enemy piece (can't move past it)
+                    if ((HelperFunctions.GetByte((byte)next, enemyPieces) & 1) == 1)
+                        break;
+
+                    current = next;
+                }
+            }
         }
-    }
-}
 
 
 
