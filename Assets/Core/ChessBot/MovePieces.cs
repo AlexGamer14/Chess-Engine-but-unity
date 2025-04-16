@@ -465,34 +465,89 @@ namespace ChessEngine
                 return;
             }
 
-            // Direction vectors for up, down, right, and left movements
+            // Direction vectors for rook: up (-8), down (+8), right (+1), left (-1)
+            int[] directions = { 8, -8, 1, -1 };
+
+            foreach (int direction in directions)
+            {
+                int currentPosition = position;
+
+                while (true)
+                {
+                    int targetPosition = currentPosition + direction;
+
+                    // Check bounds
+                    if (targetPosition < 0 || targetPosition >= 64)
+                        break;
+
+                    // Prevent wrapping from one rank to another on horizontal moves
+                    if ((direction == 1 || direction == -1) &&
+                        (currentPosition / 8 != targetPosition / 8))
+                        break;
+
+                    AttackBoard[targetPosition] = true;
+                    HelperFunctions.SetBit(ref AttackBitboard, targetPosition, 1);
+
+                    if (HelperFunctions.GetByte((byte)targetPosition, friendlyPieces) == 1)
+                        break;
+
+                    moves.Add(new Move(position, (byte)targetPosition));
+
+                    if (HelperFunctions.GetByte((byte)targetPosition, enemyPieces) == 1)
+                        break;
+
+                    currentPosition = targetPosition;
+                }
+            }
+        }
+
+
+
+        public void BishopMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard, ref ulong AttackBitBoard)
+        {
+            if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
+            {
+                return;
+            }
+
+            // Direction vectors for diagonals (top-right, top-left, bottom-right, bottom-left)
             var directions = new (int dx, int dy)[]
             {
-        (0, 1), // Up
-        (0, -1), // Down
-        (1, 0), // Right
-        (-1, 0) // Left
+        (1, 1),  // Top-right
+        (-1, 1), // Top-left
+        (1, -1), // Bottom-right
+        (-1, -1) // Bottom-left
             };
 
-            // Iterate over all four directions
+            // Iterate over all four diagonal directions
             foreach (var (dx, dy) in directions)
             {
                 int updatePosition = position;
+
                 while (true)
                 {
-                    updatePosition += (byte)(dx + dy * 8); // Update position
-                    if (updatePosition < 0 || updatePosition >= 64) break; // Out of bounds
+                    updatePosition += (byte)(dx + dy * 8); // Update position based on direction
 
+                    // Check bounds: If we go out of bounds (wrap around), we stop.
+                    if (updatePosition < 0 || updatePosition >= 64 || (dx == 1 && updatePosition % 8 == 0) || (dx == -1 && updatePosition % 8 == 7))
+                    {
+                        break;
+                    }
+
+                    // Mark the square as attacked
                     AttackBoard[updatePosition] = true;
-                    HelperFunctions.SetBit(ref AttackBitboard, updatePosition, 1);
+                    HelperFunctions.SetBit(ref AttackBitBoard, updatePosition, 1);
 
+                    // Check if the square is occupied by a friendly piece
                     if (HelperFunctions.GetByte(updatePosition, friendlyPieces) == 1)
                     {
                         break; // Stop if friendly piece is encountered
                     }
 
+                    // Add the move if it's not blocked by a friendly piece
                     moves.Add(new(position, (byte)updatePosition));
 
+                    // If the square is occupied by an enemy piece, stop the movement
                     if (HelperFunctions.GetByte(updatePosition, enemyPieces) == 1)
                     {
                         break; // Stop if enemy piece is encountered
@@ -500,60 +555,6 @@ namespace ChessEngine
                 }
             }
         }
-
-
-        public void BishopMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard, ref ulong AttackBitBoard)
-{
-    if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
-    {
-        return;
-    }
-
-    // Direction vectors for diagonals (top-right, top-left, bottom-right, bottom-left)
-    var directions = new (int dx, int dy)[]
-    {
-        (1, 1),  // Top-right
-        (-1, 1), // Top-left
-        (1, -1), // Bottom-right
-        (-1, -1) // Bottom-left
-    };
-
-    // Iterate over all four diagonal directions
-    foreach (var (dx, dy) in directions)
-    {
-        int updatePosition = position;
-
-        while (true)
-        {
-            updatePosition += (byte)(dx + dy * 8); // Update position based on direction
-
-            // Check bounds: If we go out of bounds (wrap around), we stop.
-            if (updatePosition < 0 || updatePosition >= 64 || (dx == 1 && updatePosition % 8 == 0) || (dx == -1 && updatePosition % 8 == 7))
-            {
-                break;
-            }
-
-            // Mark the square as attacked
-            AttackBoard[updatePosition] = true;
-            HelperFunctions.SetBit(ref AttackBitBoard, updatePosition, 1);
-
-            // Check if the square is occupied by a friendly piece
-            if (HelperFunctions.GetByte(updatePosition, friendlyPieces) == 1)
-            {
-                break; // Stop if friendly piece is encountered
-            }
-
-            // Add the move if it's not blocked by a friendly piece
-            moves.Add(new(position, (byte)updatePosition));
-
-            // If the square is occupied by an enemy piece, stop the movement
-            if (HelperFunctions.GetByte(updatePosition, enemyPieces) == 1)
-            {
-                break; // Stop if enemy piece is encountered
-            }
-        }
-    }
-}
 
 
         public void KingMovement(int pieceType, byte position, ulong friendlyPieces, ref List<Move> moves, ref bool[] AttackBoard, ref ulong AttackBitboard)
