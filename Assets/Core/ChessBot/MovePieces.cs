@@ -458,7 +458,7 @@ namespace ChessEngine
             return moves.ToArray();
         }
 
-        public void RookMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard, ref ulong AttackBitboard)
+        /*public void RookMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard, ref ulong AttackBitboard)
         {
             if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
             {
@@ -499,62 +499,117 @@ namespace ChessEngine
                     currentPosition = targetPosition;
                 }
             }
-        }
+        }*/
 
-
-
-        public void BishopMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard, ref ulong AttackBitBoard)
+        public void RookMovement(
+    int pieceType,
+    byte position,
+    ulong friendlyPieces,
+    ulong enemyPieces,
+    ref List<Move> moves,
+    ChessBoard board,
+    ref bool[] AttackBoard,
+    ref ulong AttackBitboard)
         {
-            if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
-            {
+            // Early exit if there's no rook at the position
+            if ((HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) & 1) == 0)
                 return;
-            }
 
-            // Direction vectors for diagonals (top-right, top-left, bottom-right, bottom-left)
-            var directions = new (int dx, int dy)[]
-            {
-        (1, 1),  // Top-right
-        (-1, 1), // Top-left
-        (1, -1), // Bottom-right
-        (-1, -1) // Bottom-left
-            };
+            // Direction offsets: Up, Down, Right, Left
+            ReadOnlySpan<int> directions = stackalloc int[] { -8, 8, 1, -1 };
 
-            // Iterate over all four diagonal directions
-            foreach (var (dx, dy) in directions)
+            foreach (int direction in directions)
             {
-                int updatePosition = position;
+                int target = position;
 
                 while (true)
                 {
-                    updatePosition += (byte)(dx + dy * 8); // Update position based on direction
+                    int next = target + direction;
 
-                    // Check bounds: If we go out of bounds (wrap around), we stop.
-                    if (updatePosition < 0 || updatePosition >= 64 || (dx == 1 && updatePosition % 8 == 0) || (dx == -1 && updatePosition % 8 == 7))
-                    {
+                    // Stop if off board
+                    if (next < 0 || next >= 64)
                         break;
-                    }
 
-                    // Mark the square as attacked
-                    AttackBoard[updatePosition] = true;
-                    HelperFunctions.SetBit(ref AttackBitBoard, updatePosition, 1);
+                    // Prevent wrap-around for horizontal moves
+                    if ((direction == 1 || direction == -1) && (next / 8 != target / 8))
+                        break;
 
-                    // Check if the square is occupied by a friendly piece
-                    if (HelperFunctions.GetByte(updatePosition, friendlyPieces) == 1)
-                    {
-                        break; // Stop if friendly piece is encountered
-                    }
+                    // Mark attack
+                    AttackBoard[next] = true;
+                    HelperFunctions.SetBit(ref AttackBitboard, next, 1);
 
-                    // Add the move if it's not blocked by a friendly piece
-                    moves.Add(new(position, (byte)updatePosition));
+                    // Stop if friendly piece
+                    if ((HelperFunctions.GetByte((byte)next, friendlyPieces) & 1) == 1)
+                        break;
 
-                    // If the square is occupied by an enemy piece, stop the movement
-                    if (HelperFunctions.GetByte(updatePosition, enemyPieces) == 1)
-                    {
-                        break; // Stop if enemy piece is encountered
-                    }
+                    // Add move
+                    moves.Add(new Move(position, (byte)next));
+
+                    // Stop if enemy piece — can't move past it
+                    if ((HelperFunctions.GetByte((byte)next, enemyPieces) & 1) == 1)
+                        break;
+
+                    target = next;
                 }
             }
         }
+
+        public void BishopMovement(
+    int pieceType,
+    byte position,
+    ulong friendlyPieces,
+    ulong enemyPieces,
+    ref List<Move> moves,
+    ChessBoard board,
+    ref bool[] AttackBoard,
+    ref ulong AttackBitBoard)
+{
+    // Early exit if there's no bishop on the square
+    if ((HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) & 1) == 0)
+        return;
+
+    // Diagonal directions: top-right, top-left, bottom-right, bottom-left
+    ReadOnlySpan<int> directions = stackalloc int[] { 9, 7, -7, -9 };
+
+    foreach (int direction in directions)
+    {
+        int current = position;
+
+        while (true)
+        {
+            int next = current + direction;
+
+            // Check board bounds
+            if (next < 0 || next >= 64)
+                break;
+
+            // Prevent horizontal wrap (file jumping)
+            int currentFile = current % 8;
+            int nextFile = next % 8;
+
+            if (Math.Abs(nextFile - currentFile) != 1)
+                break;
+
+            // Mark attack square
+            AttackBoard[next] = true;
+            HelperFunctions.SetBit(ref AttackBitBoard, next, 1);
+
+            // Stop on friendly piece
+            if ((HelperFunctions.GetByte((byte)next, friendlyPieces) & 1) == 1)
+                break;
+
+            // Add legal move
+            moves.Add(new Move(position, (byte)next));
+
+            // Stop on enemy piece (can't move past it)
+            if ((HelperFunctions.GetByte((byte)next, enemyPieces) & 1) == 1)
+                break;
+
+            current = next;
+        }
+    }
+}
+
 
 
         public void KingMovement(int pieceType, byte position, ulong friendlyPieces, ref List<Move> moves, ref bool[] AttackBoard, ref ulong AttackBitboard)
