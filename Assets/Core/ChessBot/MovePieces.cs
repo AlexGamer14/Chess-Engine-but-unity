@@ -466,7 +466,7 @@ namespace ChessEngine
             }
             if (position < 56)
             {
-                byte updatePosition = (byte)(position + 8);
+                int updatePosition = position + 8;
                 while (updatePosition - 8 < 56)
                 {
                     AttackBoard[updatePosition] = true;
@@ -474,7 +474,7 @@ namespace ChessEngine
                     {
                         break;
                     }
-                    moves.Add(new(position, updatePosition));
+                    moves.Add(new(position, (byte)updatePosition));
                     if (HelperFunctions.GetByte(updatePosition, enemyPieces) == 1)
                     {
                         break;
@@ -484,7 +484,7 @@ namespace ChessEngine
             }
             if (position >= 8)
             {
-                int updatePosition = (byte)(position - 8);
+                int updatePosition = position - 8;
                 while (updatePosition + 8 >= 8)
                 {
                     AttackBoard[updatePosition] = true;
