@@ -330,33 +330,50 @@ namespace ChessEngine
                         return moves.ToArray();
                     }
 
+                    // Forward move by 1
                     if (position > 7 && HelperFunctions.GetByte(position - 8, board.AllPieces) == 0)
                     {
                         moves.Add(new Move((byte)position, (byte)(position - 8)));
-                        if (position > 47 && position < 56 && position > 15 && HelperFunctions.GetByte(position - 16, board.AllPieces) == 0)
+
+                        // Forward move by 2 from starting rank
+                        if (position >= 48 && position < 56 && HelperFunctions.GetByte(position - 16, board.AllPieces) == 0)
                         {
                             moves.Add(new((byte)position, (byte)(position - 16)));
                         }
                     }
 
+                    // Diagonal captures and attack board
                     if (position > 7)
                     {
-                        if (position % 8 != 7 && HelperFunctions.GetByte(position - 7, board.WhitePieces) == 1)
+                        if (position % 8 != 7)
                         {
-                            moves.Add(new((byte)position, (byte)(position - 7)));
+                            board.BlackAttackBoard[position - 7] = true;
+                            if (HelperFunctions.GetByte(position - 7, board.WhitePieces) == 1)
+                            {
+                                moves.Add(new((byte)position, (byte)(position - 7)));
+                            }
                         }
-                        if (position % 8 != 0 && HelperFunctions.GetByte(position - 9, board.WhitePieces) == 1)
+
+                        if (position % 8 != 0)
                         {
-                            moves.Add(new((byte)position, (byte)(position - 9)));
+                            board.BlackAttackBoard[position - 9] = true;
+                            if (HelperFunctions.GetByte(position - 9, board.WhitePieces) == 1)
+                            {
+                                moves.Add(new((byte)position, (byte)(position - 9)));
+                            }
                         }
                     }
+
+                    // En passant
                     if (position % 8 != 0 && position - 9 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new((byte)position, (byte)(position - 9)));
+                        board.BlackAttackBoard[position - 9] = true;
                     }
                     if (position % 8 != 7 && position - 7 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new((byte)position, (byte)(position - 7)));
+                        board.BlackAttackBoard[position - 7] = true;
                     }
                     break;
                 case 7:
@@ -724,7 +741,7 @@ namespace ChessEngine
                     moves.Add(new((byte)position, (byte)(position - 9)));
                 }
 
-                if (position % 8 != 7 )
+                if (position % 8 != 7)
                 {
                     friendlyAttackBoard[position - 7] = true;
                 }
