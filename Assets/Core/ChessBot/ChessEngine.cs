@@ -30,6 +30,7 @@ namespace ChessEngine
 
         public static int depth;
 
+        public static Transform self;
 
 
         int[] pawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
@@ -62,15 +63,18 @@ namespace ChessEngine
 
         public float cooldown = 0.1f;
 
+        public static MovePieces.Move prevMove = new();
+
         private float timer = 0;
 
-        public string FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1";
-        //public string FenString = "rnkkqq2/8/8/8/QQQQQQQQ/8/8/8 w KQkq - 0 1";
+        public string FenString = "3k4/3q4/8/8/8/8/3Q4/3K4 w - - 0 1";
         public void Awake()
         {
             depth = depth_inspector;
+            self = transform;
 
             //board = new ChessBoard();
+            print(FenString);
             board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
 

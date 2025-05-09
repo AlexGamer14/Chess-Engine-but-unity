@@ -17,7 +17,8 @@ namespace ChessEngine {
 
         public Sprite[] spriteSheet;
 
-        
+        public LineRenderer lineRenderer;
+
 
         public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab, GameObject AttackBoardPrefab)
         {
@@ -25,6 +26,8 @@ namespace ChessEngine {
             MoveBoard = new GameObject[size, size];
             attackBoardBoard = new GameObject[size, size];
             spriteSheet = sprites;
+
+            lineRenderer = ChessEngine.self.GetComponent<LineRenderer>();
 
             for (int y = 0; y < size; y++)
             {
@@ -67,7 +70,7 @@ namespace ChessEngine {
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
 
-                        if (pieceType > 5 || !ChessEngine.EnableAI)
+                        if (!(pieceType > 5 || ChessEngine.EnableAI))
                         {
 
                         }
@@ -88,10 +91,10 @@ namespace ChessEngine {
 
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.RemoveAllListeners();
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.AddListener(() =>
-                                    {
-
-
+                                    { 
                                         ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i].startPos, moves[i].endPos, ChessEngine.board);
+                                        ChessEngine.prevMove = moves[i];
+
                                         for (int y2 = 0; y2 < 8; y2++)
                                         {
                                             for (int x2 = 0; x2 < 8; x2++)
@@ -120,6 +123,10 @@ namespace ChessEngine {
 
         public void UpdateBoard()
         {
+            if (ChessEngine.prevMove.startPos!=ChessEngine.prevMove.endPos )
+            {
+                lineRenderer.SetPositions(new Vector3[] { board[(int)ChessEngine.prevMove.startPos/(int)8, ChessEngine.prevMove.startPos%8].transform.position, board[(int)ChessEngine.prevMove.endPos / (int)8, ChessEngine.prevMove.endPos % 8].transform.position });
+            }
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
