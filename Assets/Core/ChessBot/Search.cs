@@ -11,7 +11,6 @@ namespace ChessEngine
 {
     public class Search
     {
-        string output = "";
 
         /*public MovePieces.Move RecursiveSearchMoves(int depth, bool WhiteToMove, ChessBoard board)
         {
