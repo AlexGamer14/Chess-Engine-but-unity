@@ -127,9 +127,9 @@ namespace ChessEngine
 
             int[] spaceIndicesArray = spaceIndices.ToArray();
 
-            for (int k = 0; k < spaceIndicesArray.Length; k++) {
+            /*for (int k = 0; k < spaceIndicesArray.Length; k++) {
                 Debug.Log(spaceIndicesArray[k]);
-            }
+            }*/
 
             ChessBoard board = new();
             board.ClearBoard();
@@ -241,7 +241,6 @@ namespace ChessEngine
 
             // Castling
             FenStringCastling(board, fenString, spaceIndicesArray[1]);
-            Debug.Log($"White kingside: {board.WhiteCanCastleKingside}, White queenside: {board.WhiteCanCastleQueenside}, Black kingside: {board.BlackCanCastleKingside}, White queenside: {board.BlackCanCastleQueenside}");
             
             //finish setting up the board
             board.WhiteBishops = HelperFunctions.FlipBitboard(board.WhiteBishops);
