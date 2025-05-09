@@ -106,7 +106,7 @@ namespace ChessEngine
 
         public MovePieces.Move IterativeSearchAllMoves(int depth, bool isWhiteToMove, ChessBoard board)
         {
-            Debug.Log("Is this a memory leak? (in iterativesearchallmoves)");
+            //Debug.Log("Is this a memory leak? (in iterativesearchallmoves)");
             MovePieces mover = new();
             Evaluation evaluation = new();
             MovePieces.Move bestMove = new();
