@@ -31,6 +31,7 @@ namespace ChessEngine
         public static int depth;
 
         public static Transform self;
+        public static LineRenderer lineRenderer;
 
 
         int[] pawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
@@ -72,6 +73,7 @@ namespace ChessEngine
         {
             depth = depth_inspector;
             self = transform;
+            lineRenderer = GameObject.Find("Linjeviser").GetComponent<LineRenderer>();
 
             //board = new ChessBoard();
             print(FenString);

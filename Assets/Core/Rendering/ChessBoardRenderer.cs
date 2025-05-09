@@ -27,7 +27,7 @@ namespace ChessEngine {
             attackBoardBoard = new GameObject[size, size];
             spriteSheet = sprites;
 
-            lineRenderer = ChessEngine.self.GetComponent<LineRenderer>();
+            lineRenderer = ChessEngine.lineRenderer;
 
             for (int y = 0; y < size; y++)
             {
@@ -123,10 +123,10 @@ namespace ChessEngine {
 
         public void UpdateBoard()
         {
-            if (ChessEngine.prevMove.startPos!=ChessEngine.prevMove.endPos )
+            /*if (ChessEngine.prevMove.startPos!=ChessEngine.prevMove.endPos )
             {
                 lineRenderer.SetPositions(new Vector3[] { board[(int)ChessEngine.prevMove.startPos/(int)8, ChessEngine.prevMove.startPos%8].transform.position, board[(int)ChessEngine.prevMove.endPos / (int)8, ChessEngine.prevMove.endPos % 8].transform.position });
-            }
+            }*/
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
