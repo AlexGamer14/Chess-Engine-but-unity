@@ -455,11 +455,6 @@ namespace ChessEngine
 
         public void RookMovement(int pieceType, byte position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard)
         {
-            if (AttackBoard.Length != 64)
-            {
-                Debug.Log("SHIT ERROR");
-            }
-
             if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
             {
                 return;

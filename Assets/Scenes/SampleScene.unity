@@ -1164,11 +1164,11 @@ MonoBehaviour:
   prefab: {fileID: 5984064074621747440, guid: 56387c242e2ea71438f2080c2b954c81, type: 3}
   movePrefab: {fileID: 1342150057149416867, guid: 316230cb4843a234491a0fc3dd1c37e9, type: 3}
   AttackBoardPrefab: {fileID: 5984064074621747440, guid: 6752483e703ad3f46848356843442d65, type: 3}
-  fenstringInputField: {fileID: 1803220644}
-  EnableAIInspector: 1
+  EnableAIInspector: 0
   FENInput: {fileID: 0}
+  depth_inspector: 3
   cooldown: 0.1
-  FenString: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1
+  FenString: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 --- !u!1 &1803220642
 GameObject:
   m_ObjectHideFlags: 0
