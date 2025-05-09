@@ -98,7 +98,7 @@ namespace ChessEngine
 
             if (Input.GetKeyDown(KeyCode.F))
             {
-                board.PrintBoard();
+                HelperFunctions.PrintList<int>(HelperFunctions.BitboardToList(board.WhiteKnights));
             }
         }
 

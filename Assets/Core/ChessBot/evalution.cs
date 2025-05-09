@@ -29,10 +29,10 @@ namespace ChessEngine
         int[] earlyBlackKnightBonus = new int[64] { 0, 0, 0, 0, 0, 0, 0, 0,
                                                     0, 0, 0, 0, 0, 0, 0, 0,
                                                     0, 0, 0, 0, 0, 0, 0, 0,
-                                                    0, 10, 0, 20, 20, 0, 10, 0,
+                                                    0, 10, 0, 15, 15, 0, 10, 0,
                                                     5, 0, 0, 0, 0, 0, 0, 5,
-                                                    0, 0, 25, 0, 0, 25, 0, 0,
-                                                    -5, 0, 0, 15, 15, 0, 0, -5,
+                                                    0, 0, 20, 0, 0, 20, 0, 0,
+                                                    -5, 0, 0, 10, 10, 0, 0, -5,
                                                     0, 5, 0, 0, 0, 0, 5, 0 };
 
         /*int[] earlyWhiteKnightBonus = new int[64] { 0, 0, 0, 0, 0, 0, 0, 0,
@@ -196,8 +196,11 @@ namespace ChessEngine
                 {
                     evaluation -= earlyBlackPawnBonus[pos];
                 }
+                foreach (int pos in HelperFunctions.BitboardToList(board.BlackKnights))
+                {
+                    evaluation -= earlyBlackKnightBonus[pos];
+                }
 
-                
             }
             
             

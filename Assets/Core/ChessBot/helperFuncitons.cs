@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace ChessEngine
 {
@@ -263,7 +266,7 @@ namespace ChessEngine
             }
         }
 
-    public static ulong FlipBitboard(ulong bitboard)
+        public static ulong FlipBitboard(ulong bitboard)
         {
             ulong result = 0;
             for (int i = 0; i < 8; i++)
@@ -273,5 +276,33 @@ namespace ChessEngine
             return result;
         }
 
+        public static List<int> BitboardToList(ulong bitboard)
+        {
+            List<int> returnList = new List<int>();
+
+            for (int i = 0; i < 64; i++)
+            {
+                returnList.Add(GetByte(i, bitboard));
+            }
+
+            return returnList;
+        }
+
+        public static void PrintList<T>(List<T> values)
+        {
+            PrintArray(values.ToArray());
+        }
+
+        public static void PrintArray<T>(T[] values) 
+        {
+            string str = "";
+
+            foreach (T value in values)
+            {
+                str += value + " ";
+            }
+
+            Debug.Log(str);
+        }
     }
 }

@@ -515,7 +515,7 @@ namespace ChessEngine
 
             if (position % 8 != 0)
             {
-                int updatePosition = position - 1;
+                byte updatePosition = (byte)(position - 1);
                 while (updatePosition % 8 != 7)
                 {
                     AttackBoard[updatePosition] = true;
