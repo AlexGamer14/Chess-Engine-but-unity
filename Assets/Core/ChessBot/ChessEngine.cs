@@ -26,6 +26,10 @@ namespace ChessEngine
 
         public InputField FENInput;
 
+        public int depth_inspector = 3;
+
+        public static int depth;
+
 
 
         int[] pawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
@@ -64,6 +68,8 @@ namespace ChessEngine
         //public string FenString = "rnkkqq2/8/8/8/QQQQQQQQ/8/8/8 w KQkq - 0 1";
         public void Awake()
         {
+            depth = depth_inspector;
+
             //board = new ChessBoard();
             board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));

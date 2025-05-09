@@ -818,7 +818,7 @@ namespace ChessEngine
         public void MakeAIMove(bool IsWhite)
         {
 
-            Move move = ChessEngine.search.IterativeSearchAllMoves(5, IsWhite, ChessEngine.board);
+            Move move = ChessEngine.search.IterativeSearchAllMoves(ChessEngine.depth, IsWhite, ChessEngine.board);
 
 
             ChessEngine.board.UpdateBitBoards();
