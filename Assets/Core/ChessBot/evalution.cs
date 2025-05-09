@@ -135,7 +135,7 @@ namespace ChessEngine
                 {
                     evaluation += queenValue;
 
-                    if (i==3)
+                    if (i == 3)
                     {
                         evaluation += 40;
                     }
@@ -175,7 +175,7 @@ namespace ChessEngine
                     evaluation -= queenValue;
                     amountOfPieces++;
 
-                    if (i==59)
+                    if (i == 59)
                     {
                         evaluation -= 40;
                     }
@@ -184,7 +184,7 @@ namespace ChessEngine
 
 
 
-            if (amountOfPieces>11)
+            if (amountOfPieces > 11)
             {
                 foreach (int pos in whitePawnPositions)
                 {
@@ -200,10 +200,17 @@ namespace ChessEngine
                 }
 
             }
-            
-            
 
+            // These values are probably to high
+            if (!blackKingAlive)
+            {
+                evaluation += 8000;
+            }
 
+            if (!whiteKingAlive)
+            {
+                evaluation -= 8000;
+            }
             return evaluation;
         }
 
