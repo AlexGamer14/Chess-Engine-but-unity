@@ -55,10 +55,12 @@ namespace ChessEngine
                 board.BlackCanCastleQueenside = false;
             }
 
+            /*
             Debug.Log(board.WhiteCanCastleQueenside);
             Debug.Log(board.WhiteCanCastleKingside);
             Debug.Log(board.BlackCanCastleQueenside);
             Debug.Log(board.BlackCanCastleKingside);
+            */
          
             board.MoveCount+=0.5f;
 
@@ -477,7 +479,7 @@ namespace ChessEngine
             }
             if (position >= 8)
             {
-                int updatePosition = position - 8;
+                byte updatePosition = (byte)(position - 8);
                 while (updatePosition + 8 >= 8)
                 {
                     AttackBoard[updatePosition] = true;
@@ -801,10 +803,12 @@ namespace ChessEngine
                     board.BlackCanCastleKingside = false;
                 } 
             }
+            /*
             Debug.Log(board.WhiteCanCastleQueenside);
             Debug.Log(board.WhiteCanCastleKingside);
             Debug.Log(board.BlackCanCastleQueenside);
             Debug.Log(board.BlackCanCastleKingside);
+            */
         }
         public void MakeAIMove(bool IsWhite)
         {

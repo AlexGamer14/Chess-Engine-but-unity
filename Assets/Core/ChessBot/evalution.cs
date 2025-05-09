@@ -99,7 +99,7 @@ namespace ChessEngine
                 {
                     evaluation += pawnValue;
                     whitePawnPositions.Add(i);
-                    Debug.Log(i);
+                    //Debug.Log(i);
 
                     amountOfPieces++;
                 }
