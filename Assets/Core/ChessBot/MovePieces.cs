@@ -72,6 +72,10 @@ namespace ChessEngine
             board.WhiteAttackBoard = new bool[64];
             board.BlackAttackBoard = new bool[64];
 
+            GetMovesForBlackOrWhite(true, board);  // Updates WhiteAttackBoard
+            GetMovesForBlackOrWhite(false, board); // Updates BlackAttackBoard
+
+
             board.UpdateBitBoards();
         }
 
