@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEditor;
-using System.Runtime.CompilerServices;
+using UnityEngine.UI;
 
 namespace ChessEngine
 {
@@ -16,11 +15,8 @@ namespace ChessEngine
         [SerializeField] GameObject movePrefab;
         [SerializeField] GameObject AttackBoardPrefab;
 
-        public static ChessBoard board = new();
+        public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
-
-        [SerializeField] InputField FenStringInput;
-
         public static MovePieces Mover;
         public static Evaluation evaluation = new Evaluation();
         public static Search search = new Search();
@@ -28,9 +24,9 @@ namespace ChessEngine
         public static bool EnableAI = true;
         [SerializeField] bool EnableAIInspector = true;
 
+        public InputField FENInput;
 
 
-        public static int MoveCount = 0;
 
         int[] pawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
                                                                 10, 15, 5, 5,  5,  5, 15, 10,
@@ -59,41 +55,27 @@ namespace ChessEngine
         // There are 10 types of people in the world, those who understand hexadecimal, those who think it is pentadecimal, those who think it is quattuordecimal, those who think it is tridecimal, those who think it is duodecimal, those who think it is undecimal, those who think it is decimal, those who think it is nonal, those who think it is octal, those who think it is septimal, those who think it is seximal, those who think it is quinary, those who think it is quadrary, those who think it is trinary, those who think it is binary and those who don't.
 
 
-        public static float FiftyMoveRule = 0;
 
         public float cooldown = 0.1f;
 
         private float timer = 0;
 
         public string FenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1";
-
-        void SetFenString(string fenstring)
-        {
-            FenString = fenstring;
-            LoadFenString(FenString);
-            boardRenderer.UpdateBoard();
-        }
-
+        //public string FenString = "rnkkqq2/8/8/8/QQQQQQQQ/8/8/8 w KQkq - 0 1";
         public void Awake()
-        {
-            FenStringInput.onSubmit.AddListener(SetFenString);
-
-            Mover = new();
-
-            EnableAI = EnableAIInspector;
-
-            boardRenderer = new ChessBoardRenderer();
-            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
-
-            boardRenderer.UpdateBoard();
-        }
-        public void StartGame()
         {
             //board = new ChessBoard();
             board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
+            EnableAI = EnableAIInspector;
+
             Debug.Log("Chess engine is running");
+
+            Mover = new();
+
+            boardRenderer = new ChessBoardRenderer();
+            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
 
             boardRenderer.UpdateBoard();
         }
@@ -347,6 +329,11 @@ namespace ChessEngine
                 return;
             }
 
+        }
+
+        public void EditFEN()
+        {
+            string FENinput = FENInput.text;
         }
 
         /*

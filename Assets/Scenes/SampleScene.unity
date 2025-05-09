@@ -1166,6 +1166,7 @@ MonoBehaviour:
   AttackBoardPrefab: {fileID: 5984064074621747440, guid: 6752483e703ad3f46848356843442d65, type: 3}
   fenstringInputField: {fileID: 1803220644}
   EnableAIInspector: 1
+  FENInput: {fileID: 0}
   cooldown: 0.1
   FenString: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR W KQkq - 0 1
 --- !u!1 &1803220642
