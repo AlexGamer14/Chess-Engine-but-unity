@@ -9,7 +9,6 @@ namespace ChessEngine
     {
         public void MovePiece(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ChessBoard board)
         {
-
             EnPassant(board, startPosition, endPosition, pieceType);
             FiftyMoveRuleCounter(board, pieceType, startPosition, endPosition);
             CastelingRights(board, pieceType, startPosition, endPosition);
@@ -22,34 +21,35 @@ namespace ChessEngine
             pieces = pieces | (ulong)Math.Pow(2, endPosition);
 
             board.WhiteAttackBoard = new bool[64];
+            board.BlackAttackBoard = new bool[64];
 
             ChessEngine.boardRenderer.UpdateBoard();
             board.UpdateBitBoards();
         }
 
-        
+
         public void CastleMover(ref ulong pieces, int pieceType, byte startPosition, byte endPosition, ChessBoard board)
         {
-            
+
             board.EnPassantTargetSquare = 255;
-            
+
             // I(Thomas) and Sondre think we should add 0.5 once. Debate this next time
             board.FiftyMoveRule += (float)0.25;
 
-            if(board.FiftyMoveRule >= 50)
+            if (board.FiftyMoveRule >= 50)
             {
                 Debug.Log("Draw by 50-Move rule");
             }
             Debug.Log(board.FiftyMoveRule);
 
             // Remove all castling rights for white if king is moved
-            if(pieceType == 5)
+            if (pieceType == 5)
             {
                 board.WhiteCanCastleKingside = false;
                 board.WhiteCanCastleQueenside = false;
             }
             // Remove all castling rights for black if king is moved
-            else if(pieceType == 11)
+            else if (pieceType == 11)
             {
                 board.BlackCanCastleKingside = false;
                 board.BlackCanCastleQueenside = false;
@@ -61,8 +61,8 @@ namespace ChessEngine
             Debug.Log(board.BlackCanCastleQueenside);
             Debug.Log(board.BlackCanCastleKingside);
             */
-         
-            board.MoveCount+=0.5f;
+
+            board.MoveCount += 0.5f;
 
             board.WhiteToMove = !board.WhiteToMove;
 
@@ -71,6 +71,10 @@ namespace ChessEngine
 
             board.WhiteAttackBoard = new bool[64];
             board.BlackAttackBoard = new bool[64];
+
+            GetMovesForBlackOrWhite(true, board);  // Updates WhiteAttackBoard
+            GetMovesForBlackOrWhite(false, board); // Updates BlackAttackBoard
+
 
             board.UpdateBitBoards();
         }
@@ -114,7 +118,7 @@ namespace ChessEngine
             {
                 board.EnPassantTargetSquare = byte.MaxValue;
             }
-            
+
             /*if(pieceType != 0 || pieceType != 6)
             {
                 if (!hasCaptured)
@@ -149,23 +153,23 @@ namespace ChessEngine
                 return true;
             }
             return false;
-            
+
         }
         public bool CheckForCapture(int pieceType, int pos, ref ChessBoard board)
         {
             int pieceTypeCheck = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, pos, board);
-            
+
             if (pieceTypeCheck != int.MaxValue)
             {
-                
+
                 HelperFunctions.SetBit(ref HelperFunctions.GetTypeBasedOnIndex(pieceTypeCheck, ref board), pos);
                 return true;
             }
             return false;
         }
 
-            // 0 = White Pawn, 1 = White Knigth, 2 = White Bishop, 3 = White Rook, 4 = White Queen, 5 = White King
-            // 6 = Black Pawn, 7 = Black Knigth, 8 = Black Bishop, 9 = Black Rook, 10 = Black Queen, 11 = Black King
+        // 0 = White Pawn, 1 = White Knigth, 2 = White Bishop, 3 = White Rook, 4 = White Queen, 5 = White King
+        // 6 = Black Pawn, 7 = Black Knigth, 8 = Black Bishop, 9 = Black Rook, 10 = Black Queen, 11 = Black King
 
         public Move[] GetLegalMoves(ref ChessBoard board, int pieceType, int position)
         {
@@ -183,18 +187,18 @@ namespace ChessEngine
                     if (position < 56 && HelperFunctions.GetByte(position + 8, board.AllPieces) == 0)
                     {
                         moves.Add(new Move((byte)position, (byte)(position + 8)));
-                        
+
                         if (position > 7 && position < 16 && position < 48 && HelperFunctions.GetByte(position + 16, board.AllPieces) == 0)
                         {
                             moves.Add(new((byte)position, (byte)(position + 16)));
-                           
+
                         }
                     }
                     if (position < 56)
                     {
                         if (position % 8 != 7)
                         {
-                            board.WhiteAttackBoard[position+9] = true;
+                            board.WhiteAttackBoard[position + 9] = true;
                             if (HelperFunctions.GetByte(position + 9, board.BlackPieces) == 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position + 9)));
@@ -203,26 +207,26 @@ namespace ChessEngine
                         }
                         if (position % 8 != 0)
                         {
-                            board.WhiteAttackBoard[position+7]=true;
+                            board.WhiteAttackBoard[position + 7] = true;
 
                             if (position % 8 != 0 && HelperFunctions.GetByte(position + 7, board.BlackPieces) == 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position + 7)));
                             }
                         }
-                        
+
                     }
                     if (position % 8 != 7 && position + 9 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new((byte)position, (byte)(position + 9)));
-                        board.WhiteAttackBoard[position+9] = true;
+                        board.WhiteAttackBoard[position + 9] = true;
                     }
                     if (position % 8 != 0 && position + 7 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new((byte)position, (byte)(position + 7)));
-                        board.WhiteAttackBoard[position+7] = true;
+                        board.WhiteAttackBoard[position + 7] = true;
                     }
-                        
+
                     break;
                 case 1:
                     if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
@@ -321,7 +325,7 @@ namespace ChessEngine
                     break;
                 case 5:
 
-                    KingMovement(pieceType, position, board.WhitePieces, ref moves, ref board.WhiteAttackBoard);
+                    KingMovement(pieceType, position, board.WhitePieces, ref moves, ref board.WhiteAttackBoard, board.BlackAttackBoard);
 
                     break;
                 case 6:
@@ -330,33 +334,50 @@ namespace ChessEngine
                         return moves.ToArray();
                     }
 
+                    // Forward move by 1
                     if (position > 7 && HelperFunctions.GetByte(position - 8, board.AllPieces) == 0)
                     {
                         moves.Add(new Move((byte)position, (byte)(position - 8)));
-                        if (position > 47 && position < 56 && position > 15 && HelperFunctions.GetByte(position - 16, board.AllPieces) == 0)
+
+                        // Forward move by 2 from starting rank
+                        if (position >= 48 && position < 56 && HelperFunctions.GetByte(position - 16, board.AllPieces) == 0)
                         {
                             moves.Add(new((byte)position, (byte)(position - 16)));
                         }
                     }
 
+                    // Diagonal captures and attack board
                     if (position > 7)
                     {
-                        if (position % 8 != 7 && HelperFunctions.GetByte(position - 7, board.WhitePieces) == 1)
+                        if (position % 8 != 7)
                         {
-                            moves.Add(new((byte)position, (byte)(position - 7)));
+                            board.BlackAttackBoard[position - 7] = true;
+                            if (HelperFunctions.GetByte(position - 7, board.WhitePieces) == 1)
+                            {
+                                moves.Add(new((byte)position, (byte)(position - 7)));
+                            }
                         }
-                        if (position % 8 != 0 && HelperFunctions.GetByte(position - 9, board.WhitePieces) == 1)
+
+                        if (position % 8 != 0)
                         {
-                            moves.Add(new((byte)position, (byte)(position - 9)));
+                            board.BlackAttackBoard[position - 9] = true;
+                            if (HelperFunctions.GetByte(position - 9, board.WhitePieces) == 1)
+                            {
+                                moves.Add(new((byte)position, (byte)(position - 9)));
+                            }
                         }
                     }
-                    if (position%8!=0 && position - 9 == board.EnPassantTargetSquare)
+
+                    // En passant
+                    if (position % 8 != 0 && position - 9 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new((byte)position, (byte)(position - 9)));
+                        board.BlackAttackBoard[position - 9] = true;
                     }
-                    if (position%8!=7 &&  position - 7 == board.EnPassantTargetSquare)
+                    if (position % 8 != 7 && position - 7 == board.EnPassantTargetSquare)
                     {
                         moves.Add(new((byte)position, (byte)(position - 7)));
+                        board.BlackAttackBoard[position - 7] = true;
                     }
                     break;
                 case 7:
@@ -364,8 +385,10 @@ namespace ChessEngine
                     {
                         return moves.ToArray();
                     }
+
                     if (position % 8 != 7 && position < 48)
                     {
+                        board.BlackAttackBoard[position + 17] = true;
                         if (HelperFunctions.GetByte(position + 17, board.BlackPieces) != 1)
                         {
                             moves.Add(new((byte)position, (byte)(position + 17)));
@@ -373,6 +396,7 @@ namespace ChessEngine
                     }
                     if (position % 8 != 0 && position < 48)
                     {
+                        board.BlackAttackBoard[position + 15] = true;
                         if (HelperFunctions.GetByte(position + 15, board.BlackPieces) != 1)
                         {
                             moves.Add(new((byte)position, (byte)(position + 15)));
@@ -383,6 +407,7 @@ namespace ChessEngine
                     {
                         if (position % 8 != 0)
                         {
+                            board.BlackAttackBoard[position - 17] = true;
                             if (HelperFunctions.GetByte(position - 17, board.BlackPieces) != 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position - 17)));
@@ -390,6 +415,7 @@ namespace ChessEngine
                         }
                         if (position % 8 != 7)
                         {
+                            board.BlackAttackBoard[position - 15] = true;
                             if (HelperFunctions.GetByte(position - 15, board.BlackPieces) != 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position - 15)));
@@ -401,6 +427,7 @@ namespace ChessEngine
                     {
                         if (position % 8 != 7 && position % 8 != 6)
                         {
+                            board.BlackAttackBoard[position + 10] = true;
                             if (HelperFunctions.GetByte(position + 10, board.BlackPieces) != 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position + 10)));
@@ -408,6 +435,7 @@ namespace ChessEngine
                         }
                         if (position % 8 != 0 && position % 8 != 1)
                         {
+                            board.BlackAttackBoard[position + 6] = true;
                             if (HelperFunctions.GetByte(position + 6, board.BlackPieces) != 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position + 6)));
@@ -419,6 +447,7 @@ namespace ChessEngine
                     {
                         if (position % 8 != 7 && position % 8 != 6)
                         {
+                            board.BlackAttackBoard[position - 6] = true;
                             if (HelperFunctions.GetByte(position - 6, board.BlackPieces) != 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position - 6)));
@@ -426,6 +455,7 @@ namespace ChessEngine
                         }
                         if (position % 8 != 0 && position % 8 != 1)
                         {
+                            board.BlackAttackBoard[position - 10] = true;
                             if (HelperFunctions.GetByte(position - 10, board.BlackPieces) != 1)
                             {
                                 moves.Add(new((byte)position, (byte)(position - 10)));
@@ -445,7 +475,7 @@ namespace ChessEngine
                     BishopMovement(pieceType, position, board.BlackPieces, board.WhitePieces, ref moves, board, ref board.BlackAttackBoard);
                     break;
                 case 11:
-                    KingMovement(pieceType, position, board.BlackPieces, ref moves, ref board.BlackAttackBoard);
+                    KingMovement(pieceType, position, board.BlackPieces, ref moves, ref board.BlackAttackBoard, board.WhiteAttackBoard);
                     break;
 
             }
@@ -455,11 +485,6 @@ namespace ChessEngine
 
         public void RookMovement(int pieceType, int position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board, ref bool[] AttackBoard)
         {
-            if (AttackBoard.Length != 64)
-            {
-                Debug.Log("SHIT ERROR");
-            }
-
             if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
             {
                 return;
@@ -525,7 +550,7 @@ namespace ChessEngine
                 uint updatePosition = (uint)(position - 1);
                 while (updatePosition % 8 != 7)
                 {
-                    
+
                     AttackBoard[updatePosition] = true;
                     if (HelperFunctions.GetByte((int)updatePosition, friendlyPieces) == 1)
                     {
@@ -620,94 +645,39 @@ namespace ChessEngine
             }
         }
 
-        public void KingMovement(int pieceType, int position, ulong friendlyPieces, ref List<Move> moves, ref bool[] AttackBoard)
+        public void KingMovement(int pieceType, int position, ulong friendlyPieces, ref List<Move> moves, ref bool[] friendlyAttackBoard, bool[] hostileAttackBoard)
         {
             if (HelperFunctions.GetByte(position, friendlyPieces) == 0)
-            {
                 return;
-            }
 
-            if (position < 56)
+            int[] directions = { 8, 9, 1, -7, -8, -9, -1, 7 };
+            foreach (int dir in directions)
             {
-                AttackBoard[position + 8] = true;
-                if (HelperFunctions.GetByte(position + 8, friendlyPieces) == 0)
+                int target = position + dir;
+
+                // Skip if move is off the board due to wrapping
+                if (target < 0 || target > 63)
+                    continue;
+
+                // Prevent wrap-around on left/right edges
+                if ((dir == -9 || dir == -1 || dir == 7) && position % 8 == 0)
+                    continue;
+                if ((dir == -7 || dir == 1 || dir == 9) && position % 8 == 7)
+                    continue;
+
+                friendlyAttackBoard[target] = true;
+
+                if (HelperFunctions.GetByte(target, friendlyPieces) == 0 && !hostileAttackBoard[target])
                 {
-                    moves.Add(new((byte)position, (byte)(position + 8)));
-                }
-
-                if (position < 55 && (position + 9) % 8 != 0)
-                {
-                    AttackBoard[position + 9] = true;
-                }
-                if (position < 55 && (position + 9) % 8 != 0 && HelperFunctions.GetByte(position + 9, friendlyPieces) == 0)
-                {
-                    moves.Add(new((byte)position, (byte)(position + 9)));
-                }
-
-                if ((position + 7) % 8 != 7)
-                {
-                    AttackBoard[position + 7] = true;
-                }
-
-                if ((position + 7) % 8 != 7 && HelperFunctions.GetByte(position + 7, friendlyPieces) == 0)
-                {
-                    moves.Add(new((byte)position, (byte)(position + 7)));
-                }
-            }
-
-            if (position % 8 != 7)
-            {
-                AttackBoard[position + 1] = true;
-            }
-
-            if (position % 8 != 0)
-            {
-                AttackBoard[position - 1] = true;
-            }
-
-            if (position % 8 != 7 && HelperFunctions.GetByte(position + 1, friendlyPieces) == 0)
-            {
-                moves.Add(new((byte)position, (byte)(position + 1)));
-            }
-            if (position % 8 != 0 && HelperFunctions.GetByte(position - 1, friendlyPieces) == 0)
-            {
-                moves.Add(new((byte)position, (byte)(position - 1)));
-            }
-
-            if (position > 7)
-            {
-                AttackBoard[position - 8] = true;
-
-                if (HelperFunctions.GetByte(position - 8, friendlyPieces) == 0)
-                {
-                    moves.Add(new((byte)position, (byte)(position - 8)));
-                }
-
-                if ((position % 8 != 0))
-                {
-                    AttackBoard[position - 9] = true;
-                }
-
-                if (position % 8 != 0 && HelperFunctions.GetByte(position - 9, friendlyPieces) == 0)
-                {
-                    moves.Add(new((byte)position, (byte)(position - 9)));
-                }
-
-                if (position % 8 != 7 )
-                {
-                    AttackBoard[position - 7] = true;
-                }
-
-                if (position % 8 != 7 && HelperFunctions.GetByte(position - 7, friendlyPieces) == 0)
-                {
-                    moves.Add(new((byte)position, (byte)(position - 7)));
+                    moves.Add(new Move((byte)position, (byte)target));
+                    Debug.Log(hostileAttackBoard[target]);
                 }
             }
         }
 
         public void Castle(bool IsWhite, ChessBoard board)
         {
-            if(IsWhite)
+            if (IsWhite)
             {
                 if (board.WhiteCanCastleKingside)
                 {
@@ -723,7 +693,7 @@ namespace ChessEngine
 
             if (pieceType == 0)
             {
-                
+
                 if (endPosition == board.EnPassantTargetSquare)
                 {
                     CheckForCapture(pieceType, endPosition - 8);
@@ -733,7 +703,7 @@ namespace ChessEngine
                 Debug.Log(pieceType);
                 Debug.Log(startPosition);
                 Debug.Log(endPosition);
-                
+
 
                 if (endPosition == startPosition + 16)
                 {
@@ -772,42 +742,42 @@ namespace ChessEngine
         public void CastelingRights(ChessBoard board, int pieceType, byte startPosition, byte endPosition)
         {
             // Remove all castling rights for white if king is moved
-            if(pieceType == 5)
+            if (pieceType == 5)
             {
                 board.WhiteCanCastleKingside = false;
                 board.WhiteCanCastleQueenside = false;
             }
             // Remove all castling rights for black if king is moved
-            else if(pieceType == 11)
+            else if (pieceType == 11)
             {
                 board.BlackCanCastleKingside = false;
                 board.BlackCanCastleQueenside = false;
             }
-            
+
             //Now white rooks
-            else if(pieceType == 3)
+            else if (pieceType == 3)
             {
-                if(startPosition == 0)
+                if (startPosition == 0)
                 {
                     board.WhiteCanCastleQueenside = false;
                 }
-                if(startPosition == 7)
+                if (startPosition == 7)
                 {
                     board.WhiteCanCastleKingside = false;
-                } 
+                }
             }
 
             //Now black rooks
-            else if(pieceType == 9)
+            else if (pieceType == 9)
             {
-                if(startPosition == 56)
+                if (startPosition == 56)
                 {
                     board.BlackCanCastleQueenside = false;
                 }
-                if(startPosition == 63)
+                if (startPosition == 63)
                 {
                     board.BlackCanCastleKingside = false;
-                } 
+                }
             }
             /*
             Debug.Log(board.WhiteCanCastleQueenside);
@@ -893,17 +863,17 @@ namespace ChessEngine
 
             if (pieceType == 0)
             {
-                if (endPosition==startPosition+9 || endPosition==startPosition+7)
+                if (endPosition == startPosition + 9 || endPosition == startPosition + 7)
                 {
-                    hasCaptured= CheckForCapture(pieceType, endPosition);
+                    hasCaptured = CheckForCapture(pieceType, endPosition);
                 }
             }
 
-            else if (pieceType==6)
+            else if (pieceType == 6)
             {
-                if (endPosition==startPosition-9 || endPosition==startPosition-7)
+                if (endPosition == startPosition - 9 || endPosition == startPosition - 7)
                 {
-                    hasCaptured= CheckForCapture(pieceType, endPosition);
+                    hasCaptured = CheckForCapture(pieceType, endPosition);
                 }
             }
 
@@ -911,8 +881,8 @@ namespace ChessEngine
             {
                 hasCaptured = CheckForCapture(pieceType, endPosition);
             }
-            
-            if(pieceType != 0 && pieceType != 6)
+
+            if (pieceType != 0 && pieceType != 6)
             {
                 if (!hasCaptured)
                 {
@@ -928,7 +898,7 @@ namespace ChessEngine
                 board.FiftyMoveRule = 0;
             }
 
-            if(board.FiftyMoveRule >= 50)
+            if (board.FiftyMoveRule >= 50)
             {
                 Debug.Log("Draw by 50-Move rule");
             }
@@ -979,9 +949,9 @@ namespace ChessEngine
             }
             return moves.ToArray();
         }
-        
+
         // first digit in vector is startY second is startX third is stopY fourth is stopX 
-        
+
 
         public struct Move
         {

@@ -116,6 +116,7 @@ namespace ChessEngine
         {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
             byte piecePosition = 0;
+            fenString = fenString.Replace("/", "");
 
             // Find location of spaces
             List<int> spaceIndices = new List<int>();
@@ -130,8 +131,9 @@ namespace ChessEngine
 
             int[] spaceIndicesArray = spaceIndices.ToArray();
 
-
-            fenString = fenString.Replace("/", "");
+            /*for (int k = 0; k < spaceIndicesArray.Length; k++) {
+                Debug.Log(spaceIndicesArray[k]);
+            }*/
 
             ChessBoard board = new();
             board.ClearBoard();
@@ -243,7 +245,7 @@ namespace ChessEngine
 
             // Castling
             FenStringCastling(board, fenString, spaceIndicesArray[1]);
-
+            
             //finish setting up the board
             board.WhiteBishops = HelperFunctions.FlipBitboard(board.WhiteBishops);
             board.WhiteKing = HelperFunctions.FlipBitboard(board.WhiteKing);
@@ -265,6 +267,7 @@ namespace ChessEngine
 
         private void FenStringCastling(ChessBoard board, string fenString, int fenStringPos)
         {
+            Debug.Log($"Fenstring: {fenString}, Fenstringposition: {fenStringPos}");
             // First position
             if (fenString[fenStringPos + 1] == '-')
             {
@@ -309,7 +312,7 @@ namespace ChessEngine
             else if (fenString[fenStringPos + 2] == 'q')
             {
                 board.BlackCanCastleQueenside = true;
-
+                
                 return;
             }
 
@@ -324,18 +327,18 @@ namespace ChessEngine
             else if (fenString[fenStringPos + 3] == 'q')
             {
                 board.BlackCanCastleQueenside = true;
-
+                
                 return;
             }
 
-            if (fenString[fenStringPos + 3] == ' ')
+            if (fenString[fenStringPos + 4] == ' ')
             {
                 return;
             }
-            else if (fenString[fenStringPos + 3] == 'q')
+            else if (fenString[fenStringPos + 4] == 'q')
             {
                 board.BlackCanCastleQueenside = true;
-
+                
                 return;
             }
 
