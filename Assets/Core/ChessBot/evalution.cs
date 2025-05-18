@@ -99,10 +99,13 @@ namespace ChessEngine
 
 
             float pieceBonus = PieceBonus(board);
+            float defenceBonus = DefenceBonus(board);
+            float attackBonus = AttackBonus(board);
 
+
+            evaluation += defenceBonus;
             evaluation += pieceBonus;
-
-
+            evaluation += attackBonus;
 
             return evaluation;
         }
@@ -265,6 +268,7 @@ namespace ChessEngine
 
         private float DefenceBonus(ChessBoard board)
         {
+            if (board.MoveCount < 10) return 0;
             float evaluation = 0;
 
             for (int i = 0; i < 64; i++)
@@ -281,7 +285,25 @@ namespace ChessEngine
 
             return evaluation;
         }
-
         
+        private float AttackBonus(ChessBoard board)
+        {
+            if (board.MoveCount < 10) return 0;
+            float evaluation = 0;
+
+            for (int i = 0; i < 64; i++)
+            {
+                if (HelperFunctions.GetByte(i, board.BlackPieces) == 1 && board.WhiteAttackBoard[i])
+                {
+                    evaluation += 10;
+                }
+                if (HelperFunctions.GetByte(i, board.WhitePieces) == 1 && board.BlackAttackBoard[i])
+                {
+                    evaluation -= 10;
+                }
+            }
+
+            return evaluation;
+        }
     }
 }
