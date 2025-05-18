@@ -17,17 +17,12 @@ namespace ChessEngine {
 
         public Sprite[] spriteSheet;
 
-        public LineRenderer lineRenderer;
-
-
         public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab, GameObject AttackBoardPrefab)
         {
             board = new GameObject[size, size];
             MoveBoard = new GameObject[size, size];
             attackBoardBoard = new GameObject[size, size];
             spriteSheet = sprites;
-
-            lineRenderer = ChessEngine.lineRenderer;
 
             for (int y = 0; y < size; y++)
             {
@@ -70,14 +65,8 @@ namespace ChessEngine {
                         byte pieceType = HelperFunctions.GetBaseType(y1 * size + x1);
 
 
-                        if (!(pieceType > 5 || ChessEngine.EnableAI))
+                        if ((pieceType < 6 || !ChessEngine.EnableAI))
                         {
-
-                        }
-                        else
-                        {
-                            
-
 
                             if (pieceType != byte.MaxValue)
                             {
@@ -92,7 +81,7 @@ namespace ChessEngine {
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.RemoveAllListeners();
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.AddListener(() =>
                                     { 
-                                        ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i].startPos, moves[i].endPos, ChessEngine.board);
+                                        ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i], ref ChessEngine.board);
                                         ChessEngine.prevMove = moves[i];
 
                                         for (int y2 = 0; y2 < 8; y2++)
@@ -123,10 +112,6 @@ namespace ChessEngine {
 
         public void UpdateBoard()
         {
-            /*if (ChessEngine.prevMove.startPos!=ChessEngine.prevMove.endPos )
-            {
-                lineRenderer.SetPositions(new Vector3[] { board[(int)ChessEngine.prevMove.startPos/(int)8, ChessEngine.prevMove.startPos%8].transform.position, board[(int)ChessEngine.prevMove.endPos / (int)8, ChessEngine.prevMove.endPos % 8].transform.position });
-            }*/
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
@@ -184,27 +169,18 @@ namespace ChessEngine {
                     {
                         board[y,x].SetActive(false);
                     }
-
-                    if (ChessEngine.board.WhiteAttackBoard[y * 8 + x])
-                    {
-                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);
-                    }
-                    else
-                    {
-                        attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
-                    }
-
                 }
 
             }
         }
 
-        public void UpdateAttackBoard(bool white)
+        public void UpdateAttackBoard(bool white, bool reset_val=true)
         {
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
                 {
+                    if (reset_val) attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
                     if (ChessEngine.board.WhiteAttackBoard[y * 8 + x] && white)
                     {
                         attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);

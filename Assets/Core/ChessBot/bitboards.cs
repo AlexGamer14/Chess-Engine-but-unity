@@ -42,8 +42,6 @@ namespace ChessEngine
         // Attack boards
         public bool[] WhiteAttackBoard;
         public bool[] BlackAttackBoard;
-        public ulong WhiteAttackBitboard;
-        public ulong BlackAttackBitboard;
 
         public bool WhiteToMove;
 
@@ -110,6 +108,32 @@ namespace ChessEngine
             Debug.Log(boardText);
         }
 
+        public bool IsWhiteChecked()
+        {
+            for (byte x = 0; x < 64; x++)
+            {
+                if (HelperFunctions.GetByte(x, WhiteKing) == 1 && BlackAttackBoard[x])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsBlackChecked()
+        {
+            for (byte x = 0; x < 64; x++)
+            {
+                if (HelperFunctions.GetByte(x, BlackKing) == 1 && WhiteAttackBoard[x])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void UpdateBitBoards()
         {
             WhitePieces = WhitePawns | WhiteKnights | WhiteBishops | WhiteRooks | WhiteQueens | WhiteKing;
@@ -159,7 +183,92 @@ namespace ChessEngine
             this.WhitePieces = this.WhitePawns | this.WhiteKnights | this.WhiteBishops | this.WhiteRooks | this.WhiteQueens | this.WhiteKing;
             this.BlackPieces = this.BlackPawns | this.BlackKnights | this.BlackBishops | this.BlackRooks | this.BlackQueens | this.BlackKing;
         }
-                public object Clone()
+
+
+        public bool Equals(ChessBoard board)
+        {
+            if (this.AllPieces != board.AllPieces)
+            {
+                Debug.Log("AllPieces are different.");
+                return false;
+            }
+            if (this.WhitePawns != board.WhitePawns)
+            {
+                Debug.Log("WhitePawns are different.");
+                return false;
+            }
+            if (this.WhiteKnights != board.WhiteKnights)
+            {
+                Debug.Log("WhiteKnights are different.");
+                return false;
+            }
+            if (this.WhiteBishops != board.WhiteBishops)
+            {
+                Debug.Log("WhiteBishops are different.");
+                return false;
+            }
+            if (this.WhiteRooks != board.WhiteRooks)
+            {
+                Debug.Log("WhiteRooks are different.");
+                return false;
+            }
+            if (this.WhiteQueens != board.WhiteQueens)
+            {
+                Debug.Log("WhiteQueens are different.");
+                return false;
+            }
+            if (this.WhiteKing != board.WhiteKing)
+            {
+                Debug.Log("WhiteKing is different.");
+                return false;
+            }
+
+            if (this.BlackPawns != board.BlackPawns)
+            {
+                Debug.Log("BlackPawns are different.");
+                return false;
+            }
+            if (this.BlackKnights != board.BlackKnights)
+            {
+                Debug.Log("BlackKnights are different.");
+                return false;
+            }
+            if (this.BlackBishops != board.BlackBishops)
+            {
+                Debug.Log("BlackBishops are different.");
+                return false;
+            }
+            if (this.BlackRooks != board.BlackRooks)
+            {
+                Debug.Log("BlackRooks are different.");
+                return false;
+            }
+            if (this.BlackQueens != board.BlackQueens)
+            {
+                Debug.Log("BlackQueens are different.");
+                return false;
+            }
+            if (this.BlackKing != board.BlackKing)
+            {
+                Debug.Log("BlackKing is different.");
+                return false;
+            }
+            if (this.BlackAttackBoard != board.BlackAttackBoard)
+            {
+                Debug.Log("BlackAttackBoard are different.");
+                return false;
+            }
+            if (this.WhiteAttackBoard != board.WhiteAttackBoard)
+            {
+                Debug.Log("WhiteAttackBoard are different.");
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public object Clone()
         {
             ChessBoard newBoard = new()
             {

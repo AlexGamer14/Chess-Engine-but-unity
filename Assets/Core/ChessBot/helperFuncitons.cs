@@ -304,5 +304,17 @@ namespace ChessEngine
 
             Debug.Log(str);
         }
+
+        public static bool Contains<T>(T[] values, T value)
+        {
+            foreach (T val in values)
+            {
+                if (val.Equals(value))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

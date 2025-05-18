@@ -31,18 +31,6 @@ namespace ChessEngine
         public static int depth;
 
         public static Transform self;
-        public static LineRenderer lineRenderer;
-
-
-        int[] pawnBonus = new int[64] { 0, 0, 0, 0, 0, 0,  0, 0,
-                                                                10, 15, 5, 5,  5,  5, 15, 10,
-                                                                5,  0,  5, 15, 15, 5, 0,  5,
-                                                                0,  0,  10, 25, 25, 10, 0,  0,
-                                                                0,  0,  0, 0,  0,  0, 0,  0,
-                                                                0,  0,  0, 0,  0,  0, 0,  0,
-                                                                0,  0,  0, 0,  0,  0, 0,  0,
-                                                                0,  0,  0, 0,  0,  0, 0,  0,
-                                                              };
 
         // There are 10 types of people in the world, those who understand binary and those who don't
         // There are 10 types of people in the world, those who understand trinary, those who think it is binary, and those who don't
@@ -73,7 +61,6 @@ namespace ChessEngine
         {
             depth = depth_inspector;
             self = transform;
-            lineRenderer = GameObject.Find("Linjeviser").GetComponent<LineRenderer>();
 
             //board = new ChessBoard();
             print(FenString);
@@ -90,6 +77,8 @@ namespace ChessEngine
             boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
 
             boardRenderer.UpdateBoard();
+            boardRenderer.UpdateAttackBoard(true,true);
+            MovePieces.UpdateAttackBoard(ref board);
         }
 
 
@@ -98,19 +87,23 @@ namespace ChessEngine
         {
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
             {
-                Mover.GetMovesForBlackOrWhite(true, board);
                 boardRenderer.UpdateAttackBoard(true);
             }
             if (Input.GetKey(KeyCode.R) && timer > cooldown)
             {
-                Mover.GetMovesForBlackOrWhite(false, board);
                 boardRenderer.UpdateAttackBoard(false);
             }
             timer += Time.deltaTime;
 
             if (Input.GetKeyDown(KeyCode.F))
             {
-                HelperFunctions.PrintList<int>(HelperFunctions.BitboardToList(board.WhiteKnights));
+                print("Black is " + (board.IsBlackChecked() ? "" : "not ") + "checked");
+                print("White is " + (board.IsWhiteChecked() ? "" : "not ") + "checked");
+            }
+
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                HelperFunctions.PrintArray(board.WhiteAttackBoard);
             }
         }
 

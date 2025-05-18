@@ -62,6 +62,24 @@ namespace ChessEngine
                                                     0, 0, 0, 0, 0, 0, 0, 0,
                                                     0, 0, 0, 0, 0, 0, 0, 0 };
 
+        int[] earlyWhiteRookBonus = new int[64] { 20, 5, 5, 5, 5, 5, 5, 20,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0, };
+
+        int[] earlyBlackRookBonus = new int[64] { 0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+0, 0, 0, 0, 0, 0, 0, 0,
+20, 5, 5, 5, 5, 5, 5, 20, };
+
         int[] earlyBlackPawnBonus = new int[64] {
     0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,
@@ -98,8 +116,18 @@ namespace ChessEngine
 
             int amountOfPieces = 0;
 
-            List<int> whitePawnPositions = new List<int>();
-            List<int> blackPawnPositions = new List<int>();
+            List<int> whitePawnPositions = new();
+            List<int> blackPawnPositions = new();
+            List<int> whiteKnightPositions = new();
+            List<int> blackKnightPositions = new();
+            List<int> whiteKingPositions = new();
+            List<int> blackKingPositions = new();
+            List<int> whiteRookPositions = new();
+            List<int> blackRookPositions = new();
+            List<int> whiteBishopPositions = new();
+            List<int> blackBishopPositions = new();
+            List<int> whiteQueenPositions = new();
+            List<int> blackQueenPositions = new();
 
             for (int i = 0; i < 64; i++)
             {
@@ -113,32 +141,32 @@ namespace ChessEngine
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteKing) == 1)
                 {
+                    whiteKingPositions.Add(i);
                     whiteKingAlive = true;
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteKnights) == 1)
                 {
+                    whiteKnightPositions.Add(i);
                     evaluation += knightsValue;
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteBishops) == 1)
                 {
                     evaluation += bishopsValue;
+                    whiteBishopPositions.Add(i);
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteRooks) == 1)
                 {
                     evaluation += rookValue;
+                    whiteRookPositions.Add(i);
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.WhiteQueens) == 1)
                 {
                     evaluation += queenValue;
-
-                    if (i == 3)
-                    {
-                        evaluation += 40;
-                    }
+                    whiteQueenPositions.Add(i);
                     amountOfPieces++;
                 }
 
@@ -152,39 +180,39 @@ namespace ChessEngine
                 }
                 if (HelperFunctions.GetByte(i, board.BlackKing) == 1)
                 {
+                    blackKingPositions.Add(i);
                     blackKingAlive = true;
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackKnights) == 1)
                 {
+                    blackKnightPositions.Add(i);
                     evaluation -= knightsValue;
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackBishops) == 1)
                 {
                     evaluation -= bishopsValue;
+                    blackBishopPositions.Add(i);
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackRooks) == 1)
                 {
                     evaluation -= rookValue;
+                    blackRookPositions.Add(i);
                     amountOfPieces++;
                 }
                 if (HelperFunctions.GetByte(i, board.BlackQueens) == 1)
                 {
                     evaluation -= queenValue;
+                    blackQueenPositions.Add(i);
                     amountOfPieces++;
-
-                    if (i == 59)
-                    {
-                        evaluation -= 40;
-                    }
                 }
             }
 
 
 
-            if (amountOfPieces > 11)
+            if (board.MoveCount<20)
             {
                 foreach (int pos in whitePawnPositions)
                 {
@@ -194,9 +222,30 @@ namespace ChessEngine
                 {
                     evaluation -= earlyBlackPawnBonus[pos];
                 }
-                foreach (int pos in HelperFunctions.BitboardToList(board.BlackKnights))
+                foreach (int pos in blackKnightPositions)
                 {
                     evaluation -= earlyBlackKnightBonus[pos];
+                }
+                foreach (int pos in whiteKnightPositions)
+                {
+                    evaluation += earlyWhiteKnightBonus[pos];
+                }
+                foreach (int pos in whiteKingPositions)
+                {
+                    evaluation += earlyWhiteKingBonus[pos];
+                }
+                foreach (int pos in blackKingPositions)
+                {
+                    evaluation -= earlyBlackKingBonus[pos];
+                }
+
+                foreach (int pos in whiteRookPositions)
+                {
+                    evaluation += earlyWhiteRookBonus[pos];
+                }
+                foreach (int pos in blackRookPositions)
+                {
+                    evaluation -= earlyBlackRookBonus[pos];
                 }
 
             }
@@ -214,16 +263,25 @@ namespace ChessEngine
             return evaluation;
         }
 
-        /*private float DefenceBonus()
+        private float DefenceBonus(ChessBoard board)
         {
             float evaluation = 0;
 
             for (int i = 0; i < 64; i++)
             {
-  
+                if (HelperFunctions.GetByte(i, board.BlackPieces) == 1 && board.BlackAttackBoard[i])
+                {
+                    evaluation -= 10;
+                }
+                if (HelperFunctions.GetByte(i, board.WhitePieces) == 1 && board.WhiteAttackBoard[i])
+                {
+                    evaluation += 10;
+                }
             }
 
             return evaluation;
-        }*/
+        }
+
+        
     }
 }
