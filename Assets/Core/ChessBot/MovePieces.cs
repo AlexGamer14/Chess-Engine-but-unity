@@ -22,14 +22,14 @@ namespace ChessEngine
             FiftyMoveRuleCounter(ref board, pieceType, move.startPos, move.endPos);
             CastelingRights(ref board, pieceType, move.startPos, move.endPos);
             CheckForCapture(pieceType, move.endPos, ref board);
-            Promotion(pieceType, move, ref board);
+            bool canPromote = Promotion(pieceType, move, ref board);
 
             board.MoveCount++;
 
             board.WhiteToMove = !board.WhiteToMove;
 
             pieces = pieces & ~(ulong)Math.Pow(2, move.startPos);
-            pieces = pieces | (ulong)Math.Pow(2, move.endPos);
+            if (!canPromote) pieces = pieces | (ulong)Math.Pow(2, move.endPos);
             board.UpdateBitBoards();
 
 
@@ -78,6 +78,8 @@ namespace ChessEngine
                 board.EnPassantTargetSquare = byte.MaxValue;
             }
 
+
+            board.MoveCount++;
 
             CheckForCapture(pieceType, move.endPos, ref board);
             Promotion(pieceType, move, ref board);
@@ -445,9 +447,9 @@ namespace ChessEngine
             return moves.ToArray();
         }
 
-        public void Promotion(int pieceType, Move move, ref ChessBoard board)
+        public bool Promotion(int pieceType, Move move, ref ChessBoard board)
         {
-            if (move.endPos < 56) { if (move.endPos < 8) return; }
+            if (move.endPos < 56) { if (move.endPos < 8) { return false; } }
 
 
             if (pieceType==0&&move.endPos >55)
@@ -456,17 +458,21 @@ namespace ChessEngine
                 switch (move.promotionType)
                 {
                     case PromotionType.Knight:
+                        Debug.Log("Spawning Knight" + move.endPos + " " + move.promotionType);
                         HelperFunctions.SetBit(ref board.WhiteKnights, move.endPos, 1);
-                        break;
+                        return true;
                     case PromotionType.Bishop:
+                        Debug.Log("Spawning Bishop" + move.endPos + " " + move.promotionType);
                         HelperFunctions.SetBit(ref board.WhiteBishops, move.endPos, 1);
-                        break;
+                        return true;
                     case PromotionType.Rook:
+                        Debug.Log("Spawning Rook" + move.endPos + " " + move.promotionType);
                         HelperFunctions.SetBit(ref board.WhiteRooks, move.endPos,1);
-                        break;
+                        return true;
                     case PromotionType.Queen:
+                        Debug.Log("Spawning Queen" + move.endPos + " " + move.promotionType);
                         HelperFunctions.SetBit(ref board.WhiteQueens, move.endPos,1);
-                        break;
+                        return true;
                 }
             }
 
@@ -477,18 +483,23 @@ namespace ChessEngine
                 {
                     case PromotionType.Knight:
                         HelperFunctions.SetBit(ref board.BlackKnights, move.endPos, 1);
-                        break;
+                        return true;
+                        
                     case PromotionType.Bishop:
                         HelperFunctions.SetBit(ref board.BlackBishops, move.endPos, 1);
-                        break;
+                        return true;
+                        
                     case PromotionType.Rook:
                         HelperFunctions.SetBit(ref board.BlackRooks, move.endPos, 1);
-                        break;
+                        return true;
+                        
                     case PromotionType.Queen:
                         HelperFunctions.SetBit(ref board.BlackQueens, move.endPos, 1);
-                        break;
+                        return true;
                 }
             }
+
+            return false;
         }
 
 

@@ -17,12 +17,35 @@ namespace ChessEngine {
 
         public Sprite[] spriteSheet;
 
-        public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab, GameObject AttackBoardPrefab)
+
+        public Button queenPromoteBtn;
+        public Button rookPromoteBtn;
+        public Button bishopPromoteBtn;
+        public Button knightPromoteBtn;
+
+        public GameObject promotionBackground;
+
+
+        public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab, GameObject AttackBoardPrefab, GameObject qpbtn, GameObject rpbtn, GameObject bpbtn, GameObject kpbtn, GameObject backgroundPromotion)
         {
             board = new GameObject[size, size];
             MoveBoard = new GameObject[size, size];
             attackBoardBoard = new GameObject[size, size];
             spriteSheet = sprites;
+
+            queenPromoteBtn = qpbtn.GetComponent<Button>();
+            rookPromoteBtn = rpbtn.GetComponent<Button>();
+            bishopPromoteBtn = bpbtn.GetComponent<Button>();
+            knightPromoteBtn = kpbtn.GetComponent<Button>();
+
+            if (queenPromoteBtn is null || rookPromoteBtn is null || bishopPromoteBtn is null || knightPromoteBtn is null)
+            {
+                Debug.Log("One of the buttons are null");
+            }
+
+            promotionBackground = backgroundPromotion;
+
+            promotionBackground.SetActive(false);
 
             for (int y = 0; y < size; y++)
             {
@@ -76,28 +99,52 @@ namespace ChessEngine {
                                 {
                                     int i = i1;
 
+
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].SetActive(true);
 
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.RemoveAllListeners();
                                     MoveBoard[(moves[i].endPos / size), moves[i].endPos % size].GetComponent<Button>().onClick.AddListener(() =>
                                     { 
-                                        ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, moves[i], ref ChessEngine.board);
-                                        ChessEngine.prevMove = moves[i];
+                                        MovePieces.Move currentMove = moves[i];
 
-                                        for (int y2 = 0; y2 < 8; y2++)
+                                        if (moves[i].promotionType==MovePieces.PromotionType.Knight)
                                         {
-                                            for (int x2 = 0; x2 < 8; x2++)
+                                            promotionBackground.SetActive(true);
+
+                                            // Adding promotion buttons
+                                            MovePieces.Move knightMove = moves[i];
+                                            MovePieces.Move bishopMove = moves[i - 1];
+                                            MovePieces.Move rookMove = moves[i - 2];
+                                            MovePieces.Move queenMove = moves[i - 3];
+
+                                            queenPromoteBtn.onClick.RemoveAllListeners();
+                                            queenPromoteBtn.onClick.AddListener(() =>
                                             {
-                                                MoveBoard[y2, x2].SetActive(false);
-                                            }
-                                        }
-                                        ChessEngine.boardRenderer.UpdateBoard();
-                                        ChessEngine.board.UpdateBitBoards();
+                                                SecondPartOfHumanMove(queenMove, pieceType);
+                                                promotionBackground.SetActive(false);
+                                            });
+                                            rookPromoteBtn.onClick.RemoveAllListeners();
+                                            rookPromoteBtn.onClick.AddListener(() =>
+                                            {
+                                                SecondPartOfHumanMove(rookMove, pieceType);
+                                                promotionBackground.SetActive(false);
+                                            });
+                                            bishopPromoteBtn.onClick.RemoveAllListeners();
+                                            bishopPromoteBtn.onClick.AddListener(() =>
+                                            {
+                                                SecondPartOfHumanMove(bishopMove, pieceType);
+                                                promotionBackground.SetActive(false);
+                                            });
+                                            knightPromoteBtn.onClick.RemoveAllListeners();
+                                            knightPromoteBtn.onClick.AddListener(() =>
+                                            {
+                                                SecondPartOfHumanMove(knightMove, pieceType);
+                                                promotionBackground.SetActive(false);
+                                            });
 
-                                        if (ChessEngine.EnableAI)
-                                        {
-                                            ChessEngine.Mover.MakeAIMove(false);
+                                            return;
                                         }
+                                        SecondPartOfHumanMove(currentMove, pieceType);
                                     });
                                 }
                             }
@@ -107,6 +154,27 @@ namespace ChessEngine {
                     MoveBoard[y,x].SetActive(false);
                     img.sprite = sprite;
                 }
+            }
+        }
+
+        public void SecondPartOfHumanMove(MovePieces.Move move, int pieceType)
+        {
+            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move, ref ChessEngine.board);
+            ChessEngine.prevMove = move;
+
+            for (int y2 = 0; y2 < 8; y2++)
+            {
+                for (int x2 = 0; x2 < 8; x2++)
+                {
+                    MoveBoard[y2, x2].SetActive(false);
+                }
+            }
+            ChessEngine.boardRenderer.UpdateBoard();
+            ChessEngine.board.UpdateBitBoards();
+
+            if (ChessEngine.EnableAI)
+            {
+                ChessEngine.Mover.MakeAIMove(false);
             }
         }
 
@@ -172,6 +240,11 @@ namespace ChessEngine {
                 }
 
             }
+        }
+
+        public IEnumerator WaitUntilCondition(bool condition)
+        {
+            yield return new WaitUntil(() => condition == true);
         }
 
         public void UpdateAttackBoard(bool white, bool reset_val=true)

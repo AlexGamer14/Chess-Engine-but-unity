@@ -15,6 +15,14 @@ namespace ChessEngine
         [SerializeField] GameObject movePrefab;
         [SerializeField] GameObject AttackBoardPrefab;
 
+
+        public GameObject queenPromoteBtn;
+        public GameObject rookPromoteBtn;
+        public GameObject bishopPromoteBtn;
+        public GameObject knightPromoteBtn;
+
+        public GameObject promotionBackground;
+
         public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
         public static MovePieces Mover;
@@ -74,7 +82,7 @@ namespace ChessEngine
             Mover = new();
 
             boardRenderer = new ChessBoardRenderer();
-            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab);
+            boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab, queenPromoteBtn, rookPromoteBtn, bishopPromoteBtn, knightPromoteBtn, promotionBackground);
 
             boardRenderer.UpdateBoard();
             boardRenderer.UpdateAttackBoard(true,true);

@@ -102,10 +102,13 @@ namespace ChessEngine
             float defenceBonus = DefenceBonus(board);
             float attackBonus = AttackBonus(board);
 
+            float staleMateBonus = StaleMateBonus(board, whiteToMove);
+
 
             evaluation += defenceBonus;
             evaluation += pieceBonus;
             evaluation += attackBonus;
+            evaluation += staleMateBonus;
 
             return evaluation;
         }
@@ -263,6 +266,12 @@ namespace ChessEngine
             {
                 evaluation -= 8000;
             }
+            return evaluation;
+        }
+
+        private float StaleMateBonus(ChessBoard board, bool white)
+        {
+            float evaluation = 0;
             return evaluation;
         }
 
