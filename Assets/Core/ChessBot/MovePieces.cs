@@ -1625,12 +1625,6 @@ namespace ChessEngine
                     board.BlackCanCastleKingside = false;
                 }
             }
-            /*
-            Debug.Log(board.WhiteCanCastleQueenside);
-            Debug.Log(board.WhiteCanCastleKingside);
-            Debug.Log(board.BlackCanCastleQueenside);
-            Debug.Log(board.BlackCanCastleKingside);
-            */
         }
         public void MakeAIMove(bool IsWhite)
         {

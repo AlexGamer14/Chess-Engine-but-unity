@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace ChessEngine
@@ -99,15 +100,16 @@ namespace ChessEngine
 
 
             float pieceBonus = PieceBonus(board);
-            float defenceBonus = DefenceBonus(board);
-            float attackBonus = AttackBonus(board);
+            /*float defenceBonus = DefenceBonus(board);
+            float attackBonus = AttackBonus(board);*/
+            float controlSquaresBonus = ControlSquaresBonus(board);
 
             float staleMateBonus = StaleMateBonus(board, whiteToMove);
 
 
-            evaluation += defenceBonus;
+            //evaluation += defenceBonus;
             evaluation += pieceBonus;
-            evaluation += attackBonus;
+            //evaluation += attackBonus;
             evaluation += staleMateBonus;
 
             return evaluation;
@@ -218,7 +220,7 @@ namespace ChessEngine
 
 
 
-            if (board.MoveCount<20)
+            if (board.MoveCount < 20)
             {
                 foreach (int pos in whitePawnPositions)
                 {
@@ -275,13 +277,40 @@ namespace ChessEngine
             return evaluation;
         }
 
-        private float DefenceBonus(ChessBoard board)
+        private float CheckBonus(ChessBoard board)
         {
-            if (board.MoveCount < 10) return 0;
             float evaluation = 0;
+
+            if (board.IsWhiteChecked())
+            {
+                evaluation -= 50;
+            }
+            if (board.IsBlackChecked())
+            {
+                evaluation += 50;
+            }
+
+            return evaluation;
+        }
+
+            private float ControlSquaresBonus(ChessBoard board)
+        {
+            float evaluation = 0;
+            float perSquareBonus = 3;
 
             for (int i = 0; i < 64; i++)
             {
+                // Control Squares Bonus
+                if (board.WhiteAttackBoard[i])
+                {
+                    evaluation += perSquareBonus;
+                }
+                if (board.BlackAttackBoard[i])
+                {
+                    evaluation -= perSquareBonus;
+                }
+
+                // Defence Bonus
                 if (HelperFunctions.GetByte(i, board.BlackPieces) == 1 && board.BlackAttackBoard[i])
                 {
                     evaluation -= 10;
@@ -290,18 +319,8 @@ namespace ChessEngine
                 {
                     evaluation += 10;
                 }
-            }
 
-            return evaluation;
-        }
-        
-        private float AttackBonus(ChessBoard board)
-        {
-            if (board.MoveCount < 10) return 0;
-            float evaluation = 0;
-
-            for (int i = 0; i < 64; i++)
-            {
+                // Attack Bonus
                 if (HelperFunctions.GetByte(i, board.BlackPieces) == 1 && board.WhiteAttackBoard[i])
                 {
                     evaluation += 10;
@@ -314,5 +333,6 @@ namespace ChessEngine
 
             return evaluation;
         }
+
     }
 }
