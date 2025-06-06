@@ -416,7 +416,7 @@ namespace ChessEngine
                 EnPassantTargetSquare = this.EnPassantTargetSquare,
 
                 BlackAttackBoard = this.BlackAttackBoard,
-                WhiteAttackBoard = this.BlackAttackBoard,
+                WhiteAttackBoard = this.WhiteAttackBoard,
 
                 WhiteCanCastleKingside = this.WhiteCanCastleKingside,
                 WhiteCanCastleQueenside = this.WhiteCanCastleQueenside,
