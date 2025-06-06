@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -100,16 +101,14 @@ namespace ChessEngine
 
 
             float pieceBonus = PieceBonus(board);
-            /*float defenceBonus = DefenceBonus(board);
-            float attackBonus = AttackBonus(board);*/
+            float checkMateBonus = CheckMateBonus(board, whiteToMove, evaluation);
             float controlSquaresBonus = ControlSquaresBonus(board);
 
-            float staleMateBonus = StaleMateBonus(board, whiteToMove);
-
-
-            //evaluation += defenceBonus;
             evaluation += pieceBonus;
-            //evaluation += attackBonus;
+            evaluation += controlSquaresBonus;
+            evaluation+= checkMateBonus;
+
+            float staleMateBonus = StaleMateBonus(board, evaluation);
             evaluation += staleMateBonus;
 
             return evaluation;
@@ -271,9 +270,41 @@ namespace ChessEngine
             return evaluation;
         }
 
-        private float StaleMateBonus(ChessBoard board, bool white)
+        private static float CheckMateBonus(ChessBoard board, bool white, float current_eval)
         {
             float evaluation = 0;
+
+            bool IsWhiteCheckeMate = board.IsWhiteCheckMate();
+            bool IsBlackCheckeMate = board.IsBlackCheckMate();
+
+            if (IsWhiteCheckeMate)
+            {
+                evaluation -= 10000;
+            }
+            if (IsBlackCheckeMate)
+            {
+                evaluation += 10000;
+            }
+
+            return evaluation;
+        }
+
+        public float StaleMateBonus(ChessBoard board, float current_eval)
+        {
+            float evaluation = 0;
+
+            bool IsWhiteStaleMate = board.IsWhiteStaleMate();
+            bool IsBlackStaleMate = board.IsBlackStaleMate();
+
+            if (IsWhiteStaleMate)
+            {
+                evaluation -= 1000;
+            }
+            if (IsBlackStaleMate)
+            {
+                evaluation += 1000;
+            }
+
             return evaluation;
         }
 
@@ -293,7 +324,7 @@ namespace ChessEngine
             return evaluation;
         }
 
-            private float ControlSquaresBonus(ChessBoard board)
+        private float ControlSquaresBonus(ChessBoard board)
         {
             float evaluation = 0;
             float perSquareBonus = 3;

@@ -93,7 +93,7 @@ namespace ChessEngine {
 
                             if (pieceType != byte.MaxValue)
                             {
-                                MovePieces.Move[] moves = ChessEngine.Mover.GetLegalMoves(ref ChessEngine.board, pieceType, (byte)(y1 * size + x1));
+                                MovePieces.Move[] moves = MovePieces.GetLegalMoves(ref ChessEngine.board, pieceType, (byte)(y1 * size + x1));
 
                                 for (int i1 = 0; i1 < moves.Length; i1++)
                                 {
@@ -159,7 +159,7 @@ namespace ChessEngine {
 
         public void SecondPartOfHumanMove(MovePieces.Move move, int pieceType)
         {
-            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move, ref ChessEngine.board);
+            MovePieces.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move, ref ChessEngine.board);
             ChessEngine.prevMove = move;
 
             for (int y2 = 0; y2 < 8; y2++)
@@ -174,7 +174,7 @@ namespace ChessEngine {
 
             if (ChessEngine.EnableAI)
             {
-                ChessEngine.Mover.MakeAIMove(false);
+                MovePieces.MakeAIMove(false);
             }
         }
 

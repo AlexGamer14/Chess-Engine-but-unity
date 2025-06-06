@@ -9,8 +9,9 @@ using UnityEngine;
 
 namespace ChessEngine
 {
-    public class Search
+    public static class Search
     {
+        static TranspositionTable transpositionTable = new(21); // Creates a transposition table of size 2 ^ 20 * 32Bytes  entries rounding to around 32mb;
 
         /*public MovePieces.Move RecursiveSearchMoves(int depth, bool WhiteToMove, ChessBoard board)
         {
@@ -103,23 +104,22 @@ namespace ChessEngine
             } 
         }*/
 
-        public MovePieces.Move IterativeSearchAllMoves(int depth, bool isWhiteToMove, ChessBoard board)
+        public static MovePieces.Move IterativeSearchAllMoves(int depth, bool isWhiteToMove, ChessBoard board)
         {
             //Debug.Log("Is this a memory leak? (in iterativesearchallmoves)");
-            MovePieces mover = new();
             Evaluation evaluation = new();
             MovePieces.Move bestMove = new();
             float bestEval = float.PositiveInfinity;
 
-            MovePieces.Move[] rootMoves = mover.GetMovesForBlackOrWhite(isWhiteToMove, board);
+            MovePieces.Move[] rootMoves = MovePieces.GetMovesForBlackOrWhite(isWhiteToMove, board);
 
             foreach (var move in rootMoves)
             {
                 ChessBoard newBoard = (ChessBoard)board.Clone();
                 int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, newBoard);
-                mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
+                MovePieces.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
 
-                float eval = Minimax(newBoard, depth - 1, !isWhiteToMove, evaluation, mover, float.NegativeInfinity, float.PositiveInfinity);
+                float eval = Minimax(newBoard, depth - 1, 0, !isWhiteToMove, evaluation, float.NegativeInfinity, float.PositiveInfinity);
 
                 if (eval < bestEval)
                 {
@@ -128,35 +128,81 @@ namespace ChessEngine
                 }
             }
 
+            Debug.Log("Best eval: " + bestEval);
             return bestMove;
         }
 
-        private float Minimax(ChessBoard board, int depth, bool isWhiteToMove, Evaluation evaluation, MovePieces mover, float alpha, float beta)
+        private static float Minimax(ChessBoard board, int depth, int amountExtended, bool isWhiteToMove, Evaluation evaluation, float alpha, float beta)
         {
+            float alphaOriginal = alpha;
+
             if (depth == 0)
             {
                 return evaluation.Evaluate(board, isWhiteToMove);
             }
 
-            MovePieces.Move[] moves = mover.GetMovesForBlackOrWhite(isWhiteToMove, board);
+            ulong zobristKey = board.ComputeZobristHash();
+
+            if (transpositionTable.TryGet(zobristKey, out var ttEntry) && ttEntry.Depth >= depth)
+            {
+                switch (ttEntry.Type)
+                {
+                    case TranspositionTable.NodeType.Exact:
+                        return ttEntry.Evaluation;
+                    case TranspositionTable.NodeType.LowerBound:
+                        alpha = Math.Max(alpha, ttEntry.Evaluation);
+                        break;
+                    case TranspositionTable.NodeType.UpperBound:
+                        beta = Math.Min(beta, ttEntry.Evaluation);
+                        break;
+                }
+
+                if (alpha >= beta)
+                    return ttEntry.Evaluation;
+            }
+
+            MovePieces.Move[] moves = MovePieces.GetMovesForBlackOrWhite(isWhiteToMove, board);
+            if (moves.Length == 0)
+            {
+                return evaluation.Evaluate(board, isWhiteToMove);
+            }
+
             float bestEval = isWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity;
+            MovePieces.Move bestMove = default;
 
             foreach (var move in moves)
             {
                 ChessBoard newBoard = (ChessBoard)board.Clone();
                 int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, newBoard);
-                mover.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
+                MovePieces.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
 
-                float eval = Minimax(newBoard, depth - 1, !isWhiteToMove, evaluation, mover, alpha, beta);
+                float eval;
+
+                if (board.IsWhiteChecked() && amountExtended < 10)
+                {
+                    eval = Minimax(newBoard, depth, amountExtended + 1, !isWhiteToMove, evaluation, alpha, beta);
+                }
+                else
+                {
+                    eval = Minimax(newBoard, depth - 1, amountExtended, !isWhiteToMove, evaluation, alpha, beta);
+                }
 
                 if (isWhiteToMove)
                 {
-                    bestEval = Math.Max(bestEval, eval);
+                    if (eval > bestEval)
+                    {
+                        bestEval = eval;
+                        bestMove = move;
+                    }
                     alpha = Math.Max(alpha, eval);
                 }
                 else
                 {
-                    bestEval = Math.Min(bestEval, eval);
+                    if (eval < bestEval)
+                    {
+                        bestEval = eval;
+                        bestMove = move;
+                    }
                     beta = Math.Min(beta, eval);
                 }
 
@@ -164,6 +210,16 @@ namespace ChessEngine
                 if (beta <= alpha)
                     break;
             }
+
+            TranspositionTable.NodeType type;
+            if (bestEval <= alphaOriginal)
+                type = TranspositionTable.NodeType.UpperBound;
+            else if (bestEval >= beta)
+                type = TranspositionTable.NodeType.LowerBound;
+            else
+                type = TranspositionTable.NodeType.Exact;
+
+            transpositionTable.Store(zobristKey, bestEval, depth, type, bestMove);
 
             return bestEval;
         }

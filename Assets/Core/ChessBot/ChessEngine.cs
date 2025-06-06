@@ -25,9 +25,7 @@ namespace ChessEngine
 
         public static ChessBoard board;
         public static ChessBoardRenderer boardRenderer;
-        public static MovePieces Mover;
         public static Evaluation evaluation = new Evaluation();
-        public static Search search = new Search();
 
         public static bool EnableAI = true;
         [SerializeField] bool EnableAIInspector = true;
@@ -64,22 +62,20 @@ namespace ChessEngine
 
         private float timer = 0;
 
-        public string FenString = "3k4/3q4/8/8/8/8/3Q4/3K4 w - - 0 1";
         public void Awake()
         {
+
             depth = depth_inspector;
             self = transform;
 
             //board = new ChessBoard();
-            print(FenString);
-            board = LoadFenString(FenString);
             //Console.WriteLine(GetByte(1, board.AllPieces));
 
             EnableAI = EnableAIInspector;
 
             Debug.Log("Chess engine is running");
 
-            Mover = new();
+            LoadFenString();
 
             boardRenderer = new ChessBoardRenderer();
             boardRenderer.Initialize(parentPanel, sprites, prefab, movePrefab: movePrefab, AttackBoardPrefab, queenPromoteBtn, rookPromoteBtn, bishopPromoteBtn, knightPromoteBtn, promotionBackground);
@@ -87,12 +83,15 @@ namespace ChessEngine
             boardRenderer.UpdateBoard();
             boardRenderer.UpdateAttackBoard(true,true);
             MovePieces.UpdateAttackBoard(ref board);
+
+            Debug.Log(System.Runtime.InteropServices.Marshal.SizeOf<TranspositionTable.TTEntry>());
         }
 
 
 
         private void Update()
         {
+            depth = depth_inspector;
             if (Input.GetKey(KeyCode.E) && timer > cooldown)
             {
                 boardRenderer.UpdateAttackBoard(true);
@@ -115,9 +114,13 @@ namespace ChessEngine
             }
         }
 
-        public ChessBoard LoadFenString(string fenString)
+        public void LoadFenString()
         {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+            string fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            board = new();
+
+
             byte piecePosition = 0;
             fenString = fenString.Replace("/", "");
 
@@ -138,7 +141,6 @@ namespace ChessEngine
                 Debug.Log(spaceIndicesArray[k]);
             }*/
 
-            ChessBoard board = new();
             board.ClearBoard();
             int i;
 
@@ -247,7 +249,7 @@ namespace ChessEngine
             }
 
             // Castling
-            FenStringCastling(board, fenString, spaceIndicesArray[1]);
+            FenStringCastling(fenString, spaceIndicesArray[1]);
             
             //finish setting up the board
             board.WhiteBishops = HelperFunctions.FlipBitboard(board.WhiteBishops);
@@ -264,11 +266,12 @@ namespace ChessEngine
             board.BlackKnights = HelperFunctions.FlipBitboard(board.BlackKnights);
             board.BlackPawns = HelperFunctions.FlipBitboard(board.BlackPawns);
 
-            board.SetUpAllBoards();
-            return board;
+            board.UpdateBitBoards();
+
+            ChessEngine.board = (ChessBoard)board.Clone();
         }
 
-        private void FenStringCastling(ChessBoard board, string fenString, int fenStringPos)
+        private void FenStringCastling(string fenString, int fenStringPos)
         {
             Debug.Log($"Fenstring: {fenString}, Fenstringposition: {fenStringPos}");
             // First position
@@ -344,6 +347,7 @@ namespace ChessEngine
                 
                 return;
             }
+
 
         }
 

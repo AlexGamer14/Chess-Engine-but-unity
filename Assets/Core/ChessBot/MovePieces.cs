@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ChessEngine
 {
-    public class MovePieces
+    public static class MovePieces
     {
         public enum PromotionType
         {
@@ -16,7 +16,7 @@ namespace ChessEngine
             None
         }
 
-        public void MovePiece(ref ulong pieces, int pieceType, Move move, ref ChessBoard board)
+        public static void MovePiece(ref ulong pieces, int pieceType, Move move, ref ChessBoard board)
         {
             EnPassant(ref board, move.startPos, move.endPos, pieceType);
             FiftyMoveRuleCounter(ref board, pieceType, move.startPos, move.endPos);
@@ -39,63 +39,27 @@ namespace ChessEngine
         }
 
 
-        public void SearchMovePiece(ref ulong pieces, int pieceType, Move move, ref ChessBoard board)
+        public static void SearchMovePiece(ref ulong pieces, int pieceType, Move move, ref ChessBoard board)
         {
-            if (pieceType == 0)
-            {
-                if (move.endPos == move.startPos + 16)
-                {
-                    board.EnPassantTargetSquare = (byte)(move.endPos - (byte)8);
-                }
-                if (move.endPos == board.EnPassantTargetSquare)
-                {
-                    CheckForCapture(pieceType, move.endPos - 8, ref board);
-                    board.EnPassantTargetSquare = 255;
-                }
-                else
-                {
-                    board.EnPassantTargetSquare = 255;
-                }
-            }
-            if (pieceType == 6)
-            {
-                if (move.endPos == move.startPos - 16)
-                {
-                    board.EnPassantTargetSquare = (byte)(move.startPos + (byte)8);
-                }
-                if (move.endPos == board.EnPassantTargetSquare)
-                {
-                    CheckForCapture(pieceType, move.endPos + 8, ref board);
-                    board.EnPassantTargetSquare = 255;
-                }
-                else
-                {
-                    board.EnPassantTargetSquare = 255;
-                }
-            }
-            else
-            {
-                board.EnPassantTargetSquare = byte.MaxValue;
-            }
-
-
             board.MoveCount++;
+            board.WhiteToMove = !board.WhiteToMove;
 
+
+            CastelingRights(ref board, pieceType, move.startPos, move.endPos);
+            EnPassant(ref board, move.startPos, move.endPos, pieceType);
             CheckForCapture(pieceType, move.endPos, ref board);
-            Promotion(pieceType, move, ref board);
+            bool canPromote = Promotion(pieceType, move, ref board);
 
             pieces = pieces & ~(ulong)Math.Pow(2, move.startPos);
-            pieces = pieces | (ulong)Math.Pow(2, move.endPos);
+            if (!canPromote) pieces = pieces | (ulong)Math.Pow(2, move.endPos);
             board.UpdateBitBoards();
 
 
 
             UpdateAttackBoard(ref board);
-
-            
         }
 
-        public bool CheckForCapture(int pieceType, int pos, ref ChessBoard board)
+        public static bool CheckForCapture(int pieceType, int pos, ref ChessBoard board)
         {
             int pieceTypeCheck = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, pos, board);
 
@@ -111,7 +75,7 @@ namespace ChessEngine
         // 0 = White Pawn, 1 = White Knigth, 2 = White Bishop, 3 = White Rook, 4 = White Queen, 5 = White King
         // 6 = Black Pawn, 7 = Black Knigth, 8 = Black Bishop, 9 = Black Rook, 10 = Black Queen, 11 = Black King
 
-        public Move[] GetLegalMoves(ref ChessBoard board, int pieceType, int position, bool testingMoves=false)
+        public static Move[] GetLegalMoves(ref ChessBoard board, int pieceType, int position, bool testingMoves=false)
         {
             List<Move> moves = new();
             // UInt64 blackAttackBoard = 0;
@@ -447,7 +411,7 @@ namespace ChessEngine
             return moves.ToArray();
         }
 
-        public bool Promotion(int pieceType, Move move, ref ChessBoard board)
+        public static bool Promotion(int pieceType, Move move, ref ChessBoard board)
         {
             if (move.endPos < 56) { if (move.endPos < 8) { return false; } }
 
@@ -503,7 +467,7 @@ namespace ChessEngine
         }
 
 
-        public bool blocksCheck(ChessBoard board, int pieceType, Move move, bool white)
+        public static bool blocksCheck(ChessBoard board, int pieceType, Move move, bool white)
         {
             ChessBoard copy = (ChessBoard)board.Clone();
 
@@ -1336,7 +1300,7 @@ namespace ChessEngine
             }
         }
 
-        public void RookMovement(int pieceType, int position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board)
+        public static void RookMovement(int pieceType, int position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board)
         {
             if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
             {
@@ -1419,7 +1383,7 @@ namespace ChessEngine
             }
         }
 
-        public void BishopMovement(int pieceType, int position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board)
+        public static void BishopMovement(int pieceType, int position, ulong friendlyPieces, ulong enemyPieces, ref List<Move> moves, ChessBoard board)
         {
             if (HelperFunctions.GetByte(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
             {
@@ -1497,7 +1461,7 @@ namespace ChessEngine
             }
         }
 
-        public void KingMovement(int pieceType, int position, ulong friendlyPieces, ref List<Move> moves, bool[] hostileAttackBoard, ChessBoard board)
+        public static void KingMovement(int pieceType, int position, ulong friendlyPieces, ref List<Move> moves, bool[] hostileAttackBoard, ChessBoard board)
         {
             if (HelperFunctions.GetByte(position, friendlyPieces) == 0)
                 return;
@@ -1525,7 +1489,7 @@ namespace ChessEngine
             }
         }
 
-        public void Castle(bool IsWhite, ChessBoard board)
+        public static void Castle(bool IsWhite, ChessBoard board)
         {
             if (IsWhite)
             {
@@ -1537,7 +1501,7 @@ namespace ChessEngine
             }
         }
 
-        public void EnPassant(ref ChessBoard board, byte startPosition, byte endPosition, int pieceType)
+        public static void EnPassant(ref ChessBoard board, byte startPosition, byte endPosition, int pieceType)
         {
             // Value set to 255 so that it is not on board if en passant is not possible
 
@@ -1585,19 +1549,46 @@ namespace ChessEngine
             }
         }
 
-        public void CastelingRights(ref ChessBoard board, int pieceType, byte startPosition, byte endPosition)
+        public static void CastelingRights(ref ChessBoard board, int pieceType, byte startPosition, byte endPosition)
         {
             // Remove all castling rights for white if king is moved
             if (pieceType == 5)
             {
                 board.WhiteCanCastleKingside = false;
                 board.WhiteCanCastleQueenside = false;
+                return;
             }
             // Remove all castling rights for black if king is moved
             else if (pieceType == 11)
             {
                 board.BlackCanCastleKingside = false;
                 board.BlackCanCastleQueenside = false;
+                return;
+            }
+
+            int CapturePieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, endPosition, board);
+            if (CapturePieceType == 3)
+            {
+                if (endPosition == 0)
+                {
+                    board.WhiteCanCastleQueenside = false;
+                }
+                if (endPosition == 7)
+                {
+                    board.WhiteCanCastleKingside = false;
+                }
+            }
+
+            if (CapturePieceType == 9)
+            {
+                if (endPosition == 56)
+                {
+                    board.BlackCanCastleQueenside = false;
+                }
+                if (endPosition == 63)
+                {
+                    board.BlackCanCastleKingside = false;
+                }
             }
 
             //Now white rooks
@@ -1626,10 +1617,10 @@ namespace ChessEngine
                 }
             }
         }
-        public void MakeAIMove(bool IsWhite)
+        public static void MakeAIMove(bool IsWhite)
         {
 
-            Move move = ChessEngine.search.IterativeSearchAllMoves(ChessEngine.depth, IsWhite, ChessEngine.board);
+            Move move = Search.IterativeSearchAllMoves(ChessEngine.depth, IsWhite, ChessEngine.board);
 
 
             ChessEngine.board.UpdateBitBoards();
@@ -1638,7 +1629,7 @@ namespace ChessEngine
 
             Debug.Log("AI moving from " + move.startPos + " to " + move.endPos + " with a piece type of " + pieceType);
 
-            ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move, ref ChessEngine.board);
+            MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move, ref ChessEngine.board);
             ChessEngine.prevMove = move;
 
             /*Move[] moves = ChessEngine.search.SearchMoves(GetMovesForBlackOrWhite(IsWhite), false, ChessEngine.board);
@@ -1652,7 +1643,7 @@ namespace ChessEngine
             ChessEngine.Mover.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move.startPos, move.endPos);*/
         }
 
-        public MovePieces.Move[] GetMovesForBlackOrWhite(bool IsWhite)
+        public static MovePieces.Move[] GetMovesForBlackOrWhite(bool IsWhite)
         {
             List<Move> moves = new();
 
@@ -1697,7 +1688,7 @@ namespace ChessEngine
             return moves.ToArray();
         }
 
-        public void FiftyMoveRuleCounter(ref ChessBoard board, int pieceType, byte startPosition, byte endPosition)
+        public static void FiftyMoveRuleCounter(ref ChessBoard board, int pieceType, byte startPosition, byte endPosition)
         {
             bool hasCaptured = false;
 
@@ -1745,9 +1736,9 @@ namespace ChessEngine
             Debug.Log(board.FiftyMoveRule);
         }
 
-        public Move[] GetMovesForBlackOrWhite(bool IsWhite, ChessBoard board)
+        public static Move[] GetMovesForBlackOrWhite(bool IsWhite, ChessBoard board)
         {
-            Span<Move> moves = stackalloc Move[256]; 
+            Span<Move> moves = stackalloc Move[255]; 
             int counter = 0;
 
             for (int i = 0; i < 8; i++)

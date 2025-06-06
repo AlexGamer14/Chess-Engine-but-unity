@@ -121,6 +121,73 @@ namespace ChessEngine
             return false;
         }
 
+        public bool IsWhiteStaleMate()
+        {
+            if (!IsWhiteChecked())
+            {
+                MovePieces.Move[] whiteMoves = MovePieces.GetMovesForBlackOrWhite(true, this);
+
+                if (whiteMoves.Length == 0)
+                {
+                    // No legal moves available for white, but not in check
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
+
+        public bool IsWhiteCheckMate()
+        {
+            if (IsWhiteChecked())
+            {
+                MovePieces.Move[] whiteMoves = MovePieces.GetMovesForBlackOrWhite(true, this);
+
+                if (whiteMoves.Length == 0)
+                {
+                    // No legal moves available for white, but not in check
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
+
+        public bool IsBlackStaleMate()
+        {
+            if (!IsBlackChecked())
+            {
+                MovePieces.Move[] blackMoves = MovePieces.GetMovesForBlackOrWhite(false, this);
+
+                if (blackMoves.Length == 0)
+                {
+                    // No legal moves available for white, but not in check
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
+
+        public bool IsBlackCheckMate()
+        {
+            if (IsBlackChecked())
+            {
+                MovePieces.Move[] blackMoves = MovePieces.GetMovesForBlackOrWhite(false, this);
+
+                if (blackMoves.Length == 0)
+                {
+                    // No legal moves available for white, but not in check
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
         public bool IsBlackChecked()
         {
             for (byte x = 0; x < 64; x++)
@@ -133,6 +200,60 @@ namespace ChessEngine
 
             return false;
         }
+
+        public ulong ComputeZobristHash()
+        {
+            ulong hash = 0;
+
+            // Pieces
+            AddPieceHash(WhitePawns, 0, 0);
+            AddPieceHash(WhiteBishops, 0, 2);
+            AddPieceHash(WhiteKnights, 0, 1);
+            AddPieceHash(WhiteRooks, 0, 3);
+            AddPieceHash(WhiteQueens, 0, 4);
+            AddPieceHash(WhiteKing, 0, 5);
+
+            AddPieceHash(BlackPawns, 1, 0);
+            AddPieceHash(BlackKnights, 1, 1);
+            AddPieceHash(BlackBishops, 1, 2);
+            AddPieceHash(BlackRooks, 1, 3);
+            AddPieceHash(BlackQueens, 1, 4);
+            AddPieceHash(BlackKing, 1, 5);
+
+            // Castling rights: encode as 4 bits
+            int castlingKey = 0;
+            if (WhiteCanCastleKingside) castlingKey |= 1;
+            if (WhiteCanCastleQueenside) castlingKey |= 2;
+            if (BlackCanCastleKingside) castlingKey |= 4;
+            if (BlackCanCastleQueenside) castlingKey |= 8;
+            hash ^= Zobrist.CastlingRights[castlingKey];
+
+            // En passant file (if valid)
+            if (EnPassantTargetSquare < 64)
+            {
+                int file = (EnPassantTargetSquare % 8);
+                hash ^= Zobrist.EnPassantFile[file];
+            }
+
+            // Side to move
+            if (WhiteToMove)
+                hash ^= Zobrist.SideToMove;
+
+            return hash;
+
+            // Local helper function
+            void AddPieceHash(ulong bitboard, int color, int pieceType)
+            {
+                for (int square = 0; square < 64; square++)
+                {
+                    if (((bitboard >> square) & 1) != 0)
+                    {
+                        hash ^= Zobrist.PieceSquareTable[color, pieceType, square];
+                    }
+                }
+            }
+        }
+
 
         public void UpdateBitBoards()
         {
