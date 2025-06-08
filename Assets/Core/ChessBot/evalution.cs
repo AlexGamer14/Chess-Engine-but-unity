@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -7,7 +8,6 @@ namespace ChessEngine
 {
     public class Evaluation
     {
-
         const float pawnValue = 100;
         const float rookValue = 500;
         const float knightsValue = 350;
@@ -93,23 +93,34 @@ namespace ChessEngine
     0,  0,  0,  0,  0,  0,  0,  0
 };
 
+        int[] earlyBishopBonus = new int[64] {- 5, -5, -5, -5, -5, -5, -5, -5,
+-5, 0, 0, 0, 0, 0, 0, -5,
+-5, 5, 10, 10, 10, 10, 5, -5,
+-5, 5, 10, 15, 15, 10, 5, -5,
+-5, 5, 10, 15, 15, 10, 5, -5,
+-5, 5, 10, 10, 10, 10, 5, -5,
+-5, 0, 0, 0, 0, 0, 0, -5,
+-5, -5, -5, -5, -5, -5, -5, -5, };
 
-
-        public float Evaluate(ChessBoard board, bool whiteToMove)
+    public float Evaluate(ChessBoard board, bool whiteToMove)
         {
             float evaluation = 0;
 
 
             float pieceBonus = PieceBonus(board);
+
             float checkMateBonus = CheckMateBonus(board, whiteToMove, evaluation);
             float controlSquaresBonus = ControlSquaresBonus(board);
+            
 
             evaluation += pieceBonus;
             evaluation += controlSquaresBonus;
             evaluation+= checkMateBonus;
 
-            float staleMateBonus = StaleMateBonus(board, evaluation);
-            evaluation += staleMateBonus;
+            // Stalemate calculation uses 96% of the time for every move
+            //float staleMateBonus = StaleMateBonus(board, evaluation);
+            //evaluation += staleMateBonus;
+
 
             return evaluation;
         }
@@ -138,7 +149,10 @@ namespace ChessEngine
 
             for (int i = 0; i < 64; i++)
             {
-                if (HelperFunctions.GetByte(i, board.WhitePawns) == 1)
+                if (HelperFunctions.GetBit(i, board.AllPieces) == 0)
+                    continue; // Skip empty squares
+
+                if (HelperFunctions.GetBit(i, board.WhitePawns) == 1)
                 {
                     evaluation += pawnValue;
                     whitePawnPositions.Add(i);
@@ -146,38 +160,38 @@ namespace ChessEngine
 
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.WhiteKing) == 1)
+                if (HelperFunctions.GetBit(i, board.WhiteKing) == 1)
                 {
                     whiteKingPositions.Add(i);
                     whiteKingAlive = true;
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.WhiteKnights) == 1)
+                if (HelperFunctions.GetBit(i, board.WhiteKnights) == 1)
                 {
                     whiteKnightPositions.Add(i);
                     evaluation += knightsValue;
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.WhiteBishops) == 1)
+                if (HelperFunctions.GetBit(i, board.WhiteBishops) == 1)
                 {
                     evaluation += bishopsValue;
                     whiteBishopPositions.Add(i);
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.WhiteRooks) == 1)
+                if (HelperFunctions.GetBit(i, board.WhiteRooks) == 1)
                 {
                     evaluation += rookValue;
                     whiteRookPositions.Add(i);
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.WhiteQueens) == 1)
+                if (HelperFunctions.GetBit(i, board.WhiteQueens) == 1)
                 {
                     evaluation += queenValue;
                     whiteQueenPositions.Add(i);
                     amountOfPieces++;
                 }
 
-                if (HelperFunctions.GetByte(i, board.BlackPawns) == 1)
+                if (HelperFunctions.GetBit(i, board.BlackPawns) == 1)
                 {
                     evaluation -= pawnValue;
 
@@ -185,31 +199,31 @@ namespace ChessEngine
 
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.BlackKing) == 1)
+                if (HelperFunctions.GetBit(i, board.BlackKing) == 1)
                 {
                     blackKingPositions.Add(i);
                     blackKingAlive = true;
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.BlackKnights) == 1)
+                if (HelperFunctions.GetBit(i, board.BlackKnights) == 1)
                 {
                     blackKnightPositions.Add(i);
                     evaluation -= knightsValue;
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.BlackBishops) == 1)
+                if (HelperFunctions.GetBit(i, board.BlackBishops) == 1)
                 {
                     evaluation -= bishopsValue;
                     blackBishopPositions.Add(i);
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.BlackRooks) == 1)
+                if (HelperFunctions.GetBit(i, board.BlackRooks) == 1)
                 {
                     evaluation -= rookValue;
                     blackRookPositions.Add(i);
                     amountOfPieces++;
                 }
-                if (HelperFunctions.GetByte(i, board.BlackQueens) == 1)
+                if (HelperFunctions.GetBit(i, board.BlackQueens) == 1)
                 {
                     evaluation -= queenValue;
                     blackQueenPositions.Add(i);
@@ -255,6 +269,15 @@ namespace ChessEngine
                     evaluation -= earlyBlackRookBonus[pos];
                 }
 
+                foreach (int pos in whiteBishopPositions)
+                {
+                    evaluation += earlyBishopBonus[pos];
+                }
+                foreach (int pos in blackBishopPositions)
+                {
+                    evaluation -= earlyBishopBonus[pos];
+                }
+
             }
 
             // These values are probably to high
@@ -267,6 +290,7 @@ namespace ChessEngine
             {
                 evaluation -= 8000;
             }
+
             return evaluation;
         }
 
@@ -332,36 +356,35 @@ namespace ChessEngine
             for (int i = 0; i < 64; i++)
             {
                 // Control Squares Bonus
-                if (board.WhiteAttackBoard[i])
+                if (HelperFunctions.GetBit(i, board.WhiteAttackBoard)==1)
                 {
                     evaluation += perSquareBonus;
                 }
-                if (board.BlackAttackBoard[i])
+                if (HelperFunctions.GetBit(i, board.BlackAttackBoard) == 1)
                 {
                     evaluation -= perSquareBonus;
                 }
 
                 // Defence Bonus
-                if (HelperFunctions.GetByte(i, board.BlackPieces) == 1 && board.BlackAttackBoard[i])
+                if (HelperFunctions.GetBit(i, board.BlackPieces) == 1 && HelperFunctions.GetBit(i, board.BlackAttackBoard)==1)
                 {
                     evaluation -= 10;
                 }
-                if (HelperFunctions.GetByte(i, board.WhitePieces) == 1 && board.WhiteAttackBoard[i])
+                if (HelperFunctions.GetBit(i, board.WhitePieces) == 1 && HelperFunctions.GetBit(i, board.WhiteAttackBoard)==1)
                 {
                     evaluation += 10;
                 }
 
                 // Attack Bonus
-                if (HelperFunctions.GetByte(i, board.BlackPieces) == 1 && board.WhiteAttackBoard[i])
+                if (HelperFunctions.GetBit(i, board.BlackPieces) == 1 && HelperFunctions.GetBit(i, board.WhiteAttackBoard)==1)
                 {
                     evaluation += 10;
                 }
-                if (HelperFunctions.GetByte(i, board.WhitePieces) == 1 && board.BlackAttackBoard[i])
+                if (HelperFunctions.GetBit(i, board.WhitePieces) == 1 && HelperFunctions.GetBit(i, board.BlackAttackBoard)==1)
                 {
                     evaluation -= 10;
                 }
             }
-
             return evaluation;
         }
 

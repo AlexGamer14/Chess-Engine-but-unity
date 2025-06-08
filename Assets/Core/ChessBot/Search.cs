@@ -1,10 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
-using System.IO;
-using System.Linq;
-using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 namespace ChessEngine
@@ -106,41 +102,51 @@ namespace ChessEngine
 
         public static MovePieces.Move IterativeSearchAllMoves(int depth, bool isWhiteToMove, ChessBoard board)
         {
-            //Debug.Log("Is this a memory leak? (in iterativesearchallmoves)");
             Evaluation evaluation = new();
-            MovePieces.Move bestMove = new();
-            float bestEval = float.PositiveInfinity;
+            MovePieces.Move bestMove = default;
+            float bestEval = isWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity;
 
             MovePieces.Move[] rootMoves = MovePieces.GetMovesForBlackOrWhite(isWhiteToMove, board);
 
             foreach (var move in rootMoves)
             {
                 ChessBoard newBoard = (ChessBoard)board.Clone();
-                int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, newBoard);
+                int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(move.startPos, newBoard);
                 MovePieces.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
 
-                float eval = Minimax(newBoard, depth - 1, 0, !isWhiteToMove, evaluation, float.NegativeInfinity, float.PositiveInfinity);
+                float eval = Minimax(newBoard, depth - 1, 0, !isWhiteToMove, evaluation, isWhiteToMove ? float.PositiveInfinity : float.NegativeInfinity, isWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity);
 
-                if (eval < bestEval)
+                if (isWhiteToMove)
                 {
-                    bestEval = eval;
-                    bestMove = move;
+                    if (eval > bestEval)
+                    {
+                        bestEval = eval;
+                        bestMove = move;
+                    }
+                }
+                else
+                {
+                    if (eval < bestEval)
+                    {
+                        bestEval = eval;
+                        bestMove = move;
+                    }
                 }
             }
 
             Debug.Log("Best eval: " + bestEval);
+
             return bestMove;
         }
 
         private static float Minimax(ChessBoard board, int depth, int amountExtended, bool isWhiteToMove, Evaluation evaluation, float alpha, float beta)
         {
-            float alphaOriginal = alpha;
-
             if (depth == 0)
             {
                 return evaluation.Evaluate(board, isWhiteToMove);
             }
 
+            float alphaOriginal = alpha;
             ulong zobristKey = board.ComputeZobristHash();
 
             if (transpositionTable.TryGet(zobristKey, out var ttEntry) && ttEntry.Depth >= depth)
@@ -167,25 +173,20 @@ namespace ChessEngine
                 return evaluation.Evaluate(board, isWhiteToMove);
             }
 
+
             float bestEval = isWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity;
             MovePieces.Move bestMove = default;
+            
 
             foreach (var move in moves)
             {
                 ChessBoard newBoard = (ChessBoard)board.Clone();
-                int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(int.MaxValue, move.startPos, newBoard);
+                int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(move.startPos, newBoard);
                 MovePieces.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
 
                 float eval;
 
-                if (board.IsWhiteChecked() && amountExtended < 10)
-                {
-                    eval = Minimax(newBoard, depth, amountExtended + 1, !isWhiteToMove, evaluation, alpha, beta);
-                }
-                else
-                {
-                    eval = Minimax(newBoard, depth - 1, amountExtended, !isWhiteToMove, evaluation, alpha, beta);
-                }
+                eval = Minimax(newBoard, depth - 1, amountExtended, !isWhiteToMove, evaluation, alpha, beta);
 
                 if (isWhiteToMove)
                 {
@@ -222,18 +223,6 @@ namespace ChessEngine
             transpositionTable.Store(zobristKey, bestEval, depth, type, bestMove);
 
             return bestEval;
-        }
-    }
-
-    public class MoveAndEval 
-    {
-        public MovePieces.Move move;
-        public float eval;
-
-        public MoveAndEval(MovePieces.Move move, float eval)
-        {
-            this.move = move;
-            this.eval = eval;
         }
     }
 }

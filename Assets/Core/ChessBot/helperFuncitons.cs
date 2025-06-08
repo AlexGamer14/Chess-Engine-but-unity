@@ -31,59 +31,61 @@ namespace ChessEngine
         }
 
 
-        public static byte GetByte(int byteIndex, ulong bytes)
+        public static byte GetBit(int byteIndex, ulong bytes)
         {
             return (bytes >> byteIndex) % 2 == 1 ? (byte)1 : (byte)0;
         }
 
-        public static int CheckIfPieceOnEveryBoard(int pieceToNotCheck, int position)
+        public static int CheckIfPieceOnEveryBoard(int position)
         {
-            if (pieceToNotCheck != 0 && GetByte(position, ChessEngine.board.WhitePawns) == 1)
+            if (GetBit(position, ChessEngine.board.AllPieces) == 0) { return int.MaxValue; }
+
+            if (GetBit(position, ChessEngine.board.WhitePawns) == 1)
             {
                 return 0;
             }
-            if (pieceToNotCheck != 1 && GetByte(position, ChessEngine.board.WhiteKnights) == 1)
+            if (GetBit(position, ChessEngine.board.WhiteKnights) == 1)
             {
                 return 1;
             }
-            if (pieceToNotCheck != 2 && GetByte(position, ChessEngine.board.WhiteBishops) == 1)
+            if (GetBit(position, ChessEngine.board.WhiteBishops) == 1)
             {
                 return 2;
             }
-            if (pieceToNotCheck != 3 && GetByte(position, ChessEngine.board.WhiteRooks) == 1)
+            if (GetBit(position, ChessEngine.board.WhiteRooks) == 1)
             {
                 return 3;
             }
-            if (pieceToNotCheck != 4 && GetByte(position, ChessEngine.board.WhiteQueens) == 1)
+            if (GetBit(position, ChessEngine.board.WhiteQueens) == 1)
             {
                 return 4;
             }
-            if (pieceToNotCheck != 5 && GetByte(position, ChessEngine.board.WhiteKing) == 1)
+            if (GetBit(position, ChessEngine.board.WhiteKing) == 1)
             {
                 return 5;
             }
 
-            if (pieceToNotCheck != 6 && GetByte(position, ChessEngine.board.BlackPawns) == 1)
+            if (GetBit(position, ChessEngine.board.BlackPawns) == 1)
             {
                 return 6;
             }
-            if (pieceToNotCheck != 7 && GetByte(position, ChessEngine.board.BlackKnights) == 1)
+            if (GetBit(position, ChessEngine.board.BlackKnights) == 1)
             {
                 return 7;
             }
-            if (pieceToNotCheck != 8 && GetByte(position, ChessEngine.board.BlackBishops) == 1)
+            if (GetBit(position, ChessEngine.board.BlackBishops) == 1)
             {
                 return 8;
             }
-            if (pieceToNotCheck != 9 && GetByte(position, ChessEngine.board.BlackRooks) == 1)
+            if (GetBit(position, ChessEngine.board.BlackRooks) == 1)
             {
                 return 9;
             }
-            if (pieceToNotCheck != 10 && GetByte(position, ChessEngine.board.BlackQueens) == 1)
+            if (GetBit(position, ChessEngine.board.BlackQueens) == 1)
             {
                 return 10;
             }
-            if (pieceToNotCheck != 11 && GetByte(position, ChessEngine.board.BlackKing) == 1)
+            if (GetBit(position, ChessEngine.board.BlackKing) == 1)
             {
                 return 11;
             }
@@ -91,54 +93,56 @@ namespace ChessEngine
             // failsafe
             return int.MaxValue;
         }
-        public static int CheckIfPieceOnEveryBoard(int pieceToNotCheck, int position, ChessBoard board)
+        public static int CheckIfPieceOnEveryBoard(int position, ChessBoard board)
         {
-            if (pieceToNotCheck != 0 && GetByte(position, board.WhitePawns) == 1)
+            if (GetBit(position, board.AllPieces)==0) { return int.MaxValue;  }
+
+            if (GetBit(position, board.WhitePawns) == 1)
             {
                 return 0;
             }
-            if (pieceToNotCheck != 1 && GetByte(position, board.WhiteKnights) == 1)
+            if (GetBit(position, board.WhiteKnights) == 1)
             {
                 return 1;
             }
-            if (pieceToNotCheck != 2 && GetByte(position, board.WhiteBishops) == 1)
+            if (GetBit(position, board.WhiteBishops) == 1)
             {
                 return 2;
             }
-            if (pieceToNotCheck != 3 && GetByte(position, board.WhiteRooks) == 1)
+            if (GetBit(position, board.WhiteRooks) == 1)
             {
                 return 3;
             }
-            if (pieceToNotCheck != 4 && GetByte(position, board.WhiteQueens) == 1)
+            if (GetBit(position, board.WhiteQueens) == 1)
             {
                 return 4;
             }
-            if (pieceToNotCheck != 5 && GetByte(position, board.WhiteKing) == 1)
+            if (GetBit(position, board.WhiteKing) == 1)
             {
                 return 5;
             }
 
-            if (pieceToNotCheck != 6 && GetByte(position, board.BlackPawns) == 1)
+            if (GetBit(position, board.BlackPawns) == 1)
             {
                 return 6;
             }
-            if (pieceToNotCheck != 7 && GetByte(position, board.BlackKnights) == 1)
+            if (GetBit(position, board.BlackKnights) == 1)
             {
                 return 7;
             }
-            if (pieceToNotCheck != 8 && GetByte(position, board.BlackBishops) == 1)
+            if (GetBit(position, board.BlackBishops) == 1)
             {
                 return 8;
             }
-            if (pieceToNotCheck != 9 && GetByte(position, board.BlackRooks) == 1)
+            if (GetBit(position, board.BlackRooks) == 1)
             {
                 return 9;
             }
-            if (pieceToNotCheck != 10 && GetByte(position, board.BlackQueens) == 1)
+            if (GetBit(position, board.BlackQueens) == 1)
             {
                 return 10;
             }
-            if (pieceToNotCheck != 11 && GetByte(position, board.BlackKing) == 1)
+            if (GetBit(position, board.BlackKing) == 1)
             {
                 return 11;
             }
@@ -149,51 +153,51 @@ namespace ChessEngine
 
         public static byte GetBaseType(int byteIndex)
         {
-            if (GetByte(byteIndex, ChessEngine.board.WhitePawns) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.WhitePawns) == 1)
             {
                 return 0;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackPawns) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.BlackPawns) == 1)
             {
                 return 6;
             }
-            if (GetByte(byteIndex, ChessEngine.board.WhiteRooks) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.WhiteRooks) == 1)
             {
                 return 3;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackRooks) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.BlackRooks) == 1)
             {
                 return 9;
             }
-            if (GetByte(byteIndex, ChessEngine.board.WhiteKnights) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.WhiteKnights) == 1)
             {
                 return 1;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackKnights) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.BlackKnights) == 1)
             {
                 return 7;
             }
-            if (GetByte(byteIndex, ChessEngine.board.WhiteBishops) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.WhiteBishops) == 1)
             {
                 return 2;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackBishops) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.BlackBishops) == 1)
             {
                 return 8;
             }
-            if (GetByte(byteIndex, ChessEngine.board.WhiteQueens) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.WhiteQueens) == 1)
             {
                 return 4;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackQueens) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.BlackQueens) == 1)
             {
                 return 10;
             }
-            if (GetByte(byteIndex, ChessEngine.board.WhiteKing) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.WhiteKing) == 1)
             {
                 return 5;
             }
-            if (GetByte(byteIndex, ChessEngine.board.BlackKing) == 1)
+            if (GetBit(byteIndex, ChessEngine.board.BlackKing) == 1)
             {
                 return 11;
             }
@@ -282,7 +286,7 @@ namespace ChessEngine
 
             for (int i = 0; i < 64; i++)
             {
-                returnList.Add(GetByte(i, bitboard));
+                returnList.Add(GetBit(i, bitboard));
             }
 
             return returnList;
@@ -299,7 +303,7 @@ namespace ChessEngine
 
             foreach (T value in values)
             {
-                str += value + " ";
+                str += value.ToString() + " ";
             }
 
             Debug.Log(str);

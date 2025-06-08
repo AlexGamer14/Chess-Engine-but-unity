@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using UnityEngine;
 
 namespace ChessEngine
@@ -19,8 +20,6 @@ namespace ChessEngine
         public ulong BlackRooks;
         public ulong BlackQueens;
         public ulong BlackKing ;
-        //Casteling rights
-        public byte CanCastle;
 
         public bool WhiteCanCastleQueenside;
         public bool WhiteCanCastleKingside;
@@ -38,10 +37,13 @@ namespace ChessEngine
 
         // En passant target square
         public byte EnPassantTargetSquare;
-        
+
+        public byte WhiteKingPos; // e1
+        public byte BlackKingPos; // e8
+
         // Attack boards
-        public bool[] WhiteAttackBoard;
-        public bool[] BlackAttackBoard;
+        public ulong WhiteAttackBoard;
+        public ulong BlackAttackBoard;
 
         public bool WhiteToMove;
 
@@ -77,9 +79,12 @@ namespace ChessEngine
 
             EnPassantTargetSquare = byte.MaxValue;
 
-            WhiteAttackBoard = new bool[64];
-            BlackAttackBoard = new bool[64];
-            
+            WhiteAttackBoard = 0;
+            BlackAttackBoard = 0;
+
+            WhiteKingPos = 4;
+            BlackKingPos = 60;
+
             WhiteCanCastleKingside = false;
             WhiteCanCastleQueenside = false;
             BlackCanCastleKingside = false;
@@ -100,7 +105,7 @@ namespace ChessEngine
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    boardText += HelperFunctions.GetByte(j + i * 8, WhitePieces);
+                    boardText += HelperFunctions.GetBit(j + i * 8, WhitePieces);
                 }
                 boardText += "\n";
             }
@@ -110,16 +115,10 @@ namespace ChessEngine
 
         public bool IsWhiteChecked()
         {
-            for (byte x = 0; x < 64; x++)
-            {
-                if (HelperFunctions.GetByte(x, WhiteKing) == 1 && BlackAttackBoard[x])
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return HelperFunctions.GetBit(WhiteKingPos, BlackAttackBoard)==1;
         }
+
+
 
         public bool IsWhiteStaleMate()
         {
@@ -190,15 +189,7 @@ namespace ChessEngine
         }
         public bool IsBlackChecked()
         {
-            for (byte x = 0; x < 64; x++)
-            {
-                if (HelperFunctions.GetByte(x, BlackKing) == 1 && WhiteAttackBoard[x])
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return HelperFunctions.GetBit(BlackKingPos, WhiteAttackBoard) == 1;
         }
 
         public ulong ComputeZobristHash()
@@ -422,6 +413,9 @@ namespace ChessEngine
                 WhiteCanCastleQueenside = this.WhiteCanCastleQueenside,
                 BlackCanCastleKingside = this.BlackCanCastleKingside,
                 BlackCanCastleQueenside = this.BlackCanCastleQueenside,
+
+                BlackKingPos = this.BlackKingPos,
+                WhiteKingPos = this.WhiteKingPos,
 
                 WhiteToMove = this.WhiteToMove,
 

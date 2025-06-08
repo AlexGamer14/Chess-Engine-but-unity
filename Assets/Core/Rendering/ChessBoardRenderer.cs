@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -174,7 +174,7 @@ namespace ChessEngine {
 
             if (ChessEngine.EnableAI)
             {
-                MovePieces.MakeAIMove(false);
+                ChessEngine.MoveBlackAI = true;
             }
         }
 
@@ -185,51 +185,51 @@ namespace ChessEngine {
                 for (int y = 0; y < size; y++)
                 {
                     board[y, x].SetActive (true);
-                    if (HelperFunctions.GetByte(y*size+x, ChessEngine.board.WhitePawns) == 1)
+                    if (HelperFunctions.GetBit(y*size+x, ChessEngine.board.WhitePawns) == 1)
                     {
                         board[y,x].GetComponent<Image>().sprite = spriteSheet[0];
                     }
-                    else if (HelperFunctions.GetByte(y*size+x, ChessEngine.board.WhiteRooks) == 1)
+                    else if (HelperFunctions.GetBit(y*size+x, ChessEngine.board.WhiteRooks) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[1];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.WhiteBishops) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.WhiteBishops) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[2];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.WhiteKnights) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.WhiteKnights) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[3];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.WhiteQueens) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.WhiteQueens) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[4];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.WhiteKing) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.WhiteKing) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[5];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.BlackPawns) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.BlackPawns) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[6];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.BlackRooks) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.BlackRooks) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[7];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.BlackBishops) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.BlackBishops) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[8];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.BlackKnights) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.BlackKnights) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[9];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.BlackQueens) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.BlackQueens) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[10];
                     }
-                    else if (HelperFunctions.GetByte(y * size + x, ChessEngine.board.BlackKing) == 1)
+                    else if (HelperFunctions.GetBit(y * size + x, ChessEngine.board.BlackKing) == 1)
                     {
                         board[y, x].GetComponent<Image>().sprite = spriteSheet[11];
                     }
@@ -254,7 +254,7 @@ namespace ChessEngine {
                 for (int y = 0; y < size; y++)
                 {
                     if (reset_val) attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
-                    if (ChessEngine.board.WhiteAttackBoard[y * 8 + x] && white)
+                    if (HelperFunctions.GetBit(y * 8 + x, ChessEngine.board.WhiteAttackBoard)==1 && white)
                     {
                         attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);
                     }
@@ -263,7 +263,7 @@ namespace ChessEngine {
                         attackBoardBoard[y, x].GetComponent<Image>().color = new Color(0, 0, 0, 0);
                     }
 
-                    if (ChessEngine.board.BlackAttackBoard[y * 8 + x] && !white)
+                    if (HelperFunctions.GetBit(y * 8 + x, ChessEngine.board.BlackAttackBoard) == 1 && !white)
                     {
                         attackBoardBoard[y, x].GetComponent<Image>().color = new Color(1, 0, 0, 0.3f);
                     }

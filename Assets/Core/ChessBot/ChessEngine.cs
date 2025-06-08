@@ -28,11 +28,14 @@ namespace ChessEngine
         public static Evaluation evaluation = new Evaluation();
 
         public static bool EnableAI = true;
+        public bool EnableAI_VS_AI = false;
         [SerializeField] bool EnableAIInspector = true;
 
         public InputField FENInput;
 
         public int depth_inspector = 3;
+        public static bool MoveBlackAI = false;
+        public static bool MoveWhiteAI = false;
 
         public static int depth;
 
@@ -69,7 +72,8 @@ namespace ChessEngine
             self = transform;
 
             //board = new ChessBoard();
-            //Console.WriteLine(GetByte(1, board.AllPieces));
+            //Console.WriteLine(
+            //(1, board.AllPieces));
 
             EnableAI = EnableAIInspector;
 
@@ -85,6 +89,8 @@ namespace ChessEngine
             MovePieces.UpdateAttackBoard(ref board);
 
             Debug.Log(System.Runtime.InteropServices.Marshal.SizeOf<TranspositionTable.TTEntry>());
+
+            MoveWhiteAI = true;
         }
 
 
@@ -110,8 +116,49 @@ namespace ChessEngine
 
             if (Input.GetKeyDown(KeyCode.A))
             {
-                HelperFunctions.PrintArray(board.WhiteAttackBoard);
+                print(board.WhiteKingPos);
+                print(board.BlackKingPos);
             }
+
+            if (MoveWhiteAI && EnableAI_VS_AI)
+            {
+                StartCoroutine(MoveNextFrame(true));
+            }
+
+            else if (MoveBlackAI)
+            {
+                StartCoroutine(MoveNextFrame(false));
+            }
+
+            if (MoveWhiteAI && EnableAI_VS_AI)
+            {
+                MoveWhiteAI = false;
+                MoveBlackAI = true;
+            }
+            else if (MoveBlackAI)
+            {
+                MoveBlackAI = false;
+                MoveWhiteAI = EnableAI_VS_AI;
+            }
+        }
+
+        IEnumerator MoveNextFrame(bool white)
+        {
+            int current_frame = Time.frameCount;
+            while (current_frame == Time.frameCount)
+            {
+                yield return null; // Wait for the next frame
+            }
+
+            System.Diagnostics.Stopwatch stopwatch = new();
+            stopwatch.Start();
+
+            MovePieces.MakeAIMove(white);
+
+            stopwatch.Stop();
+            Debug.Log($"Move took {stopwatch.ElapsedMilliseconds} ms");
+            Debug.Log("MoveGen took " + MovePieces.moveGenTime.ElapsedMilliseconds + " ms");
+            MovePieces.moveGenTime.Reset();
         }
 
         public void LoadFenString()
