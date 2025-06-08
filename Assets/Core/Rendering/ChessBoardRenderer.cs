@@ -25,6 +25,8 @@ namespace ChessEngine {
 
         public GameObject promotionBackground;
 
+        private Image evalImage;
+
 
         public void Initialize(Transform parentObj, Sprite[] sprites, GameObject prefab, GameObject movePrefab, GameObject AttackBoardPrefab, GameObject qpbtn, GameObject rpbtn, GameObject bpbtn, GameObject kpbtn, GameObject backgroundPromotion)
         {
@@ -37,6 +39,8 @@ namespace ChessEngine {
             rookPromoteBtn = rpbtn.GetComponent<Button>();
             bishopPromoteBtn = bpbtn.GetComponent<Button>();
             knightPromoteBtn = kpbtn.GetComponent<Button>();
+
+            evalImage = GameObject.Find("EvalImage").GetComponent<Image>();
 
             if (queenPromoteBtn is null || rookPromoteBtn is null || bishopPromoteBtn is null || knightPromoteBtn is null)
             {
@@ -157,6 +161,12 @@ namespace ChessEngine {
             }
         }
 
+        public void UpdateEval()
+        {
+            Evaluation evaluation = new Evaluation();
+            evalImage.fillAmount = (evaluation.Evaluate(ChessEngine.board, ChessEngine.board.WhiteToMove) / 200) + 0.5f;
+        }
+
         public void SecondPartOfHumanMove(MovePieces.Move move, int pieceType)
         {
             MovePieces.MovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType), pieceType, move, ref ChessEngine.board);
@@ -180,6 +190,8 @@ namespace ChessEngine {
 
         public void UpdateBoard()
         {
+            UpdateEval();
+
             for (int x = 0; x < size; x++)
             {
                 for (int y = 0; y < size; y++)
