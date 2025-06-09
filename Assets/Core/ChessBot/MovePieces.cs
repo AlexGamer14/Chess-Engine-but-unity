@@ -10,13 +10,15 @@ namespace ChessEngine
     {
         public static System.Diagnostics.Stopwatch moveGenTime = new System.Diagnostics.Stopwatch();
 
-        public enum PromotionType
+        public enum SpecialFlags
         {
             Knight,
             Bishop,
             Rook,
             Queen,
-            None
+            KingSideCastle,
+            QueenSideCastle,
+            None,
         }
 
         public static void MovePiece(ref ulong pieces, int pieceType, Move move, ref ChessBoard board)
@@ -31,8 +33,12 @@ namespace ChessEngine
 
             board.WhiteToMove = !board.WhiteToMove;
 
+            // Removes the bit from the position
             pieces &= ~(1UL << move.startPos);
+            // Adds the bit to the new position
             if (!canPromote) pieces |= (1UL << move.endPos);
+
+            DoCastleMoves(move.specialFlags, ref board, pieceType < 6);
             board.UpdateBitBoards();
 
             if (pieceType==5)
@@ -63,6 +69,9 @@ namespace ChessEngine
 
             pieces &= ~(1UL << move.startPos);
             if (!canPromote) pieces |= (1UL << move.endPos);
+
+            DoCastleMoves(move.specialFlags, ref board, pieceType < 6);
+
             board.UpdateBitBoards();
 
             if (pieceType == 5)
@@ -108,49 +117,77 @@ namespace ChessEngine
                         return moves.ToArray();
                     }
 
-                    
+
                     if (position < 56 && HelperFunctions.GetBit(position + 8, board.AllPieces) == 0)
                     {
-                        if (position + 8 > 55)
+                        // Quiet move forward
+                        if (position + 8 > 55) // Promotion
                         {
                             if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 8)), true))
                             {
-                                moves.Add(new Move((byte)position, (byte)(position + 8), PromotionType.Queen));
-                                moves.Add(new Move((byte)position, (byte)(position + 8), PromotionType.Rook));
-                                moves.Add(new Move((byte)position, (byte)(position + 8), PromotionType.Bishop));
-                                moves.Add(new Move((byte)position, (byte)(position + 8), PromotionType.Knight));
+                                moves.Add(new((byte)position, (byte)(position + 8), SpecialFlags.Queen));
+                                moves.Add(new((byte)position, (byte)(position + 8), SpecialFlags.Rook));
+                                moves.Add(new((byte)position, (byte)(position + 8), SpecialFlags.Bishop));
+                                moves.Add(new((byte)position, (byte)(position + 8), SpecialFlags.Knight));
                             }
                         }
                         else
                         {
-                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 8)), true)) moves.Add(new Move((byte)position, (byte)(position + 8)));
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 8)), true))
+                                moves.Add(new((byte)position, (byte)(position + 8)));
                         }
-                        if (position > 7 && position < 16 && position < 48 && HelperFunctions.GetBit(position + 16, board.AllPieces) == 0)
+
+                        // Double move from starting rank
+                        if (position >= 8 && position < 16 && HelperFunctions.GetBit(position + 16, board.AllPieces) == 0)
                         {
-                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 16)), true)) moves.Add(new((byte)position, (byte)(position + 16)));
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 16)), true))
+                                moves.Add(new((byte)position, (byte)(position + 16)));
                         }
                     }
+
+                    // Captures
                     if (position < 56)
                     {
-                        if (position % 8 != 7)
+                        // Capture right
+                        if (position % 8 != 7 && HelperFunctions.GetBit(position + 9, board.BlackPieces) == 1)
                         {
-                            if (HelperFunctions.GetBit(position + 9, board.BlackPieces) == 1)
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 9)), true))
                             {
-                                if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 9)), true))  moves.Add(new((byte)position, (byte)(position + 9)));
-
+                                if (position + 9 > 55) // Promotion capture
+                                {
+                                    moves.Add(new((byte)position, (byte)(position + 9), SpecialFlags.Queen));
+                                    moves.Add(new((byte)position, (byte)(position + 9), SpecialFlags.Rook));
+                                    moves.Add(new((byte)position, (byte)(position + 9), SpecialFlags.Bishop));
+                                    moves.Add(new((byte)position, (byte)(position + 9), SpecialFlags.Knight));
+                                }
+                                else
+                                {
+                                    moves.Add(new((byte)position, (byte)(position + 9)));
+                                }
                             }
                         }
-                        if (position % 8 != 0)
-                        {
 
-                            if (HelperFunctions.GetBit(position + 7, board.BlackPieces) == 1)
+                        // Capture left
+                        if (position % 8 != 0 && HelperFunctions.GetBit(position + 7, board.BlackPieces) == 1)
+                        {
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 7)), true))
                             {
-                                if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 7)), true))
+                                if (position + 7 > 55) // Promotion capture
+                                {
+                                    moves.Add(new((byte)position, (byte)(position + 7), SpecialFlags.Queen));
+                                    moves.Add(new((byte)position, (byte)(position + 7), SpecialFlags.Rook));
+                                    moves.Add(new((byte)position, (byte)(position + 7), SpecialFlags.Bishop));
+                                    moves.Add(new((byte)position, (byte)(position + 7), SpecialFlags.Knight));
+                                }
+                                else
+                                {
                                     moves.Add(new((byte)position, (byte)(position + 7)));
+                                }
                             }
                         }
-
                     }
+
+                    // En passant
                     if (position % 8 != 7 && position + 9 == board.EnPassantTargetSquare)
                     {
                         if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position + 9)), true))
@@ -163,7 +200,6 @@ namespace ChessEngine
                     }
 
                     break;
-                    
                 case 1:
                     
                     if (HelperFunctions.GetBit(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
@@ -270,53 +306,75 @@ namespace ChessEngine
 
                     break;
                 case 6:
-                    
-                    if (HelperFunctions.GetBit(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
-                    {
-                        //moveGenTime.Stop();
-                        return moves.ToArray();
-                    }
 
+                    if (HelperFunctions.GetBit(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
+                        return moves.ToArray();
+
+                    // Forward one square
                     if (position > 7 && HelperFunctions.GetBit(position - 8, board.AllPieces) == 0)
                     {
-                        if (position - 8 < 8)
+                        if (position - 8 < 8) // Promotion rank
                         {
                             if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 8)), false))
                             {
-                                moves.Add(new Move((byte)position, (byte)(position - 8), PromotionType.Queen));
-                                moves.Add(new Move((byte)position, (byte)(position - 8), PromotionType.Rook));
-                                moves.Add(new Move((byte)position, (byte)(position - 8), PromotionType.Bishop));
-                                moves.Add(new Move((byte)position, (byte)(position - 8), PromotionType.Knight));
+                                moves.Add(new((byte)position, (byte)(position - 8), SpecialFlags.Queen));
+                                moves.Add(new((byte)position, (byte)(position - 8), SpecialFlags.Rook));
+                                moves.Add(new((byte)position, (byte)(position - 8), SpecialFlags.Bishop));
+                                moves.Add(new((byte)position, (byte)(position - 8), SpecialFlags.Knight));
                             }
                         }
                         else
                         {
-                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 8)), false)) moves.Add(new Move((byte)position, (byte)(position - 8)));
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 8)), false))
+                                moves.Add(new((byte)position, (byte)(position - 8)));
                         }
 
-                        // Forward move by 2 from starting rank
+                        // Double forward move from starting rank
                         if (position >= 48 && position < 56 && HelperFunctions.GetBit(position - 16, board.AllPieces) == 0)
                         {
-                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 16)), false))  moves.Add(new((byte)position, (byte)(position - 16)));
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 16)), false))
+                                moves.Add(new((byte)position, (byte)(position - 16)));
                         }
                     }
 
-                    // Diagonal captures and attack board
+                    // Diagonal captures
                     if (position > 7)
                     {
-                        if (position % 8 != 7)
+                        // Capture right
+                        if (position % 8 != 7 && HelperFunctions.GetBit(position - 7, board.WhitePieces) == 1)
                         {
-                            if (HelperFunctions.GetBit(position - 7, board.WhitePieces) == 1)
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 7)), false))
                             {
-                                if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 7)), false))  moves.Add(new((byte)position, (byte)(position - 7)));
+                                if (position - 7 < 8) // Promotion capture
+                                {
+                                    moves.Add(new((byte)position, (byte)(position - 7), SpecialFlags.Queen));
+                                    moves.Add(new((byte)position, (byte)(position - 7), SpecialFlags.Rook));
+                                    moves.Add(new((byte)position, (byte)(position - 7), SpecialFlags.Bishop));
+                                    moves.Add(new((byte)position, (byte)(position - 7), SpecialFlags.Knight));
+                                }
+                                else
+                                {
+                                    moves.Add(new((byte)position, (byte)(position - 7)));
+                                }
                             }
                         }
 
-                        if (position % 8 != 0)
+                        // Capture left
+                        if (position % 8 != 0 && HelperFunctions.GetBit(position - 9, board.WhitePieces) == 1)
                         {
-                            if (HelperFunctions.GetBit(position - 9, board.WhitePieces) == 1)
+                            if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 9)), false))
                             {
-                                if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 9)), false)) moves.Add(new((byte)position, (byte)(position - 9)));
+                                if (position - 9 < 8) // Promotion capture
+                                {
+                                    moves.Add(new((byte)position, (byte)(position - 9), SpecialFlags.Queen));
+                                    moves.Add(new((byte)position, (byte)(position - 9), SpecialFlags.Rook));
+                                    moves.Add(new((byte)position, (byte)(position - 9), SpecialFlags.Bishop));
+                                    moves.Add(new((byte)position, (byte)(position - 9), SpecialFlags.Knight));
+                                }
+                                else
+                                {
+                                    moves.Add(new((byte)position, (byte)(position - 9)));
+                                }
                             }
                         }
                     }
@@ -324,14 +382,16 @@ namespace ChessEngine
                     // En passant
                     if (position % 8 != 0 && position - 9 == board.EnPassantTargetSquare)
                     {
-                        if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 9)), false)) moves.Add(new((byte)position, (byte)(position - 9)));
+                        if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 9)), false))
+                            moves.Add(new((byte)position, (byte)(position - 9)));
                     }
                     if (position % 8 != 7 && position - 7 == board.EnPassantTargetSquare)
                     {
-                        if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 7 )), false)) moves.Add(new((byte)position, (byte)(position - 7)));
+                        if (blocksCheck(board, pieceType, new Move((byte)position, (byte)(position - 7)), false))
+                            moves.Add(new((byte)position, (byte)(position - 7)));
                     }
-                    break;
 
+                    break;
                 case 7:
                     if (HelperFunctions.GetBit(position, HelperFunctions.GetTypeBasedOnIndex(pieceType, ref board)) == 0)
                     {
@@ -443,22 +503,18 @@ namespace ChessEngine
             if (pieceType==0&&move.endPos >55)
             {
                 HelperFunctions.SetBit(ref board.WhitePawns, move.endPos);
-                switch (move.promotionType)
+                switch (move.specialFlags)
                 {
-                    case PromotionType.Knight:
-                        Debug.Log("Spawning Knight" + move.endPos + " " + move.promotionType);
+                    case SpecialFlags.Knight:
                         HelperFunctions.SetBit(ref board.WhiteKnights, move.endPos, 1);
                         return true;
-                    case PromotionType.Bishop:
-                        Debug.Log("Spawning Bishop" + move.endPos + " " + move.promotionType);
+                    case SpecialFlags.Bishop:
                         HelperFunctions.SetBit(ref board.WhiteBishops, move.endPos, 1);
                         return true;
-                    case PromotionType.Rook:
-                        Debug.Log("Spawning Rook" + move.endPos + " " + move.promotionType);
+                    case SpecialFlags.Rook:
                         HelperFunctions.SetBit(ref board.WhiteRooks, move.endPos,1);
                         return true;
-                    case PromotionType.Queen:
-                        Debug.Log("Spawning Queen" + move.endPos + " " + move.promotionType);
+                    case SpecialFlags.Queen:
                         HelperFunctions.SetBit(ref board.WhiteQueens, move.endPos,1);
                         return true;
                 }
@@ -467,21 +523,21 @@ namespace ChessEngine
             if (pieceType == 6 && move.endPos < 8)
             {
                 HelperFunctions.SetBit(ref board.BlackPawns, move.endPos);
-                switch (move.promotionType)
+                switch (move.specialFlags)
                 {
-                    case PromotionType.Knight:
+                    case SpecialFlags.Knight:
                         HelperFunctions.SetBit(ref board.BlackKnights, move.endPos, 1);
                         return true;
                         
-                    case PromotionType.Bishop:
+                    case SpecialFlags.Bishop:
                         HelperFunctions.SetBit(ref board.BlackBishops, move.endPos, 1);
                         return true;
                         
-                    case PromotionType.Rook:
+                    case SpecialFlags.Rook:
                         HelperFunctions.SetBit(ref board.BlackRooks, move.endPos, 1);
                         return true;
                         
-                    case PromotionType.Queen:
+                    case SpecialFlags.Queen:
                         HelperFunctions.SetBit(ref board.BlackQueens, move.endPos, 1);
                         return true;
                 }
@@ -490,10 +546,9 @@ namespace ChessEngine
             return false;
         }
 
-
+        
         public static bool blocksCheck(ChessBoard board, int pieceType, Move move, bool white)
         {
-            //moveGenTime.Start();
 
             ChessBoard copy = (ChessBoard)board.Clone();
 
@@ -505,7 +560,6 @@ namespace ChessEngine
             {
                 if (!copy.IsWhiteChecked())
                 {
-                    moveGenTime.Stop();
                     return true;
                 }
             }
@@ -513,7 +567,6 @@ namespace ChessEngine
             {
                 if (!copy.IsBlackChecked())
                 {
-                    moveGenTime.Stop();
                     return true;
                 }
             }
@@ -1185,7 +1238,7 @@ namespace ChessEngine
             {
                 int updatePosition = position + 9;
                 while (updatePosition < 64 && updatePosition % 8 != 0)
-                {;
+                {
                     if (HelperFunctions.GetBit(updatePosition, friendlyPieces) == 1)
                     {
                         break;
@@ -1258,6 +1311,8 @@ namespace ChessEngine
             if (HelperFunctions.GetBit(position, friendlyPieces) == 0)
                 return;
 
+            GetCastleMoves(pieceType < 6, ref moves, board);
+
             int[] directions = { 8, 9, 1, -7, -8, -9, -1, 7 };
             foreach (int dir in directions)
             {
@@ -1281,14 +1336,91 @@ namespace ChessEngine
             }
         }
 
-        public static void Castle(bool IsWhite, ChessBoard board)
+        public static void GetCastleMoves(bool isWhite,ref List<Move> moves, ChessBoard board)
         {
-            if (IsWhite)
-            {
+            if (isWhite) {
+
                 if (board.WhiteCanCastleKingside)
                 {
-                    // its gonna be casteling here
-                    Debug.Log("Castle");
+                    if (HelperFunctions.GetBit(5, board.AllPieces) == 1 || HelperFunctions.GetBit(6, board.AllPieces) == 1) { }
+                    else if (HelperFunctions.GetBit(5, board.BlackAttackBoard) == 1 || HelperFunctions.GetBit(6, board.BlackAttackBoard) == 1 || HelperFunctions.GetBit(4, board.BlackAttackBoard)==1) { }
+                    else moves.Add(new Move(4, 6, SpecialFlags.KingSideCastle));
+                }
+                if (board.WhiteCanCastleQueenside)
+                {
+                    if (HelperFunctions.GetBit(1, board.AllPieces) == 1 || HelperFunctions.GetBit(2, board.AllPieces) == 1 || HelperFunctions.GetBit(3, board.AllPieces) == 1) { }
+                    else if (HelperFunctions.GetBit(4, board.BlackAttackBoard) == 1 || HelperFunctions.GetBit(3, board.BlackAttackBoard) == 1 || HelperFunctions.GetBit(2, board.BlackAttackBoard) == 1) { }
+
+                    else moves.Add(new Move(4, 2, SpecialFlags.QueenSideCastle));
+                }
+                return;
+            }
+            else
+            {
+                if (board.BlackCanCastleKingside)
+                {
+                    if (HelperFunctions.GetBit(61, board.AllPieces) == 1 || HelperFunctions.GetBit(62, board.AllPieces) == 1) { }
+                    else if (HelperFunctions.GetBit(62, board.WhiteAttackBoard) == 1 || HelperFunctions.GetBit(61, board.WhiteAttackBoard) == 1 || HelperFunctions.GetBit(60, board.WhiteAttackBoard) == 1) { }
+                    else moves.Add(new Move(60, 62, SpecialFlags.KingSideCastle));
+                }
+                if (board.BlackCanCastleQueenside)
+                {
+                    if (HelperFunctions.GetBit(57, board.AllPieces) == 1 || HelperFunctions.GetBit(58, board.AllPieces) == 1 || HelperFunctions.GetBit(59, board.AllPieces) == 1) { }
+                    else if (HelperFunctions.GetBit(58, board.WhiteAttackBoard) == 1 || HelperFunctions.GetBit(59, board.WhiteAttackBoard) == 1 || HelperFunctions.GetBit(60, board.WhiteAttackBoard) == 1) { }
+
+                    else moves.Add(new Move(60, 58, SpecialFlags.QueenSideCastle));
+                }
+            }
+        }
+
+        public static void DoCastleMoves(SpecialFlags castleType, ref ChessBoard board, bool isWhite)
+        {
+            if (isWhite)
+            {
+                if (castleType == SpecialFlags.KingSideCastle)
+                {
+                    // Remove the rook from position 7     2^7=128UL
+                    board.WhiteRooks &= ~128UL;
+
+                    // Move the rook to position 5       2^5=32UL
+                    board.WhiteRooks |= 32UL;
+
+                    return;
+                }
+
+                if (castleType == SpecialFlags.QueenSideCastle)
+                {
+                    // Remove the rook from position 0     2^0=1UL
+                    board.WhiteRooks &= ~1UL;
+
+                    // Move the rook to position 2       2^2=4UL
+                    board.WhiteRooks |= 8UL;
+
+                    return;
+                }
+            }
+
+            else
+            {
+                if (castleType == SpecialFlags.KingSideCastle)
+                {
+                    // Remove the rook from position 63     2^63=9223372036854775808UL
+                    board.BlackRooks &= ~9223372036854775808UL;
+
+                    // Move the rook to position 61       2^61=2305843009213693952UL
+                    board.BlackRooks |= 2305843009213693952UL;
+
+                    return;
+                }
+                if (castleType == SpecialFlags.QueenSideCastle)
+                {
+                    // Remove the rook from position 56     2^56=72057594037927936UL
+                    board.BlackRooks &= ~72057594037927936UL;
+
+                    // Move the rook to position 59       2^59=576460752303423488
+                    board.BlackRooks |= 576460752303423488UL;
+
+                    return;
                 }
             }
         }
@@ -1343,6 +1475,7 @@ namespace ChessEngine
 
         public static void CastelingRights(ref ChessBoard board, int pieceType, byte startPosition, byte endPosition)
         {
+            if (!board.WhiteCanCastleQueenside && !board.WhiteCanCastleKingside && !board.BlackCanCastleKingside && !board.BlackCanCastleQueenside) return;
             // Remove all castling rights for white if king is moved
             if (pieceType == 5)
             {
@@ -1371,7 +1504,7 @@ namespace ChessEngine
                 }
             }
 
-            if (CapturePieceType == 9)
+            else if (CapturePieceType == 9)
             {
                 if (endPosition == 56)
                 {
@@ -1384,7 +1517,7 @@ namespace ChessEngine
             }
 
             //Now white rooks
-            else if (pieceType == 3)
+            if (pieceType == 3)
             {
                 if (startPosition == 0)
                 {
@@ -1570,25 +1703,25 @@ namespace ChessEngine
             public byte startPos;
             public byte endPos;
 
-            public PromotionType promotionType;
+            public SpecialFlags specialFlags;
 
             public Move(byte startPos1, byte endPos1)
             {
                 startPos = startPos1;
                 endPos = endPos1;
-                promotionType = PromotionType.None;
+                specialFlags = SpecialFlags.None;
             }
 
-            public Move(byte _startPos, byte _endPos, PromotionType _promotionType)
+            public Move(byte _startPos, byte _endPos, SpecialFlags _specialFlags)
             {
                 startPos = _startPos;
                 endPos = _endPos;
-                promotionType = _promotionType;
+                specialFlags = _specialFlags;
             }
 
             public override string ToString()
             {
-                return $"From {startPos} to {endPos} with {promotionType.ToString()}";
+                return $"From {startPos} to {endPos} with {specialFlags.ToString()}";
             }
         }
     }

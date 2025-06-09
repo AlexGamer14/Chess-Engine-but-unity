@@ -120,25 +120,30 @@ namespace ChessEngine
                 print(board.BlackKingPos);
             }
 
-            if (MoveWhiteAI && EnableAI_VS_AI)
+            if (Input.GetKeyDown(KeyCode.K))
             {
-                StartCoroutine(MoveNextFrame(true));
+                Search.baseMovesCheck.Clear();
+                print("Amount of moves: " + Search.Perft(depth_inspector, board, true));
             }
 
-            else if (MoveBlackAI)
+            if (Input.GetKeyDown(KeyCode.L))
             {
-                StartCoroutine(MoveNextFrame(false));
+                
+                print(evaluation.Evaluate(board, board.WhiteToMove));
             }
 
             if (MoveWhiteAI && EnableAI_VS_AI)
             {
                 MoveWhiteAI = false;
-                MoveBlackAI = true;
+                StartCoroutine(MoveNextFrame(true));
+                Debug.LogError("Moving white");
             }
+
             else if (MoveBlackAI)
             {
                 MoveBlackAI = false;
-                MoveWhiteAI = EnableAI_VS_AI;
+                StartCoroutine(MoveNextFrame(false));
+                Debug.LogError("Moving blakc");
             }
         }
 
@@ -159,12 +164,23 @@ namespace ChessEngine
             Debug.Log($"Move took {stopwatch.ElapsedMilliseconds} ms");
             Debug.Log("MoveGen took " + MovePieces.moveGenTime.ElapsedMilliseconds + " ms");
             MovePieces.moveGenTime.Reset();
+
+            if (white && EnableAI_VS_AI)
+            {
+                MoveBlackAI = true;
+            }
+            else if (!white)
+            {
+                MoveWhiteAI = EnableAI_VS_AI;
+            }
         }
+
+
 
         public void LoadFenString()
         {
             // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-            string fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+            string fenString = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
             board = new();
 
 
@@ -313,9 +329,13 @@ namespace ChessEngine
             board.BlackKnights = HelperFunctions.FlipBitboard(board.BlackKnights);
             board.BlackPawns = HelperFunctions.FlipBitboard(board.BlackPawns);
 
-            board.UpdateBitBoards();
+            for (int j = 0; j < 64; j++)
+            {
+                if (HelperFunctions.GetBit(j, board.BlackKing) == 1) board.BlackKingPos = (byte)j;
+                if (HelperFunctions.GetBit(j, board.WhiteKing) == 1) board.WhiteKingPos = (byte)j;
+            }
 
-            ChessEngine.board = (ChessBoard)board.Clone();
+            board.UpdateBitBoards();
         }
 
         private void FenStringCastling(string fenString, int fenStringPos)

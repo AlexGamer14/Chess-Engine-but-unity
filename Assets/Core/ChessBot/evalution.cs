@@ -10,10 +10,9 @@ namespace ChessEngine
     {
         const float pawnValue = 100;
         const float rookValue = 500;
-        const float knightsValue = 350;
+        const float knightsValue = 300;
         const float bishopsValue = 350;
         const float queenValue = 900;
-        const float moveFirstValue = 0;
 
         bool whiteKingAlive = false;
         bool blackKingAlive = false;
@@ -40,7 +39,7 @@ namespace ChessEngine
                                         10, 15, 10, 5,  5,  10, 15, 10,
                                         5,  0,  5, 15, 15, 5, 0,  5,
                                         0,  0,  10, 25, 25, 10, 0,  0,
-                                        0,  0,  0, 0,  0,  0, 0,  0,
+                                        0,  0,  0, 10,  10,  0, 0,  0,
                                         0,  0,  0, 0,  0,  0, 0,  0,
                                         0,  0,  0, 0,  0,  0, 0,  0,
                                         0,  0,  0, 0,  0,  0, 0,  0,
@@ -86,7 +85,7 @@ namespace ChessEngine
     0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0, 10, 10,  0,  0,  0,
     0,  0, 10, 25, 25, 10,  0,  0,
     5,  0,  5, 15, 15,  5,  0,  5,
     10, 15,10,  5,  5,  10, 15, 10,
@@ -102,7 +101,7 @@ namespace ChessEngine
 -5, 0, 0, 0, 0, 0, 0, -5,
 -5, -5, -5, -5, -5, -5, -5, -5, };
 
-    public float Evaluate(ChessBoard board, bool whiteToMove)
+        public float Evaluate(ChessBoard board, bool whiteToMove)
         {
             float evaluation = 0;
 
@@ -134,18 +133,18 @@ namespace ChessEngine
 
             int amountOfPieces = 0;
 
-            List<int> whitePawnPositions = new();
-            List<int> blackPawnPositions = new();
-            List<int> whiteKnightPositions = new();
-            List<int> blackKnightPositions = new();
-            List<int> whiteKingPositions = new();
-            List<int> blackKingPositions = new();
-            List<int> whiteRookPositions = new();
-            List<int> blackRookPositions = new();
-            List<int> whiteBishopPositions = new();
-            List<int> blackBishopPositions = new();
-            List<int> whiteQueenPositions = new();
-            List<int> blackQueenPositions = new();
+            List<int> whitePawnPositions = new(64);
+            List<int> blackPawnPositions = new(64);
+            List<int> whiteKnightPositions = new(64);
+            List<int> blackKnightPositions = new(64);
+            List<int> whiteKingPositions = new(64);
+            List<int> blackKingPositions = new(64);
+            List<int> whiteRookPositions = new(64);
+            List<int> blackRookPositions = new(64);
+            List<int> whiteBishopPositions = new(64);
+            List<int> blackBishopPositions = new(64);
+            List<int> whiteQueenPositions = new(64);
+            List<int> blackQueenPositions = new(64);
 
             for (int i = 0; i < 64; i++)
             {
@@ -338,11 +337,11 @@ namespace ChessEngine
 
             if (board.IsWhiteChecked())
             {
-                evaluation -= 50;
+                evaluation -= 20;
             }
             if (board.IsBlackChecked())
             {
-                evaluation += 50;
+                evaluation += 20;
             }
 
             return evaluation;

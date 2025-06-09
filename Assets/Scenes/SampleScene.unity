@@ -2469,9 +2469,9 @@ MonoBehaviour:
   knightPromoteBtn: {fileID: 646486509}
   promotionBackground: {fileID: 871244755}
   EnableAI_VS_AI: 0
-  EnableAIInspector: 1
+  EnableAIInspector: 0
   FENInput: {fileID: 1803220644}
-  depth_inspector: 4
+  depth_inspector: 1
   cooldown: 0.1
 --- !u!1 &1803220642
 GameObject:

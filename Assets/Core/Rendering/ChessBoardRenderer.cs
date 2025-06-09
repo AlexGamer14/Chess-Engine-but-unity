@@ -111,7 +111,7 @@ namespace ChessEngine {
                                     { 
                                         MovePieces.Move currentMove = moves[i];
 
-                                        if (moves[i].promotionType==MovePieces.PromotionType.Knight)
+                                        if (moves[i].specialFlags ==MovePieces.SpecialFlags.Knight)
                                         {
                                             promotionBackground.SetActive(true);
 
@@ -164,7 +164,7 @@ namespace ChessEngine {
         public void UpdateEval()
         {
             Evaluation evaluation = new Evaluation();
-            evalImage.fillAmount = (evaluation.Evaluate(ChessEngine.board, ChessEngine.board.WhiteToMove) / 200) + 0.5f;
+            evalImage.fillAmount = (evaluation.Evaluate(ChessEngine.board, ChessEngine.board.WhiteToMove) / 2000f) + 0.5f;
         }
 
         public void SecondPartOfHumanMove(MovePieces.Move move, int pieceType)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ChessEngine
 {
@@ -100,6 +101,42 @@ namespace ChessEngine
             } 
         }*/
 
+        public static List<OrgMove> baseMovesCheck = new List<OrgMove>();
+
+        public static int Perft(int depth, ChessBoard board, bool isWhiteToMove)
+        {
+            if (depth == 0)
+                return 1; // Count 1 position when we reach the target depth
+
+            int nodes = 0;
+             // Preallocate a list to store moves and their counts
+
+            MovePieces.Move[] moves = MovePieces.GetMovesForBlackOrWhite(isWhiteToMove, board);
+            foreach (var move in moves)
+            {
+                ChessBoard newBoard = (ChessBoard)board.Clone();
+                int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(move.startPos, newBoard);
+                MovePieces.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
+
+                int amount = Perft(depth - 1, newBoard, !isWhiteToMove);
+
+                if (depth == ChessEngine.depth)
+                {
+                    baseMovesCheck.Add(new(move,amount));
+                }
+
+                nodes += amount;
+            }
+
+            if (depth==ChessEngine.depth)
+            {
+                HelperFunctions.PrintList(baseMovesCheck);
+            }
+            return nodes;
+        }
+
+
+
         public static MovePieces.Move IterativeSearchAllMoves(int depth, bool isWhiteToMove, ChessBoard board)
         {
             Evaluation evaluation = new();
@@ -108,13 +145,19 @@ namespace ChessEngine
 
             MovePieces.Move[] rootMoves = MovePieces.GetMovesForBlackOrWhite(isWhiteToMove, board);
 
+            if (isWhiteToMove)
+            {
+                Debug.Log(depth);
+            }
+
+
             foreach (var move in rootMoves)
             {
                 ChessBoard newBoard = (ChessBoard)board.Clone();
                 int pieceType = HelperFunctions.CheckIfPieceOnEveryBoard(move.startPos, newBoard);
                 MovePieces.SearchMovePiece(ref HelperFunctions.GetTypeBasedOnIndex(pieceType, ref newBoard), pieceType, move, ref newBoard);
 
-                float eval = Minimax(newBoard, depth - 1, 0, !isWhiteToMove, evaluation, isWhiteToMove ? float.PositiveInfinity : float.NegativeInfinity, isWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity);
+                float eval = Minimax(newBoard, depth - 1, 0, !isWhiteToMove, evaluation, float.NegativeInfinity, float.PositiveInfinity);
 
                 if (isWhiteToMove)
                 {
@@ -132,6 +175,7 @@ namespace ChessEngine
                         bestMove = move;
                     }
                 }
+
             }
 
             Debug.Log("Best eval: " + bestEval);
@@ -176,7 +220,7 @@ namespace ChessEngine
 
             float bestEval = isWhiteToMove ? float.NegativeInfinity : float.PositiveInfinity;
             MovePieces.Move bestMove = default;
-            
+
 
             foreach (var move in moves)
             {
@@ -223,6 +267,23 @@ namespace ChessEngine
             transpositionTable.Store(zobristKey, bestEval, depth, type, bestMove);
 
             return bestEval;
+        }
+
+        public struct OrgMove
+        {
+            public string PGN;
+            public long amount;
+
+            public OrgMove(MovePieces.Move move, long amount)
+            {
+                PGN = PGNConverter.MoveToPGN(move);
+                this.amount = amount;
+            }
+
+            public override string ToString()
+            {
+                return $"{PGN} - {amount}\n";
+            }
         }
     }
 }
